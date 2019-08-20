@@ -1,32 +1,78 @@
 package ControlPackage;
 
 import EngineRunner.ModuleTwo;
+import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Commit.CommitCannotExecutException;
+import Repository.DeleteHeadBranchException;
 import Repository.NoActiveRepositoryException;
+import Repository.NoSuchBranchException;
 import Repository.NoSuchRepoException;
 import XML.XmlNotValidException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TreeView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+
 public class Controller {
 
+    @FXML
+    private Label repositoryNameLabel;
 
     @FXML
     private Label usernameLabel;
+
+    @FXML
+    private Label activeBranchLabel;
+
+    @FXML
+    void commitButton(ActionEvent event) {
+        TextInputDialog commitDialog = new TextInputDialog("");
+        commitDialog.setTitle("Execute commit");
+        commitDialog.setHeaderText("Enter commit message:");
+        Optional<String> commitMsg = commitDialog.showAndWait();
+        try {
+            if (commitMsg.isPresent())
+                ModuleTwo.executeCommit(commitMsg.get());
+        } catch (NoActiveRepositoryException | CommitCannotExecutException e) {
+            popAlert(e);
+        }
+    }
+
+    @FXML
+    private Label fileNameLabel;
+
+    @FXML
+    private Label fileContentLabel;
+
+    @FXML
+    private TreeView<?> fileSystemTreeView;
+
+    @FXML
+    void showCommitButton(ActionEvent event) {
+
+    }
+
+    @FXML
+    void showChangesButton(ActionEvent event) {
+
+    }
+
+    @FXML
+    private Label commitMsgLabel;
+
+    @FXML
+    private TreeView<?> BranchCommitTreeView;
 
     @FXML
     void createEmptyRepo(ActionEvent event) {
@@ -34,16 +80,88 @@ public class Controller {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select repository location ");
         File directory = directoryChooser.showDialog(new Stage());
-        TextInputDialog dialog = new TextInputDialog("");
-        dialog.setTitle("Repository folder name");
-        dialog.setHeaderText("Enter repository folder name:");
-        dialog.setContentText("Name:");
-        Optional<String> answer = dialog.showAndWait();
-        if (answer.isPresent()) {
-            path = directory.getPath() + "/" + answer.get();
-            ModuleTwo.InitializeRepo(path);
+        if (directory.getPath() != null) {
+            TextInputDialog dialog = new TextInputDialog("");
+            dialog.setTitle("Repository folder name");
+            dialog.setHeaderText("Enter repository folder name:");
+            dialog.setContentText("Name:");
+            Optional<String> answer = dialog.showAndWait();
+            if (answer.isPresent()) {
+                path = directory.getPath() + "/" + answer.get();
+                ModuleTwo.InitializeRepo(path);
+                repositoryNameLabel.setText(answer.get());
+                activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+            }
         }
     }
+
+    @FXML
+    void deleteExistingBranch(ActionEvent event) {
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Delete branch");
+        dialog.setHeaderText("Please enter the branch name to delete it:");
+        dialog.setContentText("Branch name");
+        Optional<String> answer = dialog.showAndWait();
+        if (answer.isPresent()) {
+
+            try {
+                ModuleTwo.deleteBranch(answer.get());
+            } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
+                popAlert(e);
+            }
+        }
+    }
+
+    @FXML
+    void makeNewBranch(ActionEvent event) {
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Make new branch");
+        dialog.setHeaderText("Please enter the branch name:");
+        dialog.setContentText("Branch name");
+        Optional<String> answer = dialog.showAndWait();
+        if (answer.isPresent()) {
+            try {
+                ModuleTwo.makeNewBranch(answer.get());
+
+                String[] options = new String[]{"Yes",
+                        "No"};
+                ChoiceDialog<String> choiceDialog = new ChoiceDialog<String>(options[0], options);
+                choiceDialog.setTitle("Change active branch");
+                choiceDialog.setHeaderText("Do you want to make the new branch active?");
+                choiceDialog.setContentText("Please choose an option");
+                Optional<String> answer2 = choiceDialog.showAndWait();
+                if (answer2.isPresent()) {
+                    if (answer2.get().equals(options[0])) {
+                        ModuleTwo.checkout(answer.get());
+                        activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                    }
+                }
+
+            } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException e) {
+                popAlert(e);
+            }
+            //ModuleOne.PrintString("Do you want to make this branch the active branch?");
+            // if (checkAnswer())
+            //     checkout(name);
+        }
+    }
+
+    @FXML
+    void loadRepoFromXml(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Please select XML file");
+        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML Document", "*.xml");
+        fileChooser.getExtensionFilters().addAll(extensionFilter);
+        File file = fileChooser.showOpenDialog(new Stage());
+        try {
+            ModuleTwo.loadRepo(file.getPath());
+            repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
+            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+        } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
+            popAlert(e);
+        }
+    }
+
 
     @FXML
     void openRepository(ActionEvent event) {
@@ -52,22 +170,37 @@ public class Controller {
         File dir = directoryChooser.showDialog(new Stage());
         try {
             ModuleTwo.SwitchRepo(dir.getPath());
+            repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
+            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
         } catch (NoSuchRepoException e) {
             popAlert(e);
         }
     }
 
     @FXML
-    void loadRepoFromXml(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Please select XML file");
-        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML Files", "*.xml");
-        fileChooser.getExtensionFilters().addAll(extensionFilter);
-        File file = fileChooser.showOpenDialog(new Stage());
-        try {
-            ModuleTwo.loadRepo(file.getPath());
-        } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
-            popAlert(e);
+    void resetBranchPosition(ActionEvent event) {
+
+    }
+
+    @FXML
+    void showBranches(ActionEvent event) {
+
+    }
+
+    @FXML
+    void switchHeadBranch(ActionEvent event) {
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Checkout");
+        dialog.setHeaderText("Please enter the branch name to switch to:");
+        dialog.setContentText("Branch name");
+        Optional<String> answer = dialog.showAndWait();
+        if (answer.isPresent()) {
+            try {
+                ModuleTwo.checkout(answer.get());
+                activeBranchLabel.setText(answer.get());
+            } catch (NoActiveRepositoryException | NoSuchBranchException e) {
+                popAlert(e);
+            }
         }
     }
 
@@ -85,56 +218,8 @@ public class Controller {
 
     }
 
-    @FXML
-    void showCommitContent(ActionEvent event) {
 
-    }
-
-    @FXML
-    void showOpenChanges(ActionEvent event) {
-
-    }
-
-    @FXML
-    void executeCommit(ActionEvent event) {
-        TextInputDialog commitDialog = new TextInputDialog("");
-        commitDialog.setTitle("Execute commit");
-        commitDialog.setHeaderText("Enter commit message:");
-        Optional<String> commitMsg = commitDialog.showAndWait();
-        try {
-            if (commitMsg.isPresent())
-                ModuleTwo.executeCommit(commitMsg.get());
-        } catch (NoActiveRepositoryException | CommitCannotExecutException e) {
-            popAlert(e);
-        }
-    }
-
-    @FXML
-    void showBranches(ActionEvent event) {
-
-    }
-
-    @FXML
-    void makeNewBranch(ActionEvent event) {
-
-    }
-
-    @FXML
-    void deleteExistingBranch(ActionEvent event) {
-
-    }
-
-    @FXML
-    void switchHeadBranch(ActionEvent event) {
-
-    }
-
-    @FXML
-    void resetBranchPosition(ActionEvent event) {
-
-    }
-
-    void popAlert(Exception e) {
+    private void popAlert(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setContentText(e.getMessage());
         alert.showAndWait();
@@ -160,3 +245,4 @@ public class Controller {
     }
 
 }
+

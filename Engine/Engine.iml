@@ -18,5 +18,6 @@
     </orderEntry>
     <orderEntry type="module" module-name="UserInterface" exported="" />
     <orderEntry type="module" module-name="GUI" />
+    <orderEntry type="library" name="commons-codec-1.12" level="project" />
   </component>
 </module>

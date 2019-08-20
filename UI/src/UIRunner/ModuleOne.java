@@ -68,13 +68,13 @@ public class ModuleOne {
                 case "8": {
                     System.out.println("Please enter the name of the branch");
                     input = scanner.nextLine();
-                    ModuleTwo.makeNewBranch(input);
+                   // ModuleTwo.makeNewBranch(input);
                     break;
                 }
                 case "9": {
                     System.out.println("Please enter the name of the branch");
                     input = scanner.nextLine();
-                    ModuleTwo.deleteBranch(input);
+                    //ModuleTwo.deleteBranch(input);
                     break;
                 }
                 case "10": {
@@ -119,7 +119,7 @@ public class ModuleOne {
         System.out.println("Please enter the name of the branch");
         String input;
         input = scanner.nextLine();
-        ModuleTwo.checkout(input);
+        //ModuleTwo.checkout(input);
     }
 }
 

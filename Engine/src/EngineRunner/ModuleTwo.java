@@ -90,17 +90,11 @@ public class ModuleTwo {
         }
     }
 
-    public static void makeNewBranch(String name) {
+    public static void makeNewBranch(String name) throws NoActiveRepositoryException, AlreadyExistingBranchException {
 
-        try {
+
             checkIfActiveRepoExists();
             activeRepo.addNewBranch(name);
-            ModuleOne.PrintString("Do you want to make this branch the active branch?");
-            if (checkAnswer())
-                checkout(name);
-        } catch (AlreadyExistingBranchException | NoActiveRepositoryException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void changesChecker() {
@@ -148,13 +142,11 @@ public class ModuleTwo {
 
     }
 
-    public static void checkout(String name) {
-        try {
+    public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException {
+
             checkIfActiveRepoExists();
             activeRepo.switchHead(name);
-        } catch (NoActiveRepositoryException | NoSuchBranchException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public static void showStatus() {
@@ -177,13 +169,9 @@ public class ModuleTwo {
 
     }
 
-    public static void deleteBranch(String input) {
-        try {
+    public static void deleteBranch(String input) throws NoActiveRepositoryException,DeleteHeadBranchException, NoSuchBranchException{
             checkIfActiveRepoExists();
             activeRepo.deleteThisBranch(input);
-        } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
-            e.printStackTrace();
-        }
     }
 
     private static void checkIfActiveRepoExists() throws NoActiveRepositoryException {
@@ -206,5 +194,13 @@ public class ModuleTwo {
         }
     }
 
+    public static String getActiveRepoName()
+    {
+        return activeRepo.getName();
+    }
+    public static String getActiveBranchName()
+    {
+        return activeRepo.getHeadBranchName();
+    }
 
 }
