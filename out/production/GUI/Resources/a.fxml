@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControlPackage.Controller">
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Repository">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <ScrollBar layoutX="14.0" layoutY="17.0" orientation="VERTICAL" prefHeight="643.0" prefWidth="0.0" />
+                        <Label layoutX="65.0" layoutY="17.0" prefHeight="57.0" prefWidth="94.0" text="Username:" />
+                        <Label fx:id="usernameLabel" layoutX="159.0" layoutY="32.0" prefHeight="27.0" prefWidth="88.0" text="Default" />
+                     </children>
+                     <effect>
+                        <InnerShadow />
+                     </effect>
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Graphical representation">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="180.0" prefWidth="200.0">
+                     <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                     </cursor>
+                     <effect>
+                        <InnerShadow />
+                     </effect>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Repository">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#createEmptyRepo" text="Create new repository" />
+                  <MenuItem mnemonicParsing="false" onAction="#openRepository" text="Open Repository" />
+                  <MenuItem mnemonicParsing="false" onAction="#loadRepoFromXml" text="Load xml repository" />
+                  <MenuItem mnemonicParsing="false" onAction="#switchUsername" text="Set username" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Commit">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#showCommitContent" text="Show content" />
+                  <MenuItem mnemonicParsing="false" onAction="#showOpenChanges" text="Show open changes in the working copy" />
+                  <MenuItem mnemonicParsing="false" onAction="#executeCommit" text="Execute Commit" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Branches">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#showBranches" text="Show branches" />
+                  <MenuItem mnemonicParsing="false" onAction="#makeNewBranch" text="Make new branch" />
+                  <MenuItem mnemonicParsing="false" onAction="#deleteExistingBranch" text="Delete existing branch" />
+                  <MenuItem mnemonicParsing="false" onAction="#switchHeadBranch" text="Switch head branch(checkout)" />
+                  <MenuItem mnemonicParsing="false" onAction="#resetBranchPosition" text="Reset branch position" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+</BorderPane>
