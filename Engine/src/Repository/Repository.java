@@ -101,7 +101,7 @@ public class Repository {
 
     public void readRepoFiles() {
         this.readMagitObjects();
-        this.readBranches();
+        this.readBranches();//k
     }
 
     private void readBranches() {
