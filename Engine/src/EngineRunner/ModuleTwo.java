@@ -194,6 +194,9 @@ public class ModuleTwo {
         }
     }
 
+    public static String getActiveRepoPath(){
+        return activeRepo.getPath();
+    }
     public static String getActiveRepoName()
     {
         return activeRepo.getName();

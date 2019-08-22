@@ -35,6 +35,9 @@ public class Repository {
         branches = _branches;
         name = new File(_path).getName();
     }
+    public String getPath() {
+        return path;
+    }
     public String getHeadBranchName()
     {
         return headBranch.getName();

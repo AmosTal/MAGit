@@ -10,17 +10,15 @@ import Repository.NoSuchRepoException;
 import XML.XmlNotValidException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+
 import java.util.Optional;
 
 
@@ -42,8 +40,10 @@ public class Controller {
         commitDialog.setHeaderText("Enter commit message:");
         Optional<String> commitMsg = commitDialog.showAndWait();
         try {
-            if (commitMsg.isPresent())
+            if (commitMsg.isPresent()){
                 ModuleTwo.executeCommit(commitMsg.get());
+                buildFileTree(ModuleTwo.getActiveRepoPath());
+            }
         } catch (NoActiveRepositoryException | CommitCannotExecutException e) {
             popAlert(e);
         }
@@ -56,7 +56,7 @@ public class Controller {
     private Label fileContentLabel;
 
     @FXML
-    private TreeView<?> fileSystemTreeView;
+    private TreeView<String> fileSystemTreeView;
 
     @FXML
     void showCommitButton(ActionEvent event) {
@@ -66,6 +66,14 @@ public class Controller {
     @FXML
     void showChangesButton(ActionEvent event) {
 
+    }
+    @FXML
+    void showContentButton(ActionEvent event) {
+        TreeItem<String> selectedItem = fileSystemTreeView.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            fileNameLabel.setText(selectedItem.getValue());
+
+        }
     }
 
     @FXML
@@ -157,10 +165,27 @@ public class Controller {
             ModuleTwo.loadRepo(file.getPath());
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+            buildFileTree(ModuleTwo.getActiveRepoPath());
         } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
             popAlert(e);
         }
     }
+
+    private TreeItem<String> getNodesForDirectory(File directory) {
+        TreeItem<String> root = new TreeItem<String>(directory.getName());
+        for (File f : directory.listFiles()) {
+            if (f.isDirectory() && !f.getName().equals(".magit"))
+                root.getChildren().add(getNodesForDirectory(f));
+            else if (!f.isDirectory())
+                root.getChildren().add(new TreeItem<String>(f.getName()));
+        }
+        return root;
+    }
+
+    private void buildFileTree(String activeRepoName) {
+        fileSystemTreeView.setRoot(getNodesForDirectory(new File(activeRepoName)));
+    }
+
 
 
     @FXML
@@ -172,6 +197,7 @@ public class Controller {
             ModuleTwo.SwitchRepo(dir.getPath());
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+            buildFileTree(ModuleTwo.getActiveRepoPath());
         } catch (NoSuchRepoException e) {
             popAlert(e);
         }
