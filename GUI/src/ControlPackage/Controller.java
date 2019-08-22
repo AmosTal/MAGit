@@ -11,14 +11,16 @@ import XML.XmlNotValidException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 
@@ -40,7 +42,7 @@ public class Controller {
         commitDialog.setHeaderText("Enter commit message:");
         Optional<String> commitMsg = commitDialog.showAndWait();
         try {
-            if (commitMsg.isPresent()){
+            if (commitMsg.isPresent()) {
                 ModuleTwo.executeCommit(commitMsg.get());
                 buildFileTree(ModuleTwo.getActiveRepoPath());
             }
@@ -56,7 +58,7 @@ public class Controller {
     private Label fileContentLabel;
 
     @FXML
-    private TreeView<String> fileSystemTreeView;
+    private TreeView<File> fileSystemTreeView;
 
     @FXML
     void showCommitButton(ActionEvent event) {
@@ -67,14 +69,21 @@ public class Controller {
     void showChangesButton(ActionEvent event) {
 
     }
+
     @FXML
     void showContentButton(ActionEvent event) {
-        TreeItem<String> selectedItem = fileSystemTreeView.getSelectionModel().getSelectedItem();
+        TreeItem<File> selectedItem = fileSystemTreeView.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
-            fileNameLabel.setText(selectedItem.getValue());
-
+            fileNameLabel.setText(selectedItem.getValue().getName());
+            try {
+                fileContentLabel.setText(FileUtils.readFileToString(selectedItem.getValue(),(String)null));
+            } catch (IOException e) {
+                popAlert(e);
+            }
         }
     }
+
+
 
     @FXML
     private Label commitMsgLabel;
@@ -148,9 +157,6 @@ public class Controller {
             } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException e) {
                 popAlert(e);
             }
-            //ModuleOne.PrintString("Do you want to make this branch the active branch?");
-            // if (checkAnswer())
-            //     checkout(name);
         }
     }
 
@@ -171,21 +177,35 @@ public class Controller {
         }
     }
 
-    private TreeItem<String> getNodesForDirectory(File directory) {
-        TreeItem<String> root = new TreeItem<String>(directory.getName());
+    private TreeItem<File> getNodesForDirectory(File directory) {
+        TreeItem<File> root = new TreeItem<File>(directory);
         for (File f : directory.listFiles()) {
             if (f.isDirectory() && !f.getName().equals(".magit"))
                 root.getChildren().add(getNodesForDirectory(f));
             else if (!f.isDirectory())
-                root.getChildren().add(new TreeItem<String>(f.getName()));
+                root.getChildren().add(new TreeItem<File>(f));
         }
         return root;
     }
 
     private void buildFileTree(String activeRepoName) {
         fileSystemTreeView.setRoot(getNodesForDirectory(new File(activeRepoName)));
-    }
+        fileSystemTreeView.setCellFactory(new Callback<TreeView<File>, TreeCell<File>>() {
 
+            public TreeCell<File> call(TreeView<File> tv) {
+                return new TreeCell<File>() {
+
+                    @Override
+                    protected void updateItem(File item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        setText((empty || item == null) ? "" : item.getName());
+                    }
+
+                };
+            }
+        });
+    }
 
 
     @FXML
