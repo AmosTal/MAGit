@@ -2,12 +2,16 @@ package ControlPackage;
 
 import EngineRunner.ModuleTwo;
 import Objects.Branch.AlreadyExistingBranchException;
+import Objects.Branch.Branch;
+import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.DeleteHeadBranchException;
 import Repository.NoActiveRepositoryException;
 import Repository.NoSuchBranchException;
 import Repository.NoSuchRepoException;
 import XML.XmlNotValidException;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -19,9 +23,9 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class Controller {
@@ -44,30 +48,34 @@ public class Controller {
         try {
             if (commitMsg.isPresent()) {
                 ModuleTwo.executeCommit(commitMsg.get());
-                buildFileTree(ModuleTwo.getActiveRepoPath());
             }
         } catch (NoActiveRepositoryException | CommitCannotExecutException e) {
             popAlert(e);
         }
+        buildFileTree(ModuleTwo.getActiveRepoPath());
+        buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
     }
 
     @FXML
     private Label fileNameLabel;
 
     @FXML
-    private Label fileContentLabel;
+    private ListView<?> fileContentListView;
 
     @FXML
     private TreeView<File> fileSystemTreeView;
 
     @FXML
     void showCommitButton(ActionEvent event) {
-
+        TreeItem<CommitOrBranch> selectedItem = (TreeItem<CommitOrBranch>) BranchCommitTreeView.getSelectionModel().getSelectedItem();
+        if(selectedItem.getValue().isCommit())
+            commitMsgLabel.setText(selectedItem.getValue().getCommit().getCommitPurposeMSG());
+        else
+            commitMsgLabel.setText("This is not a Commit");
     }
 
     @FXML
     void showChangesButton(ActionEvent event) {
-
     }
 
     @FXML
@@ -76,7 +84,8 @@ public class Controller {
         if (selectedItem != null) {
             fileNameLabel.setText(selectedItem.getValue().getName());
             try {
-                fileContentLabel.setText(FileUtils.readFileToString(selectedItem.getValue(),(String)null));
+                ObservableList list = FXCollections.observableArrayList(FileUtils.readLines(selectedItem.getValue(), "utf-8"));
+                fileContentListView.setItems(list);
             } catch (IOException e) {
                 popAlert(e);
             }
@@ -84,12 +93,11 @@ public class Controller {
     }
 
 
-
     @FXML
     private Label commitMsgLabel;
 
     @FXML
-    private TreeView<?> BranchCommitTreeView;
+    private TreeView<CommitOrBranch> BranchCommitTreeView;
 
     @FXML
     void createEmptyRepo(ActionEvent event) {
@@ -105,7 +113,11 @@ public class Controller {
             Optional<String> answer = dialog.showAndWait();
             if (answer.isPresent()) {
                 path = directory.getPath() + "/" + answer.get();
-                ModuleTwo.InitializeRepo(path);
+                try {
+                    ModuleTwo.InitializeRepo(path);
+                } catch (IOException e) {
+                    popAlert(e);
+                }
                 repositoryNameLabel.setText(answer.get());
                 activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             }
@@ -123,6 +135,7 @@ public class Controller {
 
             try {
                 ModuleTwo.deleteBranch(answer.get());
+                buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
             } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
                 popAlert(e);
             }
@@ -153,6 +166,7 @@ public class Controller {
                         activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
                     }
                 }
+                buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
 
             } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException e) {
                 popAlert(e);
@@ -172,6 +186,7 @@ public class Controller {
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
+            buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
         } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
             popAlert(e);
         }
@@ -187,6 +202,20 @@ public class Controller {
         }
         return root;
     }
+    private TreeItem<CommitOrBranch> getNodesForBranch() {
+        TreeItem<CommitOrBranch> root = new TreeItem<>();
+        List<Commit> commitLst;
+        for (Branch b:ModuleTwo.getActiveReposBranchs()){
+            TreeItem<CommitOrBranch> node = new TreeItem<CommitOrBranch>(new CommitOrBranch(b));
+            commitLst = ModuleTwo.getActiveReposBranchCommits(b);
+            node.getChildren().addAll(commitLst.stream().map(c->new TreeItem<CommitOrBranch>(new CommitOrBranch(c))).collect(Collectors.toList()));
+            BranchCommitTreeView.setRoot(node);
+            root.getChildren().add(node);
+        }
+        return root;
+        }
+
+
 
     private void buildFileTree(String activeRepoName) {
         fileSystemTreeView.setRoot(getNodesForDirectory(new File(activeRepoName)));
@@ -207,6 +236,25 @@ public class Controller {
         });
     }
 
+    private void buildBranchCommitTree(Branch headBranch) {
+        BranchCommitTreeView.setRoot(getNodesForBranch());
+        BranchCommitTreeView.setCellFactory(new Callback<TreeView<CommitOrBranch>, TreeCell<CommitOrBranch>>() {
+
+            public TreeCell<CommitOrBranch> call(TreeView<CommitOrBranch> tv) {
+                return new TreeCell<CommitOrBranch>() {
+
+                    @Override
+                    protected void updateItem(CommitOrBranch item, boolean empty) {
+                        super.updateItem(item, empty);
+
+                        setText((empty||item==null) ?"":(item.isCommit()) ?"Commit "+item.getCommit().getSha1() : "Branch "+item.getBranch().getName());
+                    }
+
+                };
+            }
+        });
+    }
+
 
     @FXML
     void openRepository(ActionEvent event) {
@@ -218,6 +266,7 @@ public class Controller {
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
+            buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
         } catch (NoSuchRepoException e) {
             popAlert(e);
         }
@@ -290,5 +339,32 @@ public class Controller {
         return answer.map(s -> s.equals(options[0])).orElse(true);
     }
 
+    private class CommitOrBranch {
+
+
+        Branch branch;
+        Commit commit;
+
+        CommitOrBranch(Branch b) {
+            branch = b;
+        }
+
+        CommitOrBranch(Commit c) {
+            commit = c;
+        }
+
+        boolean isCommit() {
+            return commit != null;
+        }
+
+        public Branch getBranch() {
+            return branch;
+        }
+
+        public Commit getCommit() {
+            return commit;
+        }
+
+    }
 }
 

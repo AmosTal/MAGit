@@ -16,6 +16,7 @@ import XMLpackage.*;
 
 import java.io.*;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import java.util.zip.*;
@@ -41,6 +42,9 @@ public class Repository {
     public String getHeadBranchName()
     {
         return headBranch.getName();
+    }
+    public Branch getHeadBranch(){
+        return headBranch;
     }
     public String getName() {
         return name;
@@ -71,6 +75,10 @@ public class Repository {
         }
 
     }
+    public ArrayList<Branch> getBranches(){
+        return branches;
+    }
+
 
     private void makeFileForBranch(Branch branch, String name) {
         try {
@@ -434,6 +442,19 @@ public class Repository {
         }
     }
 
+    public List<Commit> getBranchCommits(Branch branch){
+        List<Commit> res = new ArrayList<>();
+        Commit commit = ((Commit) objList.get(branch.getSha1()));
+        while (commit != null) {
+            if (commit.getPreviousCommitSha1() != null){
+                commit = (Commit) objList.get(commit.getPreviousCommitSha1());
+                res.add(commit);
+            }
+            else
+                commit = null;
+        }
+        return res;
+    }
     public boolean hasCommitInHead() {
         return (headBranch.getSha1() != null);
 

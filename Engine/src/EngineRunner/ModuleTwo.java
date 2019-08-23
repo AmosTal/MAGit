@@ -2,6 +2,8 @@ package EngineRunner;
 
 import ControlPackage.Controller;
 import Objects.Branch.AlreadyExistingBranchException;
+import Objects.Branch.Branch;
+import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.*;
 import UIRunner.ModuleOne;
@@ -11,11 +13,13 @@ import XML.XmlNotValidException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ModuleTwo {
 
@@ -35,15 +39,10 @@ public class ModuleTwo {
             throw new NoSuchRepoException();
     }
 
-    public static void InitializeRepo(String path)//create empty repo (not from xml)
-    {
-        try {
-            Repository repo = new Repository(path, new HashMap<>(), new ArrayList<>());
-            repo.createEmptyRepo();
-            activeRepo = repo;
-        } catch (IOException e) {
-            e.getMessage();
-        }
+    public static void InitializeRepo(String path) throws IOException {
+        Repository repo = new Repository(path, new HashMap<>(), new ArrayList<>());
+        repo.createEmptyRepo();
+        activeRepo = repo;
     }
 
     public static void loadRepo(String path) throws XmlNotValidException, IOException, NoSuchRepoException {
@@ -93,8 +92,8 @@ public class ModuleTwo {
     public static void makeNewBranch(String name) throws NoActiveRepositoryException, AlreadyExistingBranchException {
 
 
-            checkIfActiveRepoExists();
-            activeRepo.addNewBranch(name);
+        checkIfActiveRepoExists();
+        activeRepo.addNewBranch(name);
     }
 
     public static void changesChecker() {
@@ -144,8 +143,8 @@ public class ModuleTwo {
 
     public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException {
 
-            checkIfActiveRepoExists();
-            activeRepo.switchHead(name);
+        checkIfActiveRepoExists();
+        activeRepo.switchHead(name);
 
     }
 
@@ -169,9 +168,9 @@ public class ModuleTwo {
 
     }
 
-    public static void deleteBranch(String input) throws NoActiveRepositoryException,DeleteHeadBranchException, NoSuchBranchException{
-            checkIfActiveRepoExists();
-            activeRepo.deleteThisBranch(input);
+    public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
+        checkIfActiveRepoExists();
+        activeRepo.deleteThisBranch(input);
     }
 
     private static void checkIfActiveRepoExists() throws NoActiveRepositoryException {
@@ -194,16 +193,27 @@ public class ModuleTwo {
         }
     }
 
-    public static String getActiveRepoPath(){
+    public static String getActiveRepoPath() {
         return activeRepo.getPath();
     }
-    public static String getActiveRepoName()
-    {
+
+    public static String getActiveRepoName() {
         return activeRepo.getName();
     }
-    public static String getActiveBranchName()
-    {
+
+    public static String getActiveBranchName() {
         return activeRepo.getHeadBranchName();
     }
 
+    public static Branch getActiveHeadBranch() {
+        return activeRepo.getHeadBranch();
+    }
+
+    public static List<Commit> getActiveReposBranchCommits(Branch branch) {
+        return activeRepo.getBranchCommits(branch);
+    }
+
+    public static ArrayList<Branch> getActiveReposBranchs() {
+        return activeRepo.getBranches();
+    }
 }
