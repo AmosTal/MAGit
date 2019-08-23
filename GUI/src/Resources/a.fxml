@@ -100,8 +100,13 @@
                         <ListView fx:id="fileContentListView" prefHeight="374.0" prefWidth="574.0" />
                      </children>
                   </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#showContentButton" prefHeight="39.0" prefWidth="134.0" text="Show content" />
+                        <Button mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="39.0" prefWidth="134.0" text="Refresh Files" />
+                     </children>
+                  </VBox>
                   <TreeView fx:id="fileSystemTreeView" prefHeight="200.0" prefWidth="200.0" />
-                  <Button mnemonicParsing="false" onAction="#showContentButton" prefHeight="39.0" prefWidth="134.0" text="Show content" GridPane.columnIndex="1" />
                </children>
             </GridPane>
             <GridPane GridPane.rowIndex="1">

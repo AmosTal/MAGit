@@ -80,6 +80,7 @@ public class Repository {
     }
 
 
+
     private void makeFileForBranch(Branch branch, String name) {
         try {
             PrintWriter out = new PrintWriter(this.path + "/.magit/branches/" + name);
@@ -155,16 +156,16 @@ public class Repository {
         }
     }
 
-    public void newCommit(String msg) {
+    public void newCommit(String msg) throws AlreadyExistingBranchException {
 
         String sha1OfRoot = recursiveWcToObjectBuilder(this.path, true, username).getSha1();
 
         Commit commit;
         if (headBranch != null && headBranch.getSha1() != null)
-            commit = new Commit(sha1OfRoot, headBranch.getSha1(), null, msg, username);//fix prev commit sha1
+            commit = new Commit(sha1OfRoot, headBranch.getSha1(), null, msg, username);
         else {
-            commit = new Commit(sha1OfRoot, msg, username);
-            headBranch = new Branch(commit.getSha1(), "master");
+            commit = new Commit(sha1OfRoot, msg, username); //first commmit
+            addNewBranch("master",commit);
         }
         headBranch.UpdateSha1(commit.getSha1());
         objList.put(commit.getSha1(), commit);
@@ -259,8 +260,11 @@ public class Repository {
         }
     }
 
-    public void addNewBranch(String name) throws AlreadyExistingBranchException {
+    public void addNewBranch(String name,Commit commit) throws AlreadyExistingBranchException {
         if (branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null) == null) {
+            if (commit != null){
+                headBranch = new Branch(commit.getSha1(), "master");
+            }
             Branch newBranch = new Branch(headBranch.getSha1(), name);
             branches.add(newBranch);
             makeFileForBranch(newBranch, newBranch.getName());
@@ -269,11 +273,11 @@ public class Repository {
     }
 
     public boolean checkDeltaChanges() {
-        Map<String, Fof> commitMap;
-        if (headBranch.getSha1() != null)
-            commitMap = getCommitMap((Commit) objList.get(headBranch.getSha1()));
-        else
-            commitMap = new HashMap<>();
+        Map<String, Fof> commitMap = new HashMap<>();
+        if (headBranch != null) {
+            if (headBranch.getSha1() != null)
+                commitMap = getCommitMap((Commit) objList.get(headBranch.getSha1()));
+        }
         currDelta = new Delta(commitMap);
         recursiveWcToObjectBuilder(this.path, false, username);
         return currDelta.getIsChanged();
@@ -446,9 +450,9 @@ public class Repository {
         List<Commit> res = new ArrayList<>();
         Commit commit = ((Commit) objList.get(branch.getSha1()));
         while (commit != null) {
+            res.add(commit);
             if (commit.getPreviousCommitSha1() != null){
                 commit = (Commit) objList.get(commit.getPreviousCommitSha1());
-                res.add(commit);
             }
             else
                 commit = null;

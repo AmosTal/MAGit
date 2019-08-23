@@ -64,7 +64,7 @@ public class ModuleTwo {
         }
     }
 
-    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException {
+    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException, AlreadyExistingBranchException {
         checkIfActiveRepoExists();
         if (activeRepo.checkDeltaChanges()) {
             activeRepo.newCommit(msg);
@@ -93,7 +93,7 @@ public class ModuleTwo {
 
 
         checkIfActiveRepoExists();
-        activeRepo.addNewBranch(name);
+        activeRepo.addNewBranch(name,null);
     }
 
     public static void changesChecker() {

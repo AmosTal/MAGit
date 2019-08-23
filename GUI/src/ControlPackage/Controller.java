@@ -48,12 +48,13 @@ public class Controller {
         try {
             if (commitMsg.isPresent()) {
                 ModuleTwo.executeCommit(commitMsg.get());
+                buildFileTree(ModuleTwo.getActiveRepoPath());
+                buildBranchCommitTree();
             }
-        } catch (NoActiveRepositoryException | CommitCannotExecutException e) {
+        } catch (NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e) {
             popAlert(e);
         }
-        buildFileTree(ModuleTwo.getActiveRepoPath());
-        buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
+
     }
 
     @FXML
@@ -67,7 +68,7 @@ public class Controller {
 
     @FXML
     void showCommitButton(ActionEvent event) {
-        TreeItem<CommitOrBranch> selectedItem = (TreeItem<CommitOrBranch>) BranchCommitTreeView.getSelectionModel().getSelectedItem();
+        TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
         if(selectedItem.getValue().isCommit())
             commitMsgLabel.setText(selectedItem.getValue().getCommit().getCommitPurposeMSG());
         else
@@ -92,6 +93,10 @@ public class Controller {
         }
     }
 
+    @FXML
+    void refreshFilesTree(ActionEvent event) {
+        buildFileTree(ModuleTwo.getActiveRepoPath());
+    }
 
     @FXML
     private Label commitMsgLabel;
@@ -115,11 +120,11 @@ public class Controller {
                 path = directory.getPath() + "/" + answer.get();
                 try {
                     ModuleTwo.InitializeRepo(path);
+                    repositoryNameLabel.setText(answer.get());
                 } catch (IOException e) {
                     popAlert(e);
                 }
-                repositoryNameLabel.setText(answer.get());
-                activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+
             }
         }
     }
@@ -135,7 +140,7 @@ public class Controller {
 
             try {
                 ModuleTwo.deleteBranch(answer.get());
-                buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
+                buildBranchCommitTree();
             } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
                 popAlert(e);
             }
@@ -166,7 +171,7 @@ public class Controller {
                         activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
                     }
                 }
-                buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
+                buildBranchCommitTree();
 
             } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException e) {
                 popAlert(e);
@@ -186,7 +191,7 @@ public class Controller {
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
-            buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
+            buildBranchCommitTree();
         } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
             popAlert(e);
         }
@@ -208,8 +213,7 @@ public class Controller {
         for (Branch b:ModuleTwo.getActiveReposBranchs()){
             TreeItem<CommitOrBranch> node = new TreeItem<CommitOrBranch>(new CommitOrBranch(b));
             commitLst = ModuleTwo.getActiveReposBranchCommits(b);
-            node.getChildren().addAll(commitLst.stream().map(c->new TreeItem<CommitOrBranch>(new CommitOrBranch(c))).collect(Collectors.toList()));
-            BranchCommitTreeView.setRoot(node);
+            node.getChildren().addAll(commitLst.stream().map(c-> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
             root.getChildren().add(node);
         }
         return root;
@@ -236,7 +240,7 @@ public class Controller {
         });
     }
 
-    private void buildBranchCommitTree(Branch headBranch) {
+    private void buildBranchCommitTree() {
         BranchCommitTreeView.setRoot(getNodesForBranch());
         BranchCommitTreeView.setCellFactory(new Callback<TreeView<CommitOrBranch>, TreeCell<CommitOrBranch>>() {
 
@@ -266,7 +270,7 @@ public class Controller {
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
-            buildBranchCommitTree(ModuleTwo.getActiveHeadBranch());
+            buildBranchCommitTree();
         } catch (NoSuchRepoException e) {
             popAlert(e);
         }
@@ -293,6 +297,7 @@ public class Controller {
             try {
                 ModuleTwo.checkout(answer.get());
                 activeBranchLabel.setText(answer.get());
+                buildBranchCommitTree();
             } catch (NoActiveRepositoryException | NoSuchBranchException e) {
                 popAlert(e);
             }
