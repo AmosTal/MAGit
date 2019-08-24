@@ -16,7 +16,6 @@ import XMLpackage.*;
 
 import java.io.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 import java.util.zip.*;
@@ -328,14 +327,12 @@ public class Repository {
         }
     }
 
-    public void showRepoStatus() {
-
-        ModuleTwo.printLine("The repository name is: " + name);
-        ModuleTwo.printLine("Active user: " + username);
+    public String showRepoStatus() {
+        String noChanges = "No changes were made since last commit";
         if (!checkDeltaChanges()) {
-            ModuleTwo.printLine("No changes were made since last commit");
+            return noChanges;
         } else
-            currDelta.showChanges();
+            return currDelta.showChanges();
     }
 
     public void showBranches() {

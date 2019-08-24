@@ -19,6 +19,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -41,7 +42,7 @@ public class Controller {
     private Label activeBranchLabel;
 
     @FXML
-    void commitButton(ActionEvent event) {
+    void commitButton() {
         TextInputDialog commitDialog = new TextInputDialog("");
         commitDialog.setTitle("Execute commit");
         commitDialog.setHeaderText("Enter commit message:");
@@ -78,6 +79,7 @@ public class Controller {
 
     @FXML
     void showChangesButton(ActionEvent event) {
+        JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @FXML
@@ -320,9 +322,7 @@ public class Controller {
             ModuleTwo.updateUsername(answer.get());
             usernameLabel.setText(answer.get());
         }
-
     }
-
 
     private void popAlert(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -330,13 +330,6 @@ public class Controller {
         alert.showAndWait();
     }
 
-
-    public static String popInputDialog(String headerTxt) {
-        TextInputDialog dialog = new TextInputDialog("");
-        dialog.setHeaderText(headerTxt);
-        Optional<String> answer = dialog.showAndWait();
-        return answer.orElse(null);
-    }
 
     public static boolean deleteOrNot() {
         String[] options = new String[]{"Delete the repository to make a new one",

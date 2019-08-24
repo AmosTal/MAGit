@@ -1,7 +1,6 @@
 package Repository;
 
 
-import EngineRunner.ModuleTwo;
 import Objects.Folder.Fof;
 
 import java.util.HashMap;
@@ -40,29 +39,30 @@ class Delta {
     }
 
 
-    void showChanges() {
-        String linesToPrint;
+    String showChanges() {
+        String linesToPrint = "";
         if (newFilesFofs.entrySet().size() != 0) {
-            linesToPrint = "The following files and folders have been created:";
-            showChangeInFiles(linesToPrint, newFilesFofs);
+            linesToPrint = linesToPrint.concat("The following files and folders have been created:\n");
+            linesToPrint = showChangeInFiles(linesToPrint, newFilesFofs);
         }
         if (updatedFilesFofs.entrySet().size() != 0) {
-            linesToPrint = "The following files and folder have been updated: ";
-            showChangeInFiles(linesToPrint, updatedFilesFofs);
+            linesToPrint = linesToPrint.concat("The following files and folder have been updated:\n");
+            linesToPrint = showChangeInFiles(linesToPrint, updatedFilesFofs);
         }
         if (deletedFilesFofs.entrySet().size() != 0) {
-            linesToPrint = "The following files and folders have been deleted: ";
-            showChangeInFiles(linesToPrint, deletedFilesFofs);
+            linesToPrint = linesToPrint.concat("The following files and folders have been deleted:\n");
+            linesToPrint = showChangeInFiles(linesToPrint, deletedFilesFofs);
         }
+        return linesToPrint;
     }
 
-    private void showChangeInFiles(String msg, Map<String, Fof> filesMap) {
+    private String showChangeInFiles(String msg, Map<String, Fof> filesMap) {
         int i = 1;
-        ModuleTwo.printLine(msg);
         for (Map.Entry<String, Fof> entry : filesMap.entrySet()) {
-            ModuleTwo.printLine(i + ")\n" + "Path: " + entry.getKey() + entry.getValue().getInfo());
+            msg = msg.concat(i + ")" + " Path: " + entry.getKey() + entry.getValue().getInfo())+"\n";
             i++;
         }
+        return msg;
     }
 
     public boolean getIsChanged() {

@@ -133,12 +133,7 @@ public class ModuleTwo {
     public static boolean checkChanges() throws NoActiveRepositoryException {
 
         checkIfActiveRepoExists();
-        if (activeRepo.checkDeltaChanges()) {
-            ModuleOne.PrintString("You have changes without commiting them. Would you like to commit them?");
-            return checkAnswer();
-        } else
-            return false;
-
+        return activeRepo.checkDeltaChanges();
     }
 
     public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException {
@@ -148,13 +143,8 @@ public class ModuleTwo {
 
     }
 
-    public static void showStatus() {
-        try {
-            checkIfActiveRepoExists();
-            activeRepo.showRepoStatus();
-        } catch (NoActiveRepositoryException e) {
-            e.printStackTrace();
-        }
+    public static String showStatus() {
+        return activeRepo.showRepoStatus();
     }
 
     public static void showAllBranches() {
