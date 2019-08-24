@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -283,7 +284,11 @@ public class Controller {
 
     @FXML
     void showBranches(ActionEvent event) {
-
+        String branches = "";
+        for (Branch b:ModuleTwo.getActiveReposBranchs()) {
+            branches = branches.concat("\n"+b.getName());
+        }
+        JOptionPane.showMessageDialog(null, branches, "Active Repository Branches", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @FXML
