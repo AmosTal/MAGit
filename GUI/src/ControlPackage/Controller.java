@@ -19,7 +19,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import jdk.nashorn.internal.runtime.regexp.joni.constants.OPCode;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -56,7 +55,6 @@ public class Controller {
         } catch (NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e) {
             popAlert(e);
         }
-
     }
 
     @FXML
@@ -69,9 +67,15 @@ public class Controller {
     private TreeView<File> fileSystemTreeView;
 
     @FXML
+    void refreshCommitsTree(ActionEvent event) {
+        buildBranchCommitTree();
+    }
+
+
+    @FXML
     void showCommitButton(ActionEvent event) {
         TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
-        if(selectedItem.getValue().isCommit())
+        if (selectedItem.getValue().isCommit())
             commitMsgLabel.setText(selectedItem.getValue().getCommit().getCommitPurposeMSG());
         else
             commitMsgLabel.setText("This is not a Commit");
@@ -210,18 +214,18 @@ public class Controller {
         }
         return root;
     }
+
     private TreeItem<CommitOrBranch> getNodesForBranch() {
         TreeItem<CommitOrBranch> root = new TreeItem<>();
         List<Commit> commitLst;
-        for (Branch b:ModuleTwo.getActiveReposBranchs()){
+        for (Branch b : ModuleTwo.getActiveReposBranchs()) {
             TreeItem<CommitOrBranch> node = new TreeItem<CommitOrBranch>(new CommitOrBranch(b));
             commitLst = ModuleTwo.getActiveReposBranchCommits(b);
-            node.getChildren().addAll(commitLst.stream().map(c-> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
+            node.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
             root.getChildren().add(node);
         }
         return root;
-        }
-
+    }
 
 
     private void buildFileTree(String activeRepoName) {
@@ -254,7 +258,7 @@ public class Controller {
                     protected void updateItem(CommitOrBranch item, boolean empty) {
                         super.updateItem(item, empty);
 
-                        setText((empty||item==null) ?"":(item.isCommit()) ?"Commit "+item.getCommit().getSha1() : "Branch "+item.getBranch().getName());
+                        setText((empty || item == null) ? "" : (item.isCommit()) ? "Commit " + item.getCommit().getSha1() : "Branch " + item.getBranch().getName());
                     }
 
                 };
@@ -287,8 +291,8 @@ public class Controller {
     @FXML
     void showBranches(ActionEvent event) {
         String branches = "";
-        for (Branch b:ModuleTwo.getActiveReposBranchs()) {
-            branches = branches.concat("\n"+b.getName());
+        for (Branch b : ModuleTwo.getActiveReposBranchs()) {
+            branches = branches.concat("\n" + b.getName());
         }
         JOptionPane.showMessageDialog(null, branches, "Active Repository Branches", JOptionPane.INFORMATION_MESSAGE);
     }

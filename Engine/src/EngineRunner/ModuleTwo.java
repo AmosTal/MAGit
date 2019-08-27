@@ -107,28 +107,6 @@ public class ModuleTwo {
         }
     }
 
-    private static boolean checkAnswer() {
-        ModuleOne.PrintString("\ny for yes \nn for no\n");
-        String answer = ModuleOne.getString();
-        while (true) {
-            switch (answer) {
-                case "y":
-                case "yes":
-                case "Y":
-                case "Yes":
-                    return true;
-                case "n":
-                case "no":
-                case "N":
-                case "No":
-                    return false;
-                default:
-                    ModuleOne.PrintString("try again\n");
-                    answer = ModuleOne.getString();
-                    break;
-            }
-        }
-    }
 
     public static boolean checkChanges() throws NoActiveRepositoryException {
 

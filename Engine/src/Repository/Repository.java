@@ -124,10 +124,10 @@ public class Repository {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
                 FileReader fr = new FileReader(fileEntry);
                 BufferedReader br = new BufferedReader(fr);
-                if (!fileEntry.getName().equals("HEAD"))
-                    this.branches.add(new Branch(br.readLine(), fileEntry.getName()));
-                else
-                    headBranch = new Branch(br.readLine(), "master");
+                Branch branch = new Branch(br.readLine(), fileEntry.getName());
+                this.branches.add(branch);
+                if (fileEntry.getName().equals("HEAD"))
+                    headBranch = new Branch(br.readLine(), "master");//not trueeeeeeeeeeeeeeeeeeeeeeeeee
                 br.close();
                 fr.close();
             }
@@ -260,13 +260,16 @@ public class Repository {
     }
 
     public void addNewBranch(String name,Commit commit) throws AlreadyExistingBranchException {
+        Branch branch;
         if (branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null) == null) {
             if (commit != null){
-                headBranch = new Branch(commit.getSha1(), "master");
+                branch = new Branch(commit.getSha1(), "master");
+                headBranch = branch;
             }
-            Branch newBranch = new Branch(headBranch.getSha1(), name);
-            branches.add(newBranch);
-            makeFileForBranch(newBranch, newBranch.getName());
+            else
+                branch = new Branch(headBranch.getSha1(), name);
+            branches.add(branch);
+            makeFileForBranch(branch, branch.getName());
         } else
             throw new AlreadyExistingBranchException();
     }

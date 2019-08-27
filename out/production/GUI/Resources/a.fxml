@@ -125,6 +125,7 @@
                            <children>
                               <Button mnemonicParsing="false" onAction="#showCommitButton" prefHeight="39.0" prefWidth="134.0" text="Show commit" />
                               <Button mnemonicParsing="false" onAction="#showChangesButton" prefHeight="39.0" prefWidth="134.0" text="Show changes" />
+                              <Button mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh" />
                            </children>
                         </VBox>
                         <VBox prefHeight="131.0" prefWidth="538.0">
