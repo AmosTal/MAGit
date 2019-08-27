@@ -160,6 +160,9 @@ public class ModuleTwo {
             e.printStackTrace();
         }
     }
+    public static void resetActiveRepoHeadBranch(Commit commit){
+        activeRepo.resetBranch(commit);
+    }
 
     public static String getActiveRepoPath() {
         return activeRepo.getPath();

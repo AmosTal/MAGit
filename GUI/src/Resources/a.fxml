@@ -54,7 +54,6 @@
                         <MenuItem mnemonicParsing="false" onAction="#makeNewBranch" text="Make new branch" />
                         <MenuItem mnemonicParsing="false" onAction="#deleteExistingBranch" text="Delete existing branch" />
                         <MenuItem mnemonicParsing="false" onAction="#switchHeadBranch" text="Switch head branch(checkout)" />
-                        <MenuItem mnemonicParsing="false" onAction="#resetBranchPosition" text="Reset branch position" />
                   </items>
                 </Menu>
               </menus>
@@ -102,7 +101,7 @@
                   </VBox>
                   <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#showContentButton" prefHeight="39.0" prefWidth="134.0" text="Show content" />
+                        <Button mnemonicParsing="false" onAction="#showContentButton" prefHeight="39.0" prefWidth="134.0" text="Show file content" />
                         <Button mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="39.0" prefWidth="134.0" text="Refresh Files" />
                      </children>
                   </VBox>
@@ -126,6 +125,7 @@
                               <Button mnemonicParsing="false" onAction="#showCommitButton" prefHeight="39.0" prefWidth="134.0" text="Show commit" />
                               <Button mnemonicParsing="false" onAction="#showChangesButton" prefHeight="39.0" prefWidth="134.0" text="Show changes" />
                               <Button mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh" />
+                              <Button mnemonicParsing="false" onAction="#resetHead" prefHeight="39.0" prefWidth="134.0" text="Reset head branch" />
                            </children>
                         </VBox>
                         <VBox prefHeight="131.0" prefWidth="538.0">

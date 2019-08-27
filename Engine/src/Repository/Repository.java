@@ -67,9 +67,9 @@ public class Repository {
     }
 
     private void createFilesForBranches() {
-        makeFileForBranch(headBranch, "HEAD");
+        makeFileForBranch(headBranch.getName(),"HEAD");
         for (Branch branch : branches) {
-            makeFileForBranch(branch, branch.getName());
+            makeFileForBranch(branch.getSha1(), branch.getName());
         }
 
     }
@@ -79,10 +79,10 @@ public class Repository {
 
 
 
-    private void makeFileForBranch(Branch branch, String name) {
+    private void makeFileForBranch(String content, String name) {
         try {
             PrintWriter out = new PrintWriter(this.path + "/.magit/branches/" + name);
-            out.println(branch.getSha1());
+            out.println(content);
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -114,22 +114,27 @@ public class Repository {
 
     public void readRepoFiles() {
         this.readMagitObjects();
-        this.readBranches();//k
+        this.readBranches();
     }
 
     private void readBranches() {
         File folder = new File(this.path + "/.magit/branches");
+        String nameOfHead ="";
         try {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
                 FileReader fr = new FileReader(fileEntry);
                 BufferedReader br = new BufferedReader(fr);
+                if (fileEntry.getName().equals("HEAD")){
+                    nameOfHead = br.readLine();
+                    continue;
+                }
                 Branch branch = new Branch(br.readLine(), fileEntry.getName());
                 this.branches.add(branch);
-                if (fileEntry.getName().equals("HEAD"))
-                    headBranch = new Branch(br.readLine(), "master");//not trueeeeeeeeeeeeeeeeeeeeeeeeee
                 br.close();
                 fr.close();
             }
+            String finalNameOfHead = nameOfHead;
+            headBranch = branches.stream().filter(Branch -> Branch.getName().equals(finalNameOfHead)).findFirst().orElse(null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -268,7 +273,7 @@ public class Repository {
             else
                 branch = new Branch(headBranch.getSha1(), name);
             branches.add(branch);
-            makeFileForBranch(branch, branch.getName());
+            makeFileForBranch(branch.getSha1(), branch.getName());
         } else
             throw new AlreadyExistingBranchException();
     }
@@ -289,7 +294,7 @@ public class Repository {
         if (branch == null)
             throw new NoSuchBranchException();
         headBranch = branch;
-        makeFileForBranch(headBranch, "HEAD");
+        makeFileForBranch(headBranch.getName(), "HEAD");
         deleteWCfiles(this.path);
         deployCommit((Commit) objList.get(headBranch.getSha1()),this.path);
     }
@@ -461,6 +466,12 @@ public class Repository {
     public boolean hasCommitInHead() {
         return (headBranch.getSha1() != null);
 
+    }
+
+    public void resetBranch(Commit commit) {
+        headBranch.UpdateSha1(commit.getSha1());
+        deleteWCfiles(this.path);
+        deployCommit(commit,this.path);
     }
 }
 

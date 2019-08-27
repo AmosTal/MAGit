@@ -1,6 +1,7 @@
 package ControlPackage;
 
 import EngineRunner.ModuleTwo;
+import Objects.Api.MagitObject;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
 import Objects.Commit.Commit;
@@ -51,6 +52,7 @@ public class Controller {
                 ModuleTwo.executeCommit(commitMsg.get());
                 buildFileTree(ModuleTwo.getActiveRepoPath());
                 buildBranchCommitTree();
+                activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             }
         } catch (NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e) {
             popAlert(e);
@@ -233,6 +235,8 @@ public class Controller {
         TreeItem<CommitOrBranch> root = new TreeItem<>();
         List<Commit> commitLst;
         for (Branch b : ModuleTwo.getActiveReposBranchs()) {
+            if (b.getName().equals("HEAD"))
+                continue;
             TreeItem<CommitOrBranch> node = new TreeItem<CommitOrBranch>(new CommitOrBranch(b));
             commitLst = ModuleTwo.getActiveReposBranchCommits(b);
             node.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
@@ -259,6 +263,12 @@ public class Controller {
                 };
             }
         });
+    }
+    @FXML
+    void resetHead(ActionEvent event) {
+
+        Commit selectedCommit = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getCommit();
+        ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
     }
 
     private void buildBranchCommitTree() {
@@ -298,10 +308,6 @@ public class Controller {
         }
     }
 
-    @FXML
-    void resetBranchPosition(ActionEvent event) {
-
-    }
 
     @FXML
     void showBranches(ActionEvent event) {
