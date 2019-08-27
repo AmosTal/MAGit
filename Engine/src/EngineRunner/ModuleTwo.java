@@ -93,7 +93,7 @@ public class ModuleTwo {
 
 
         checkIfActiveRepoExists();
-        activeRepo.addNewBranch(name,null);
+        activeRepo.addNewBranch(name, null);
     }
 
     public static void changesChecker() {
@@ -169,13 +169,14 @@ public class ModuleTwo {
         return activeRepo.getName();
     }
 
+    public static Repository getActiveRepo() {
+        return activeRepo;
+    }
+
     public static String getActiveBranchName() {
         return activeRepo.getHeadBranchName();
     }
 
-    public static Branch getActiveHeadBranch() {
-        return activeRepo.getHeadBranch();
-    }
 
     public static List<Commit> getActiveReposBranchCommits(Branch branch) {
         return activeRepo.getBranchCommits(branch);

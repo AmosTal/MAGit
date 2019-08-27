@@ -42,9 +42,7 @@ public class Repository {
     {
         return headBranch.getName();
     }
-    public Branch getHeadBranch(){
-        return headBranch;
-    }
+
     public String getName() {
         return name;
     }
@@ -58,6 +56,7 @@ public class Repository {
         new File(path + "/.magit").mkdir();
         new File(path + "/.magit/branches").mkdir();
         new File(path + "/.magit/objects").mkdir();
+        new File(path + "/.magit/Commit files").mkdir();
         File Head = new File(path + "/.magit/branches/HEAD");
         Head.createNewFile();
     }
@@ -291,13 +290,13 @@ public class Repository {
             throw new NoSuchBranchException();
         headBranch = branch;
         makeFileForBranch(headBranch, "HEAD");
-        deleteWCfiles();
-        deployCommit((Commit) objList.get(headBranch.getSha1()));
+        deleteWCfiles(this.path);
+        deployCommit((Commit) objList.get(headBranch.getSha1()),this.path);
     }
 
-    private void deployCommit(Commit commit) {
+    public void deployCommit(Commit commit , String pathOfCommit) {
         if (commit != null)
-            recursiveObjectToWCBuilder((Folder) objList.get(commit.getRootFolderSha1()), this.path);
+            recursiveObjectToWCBuilder((Folder) objList.get(commit.getRootFolderSha1()), pathOfCommit);
 
     }
 
@@ -321,8 +320,8 @@ public class Repository {
         }
     }
 
-    private void deleteWCfiles() {
-        File file = new File(path);
+    public void deleteWCfiles(String _path) {
+        File file = new File(_path);
         for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
             if (!fileEntry.getName().equals(".magit")) {
                 fileEntry.delete();
@@ -367,7 +366,7 @@ public class Repository {
                     repo.branches.add(new Branch(commitSha1, mgbrnach.getName()));
             }
         }
-        repo.deployCommit((Commit) repo.objList.get(repo.headBranch.getSha1()));
+        repo.deployCommit((Commit) repo.objList.get(repo.headBranch.getSha1()),repo.getPath());
         return repo;
     }
 

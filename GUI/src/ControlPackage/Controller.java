@@ -75,10 +75,24 @@ public class Controller {
     @FXML
     void showCommitButton(ActionEvent event) {
         TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
-        if (selectedItem.getValue().isCommit())
-            commitMsgLabel.setText(selectedItem.getValue().getCommit().getCommitPurposeMSG());
+        if (selectedItem.getValue().isCommit()){
+            Commit selectedCommit = selectedItem.getValue().getCommit();
+            commitMsgLabel.setText(selectedCommit.getCommitPurposeMSG());
+            showCommitFiles(selectedCommit);
+        }
         else
             commitMsgLabel.setText("This is not a Commit");
+    }
+
+    private void showCommitFiles(Commit selectedCommit) {
+        String path = ModuleTwo.getActiveRepoPath()+"/.magit/Commit files";
+        ModuleTwo.getActiveRepo().deleteWCfiles(path);
+        makeFilesOfCommit(selectedCommit,path);
+        buildFileTree(path);
+    }
+
+    private void makeFilesOfCommit(Commit selectedCommit, String _path) {
+        ModuleTwo.getActiveRepo().deployCommit(selectedCommit,_path);
     }
 
     @FXML
@@ -264,6 +278,7 @@ public class Controller {
                 };
             }
         });
+        BranchCommitTreeView.getRoot().setExpanded(true);
     }
 
 
