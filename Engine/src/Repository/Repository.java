@@ -126,6 +126,8 @@ public class Repository {
                 BufferedReader br = new BufferedReader(fr);
                 if (fileEntry.getName().equals("HEAD")){
                     nameOfHead = br.readLine();
+                    br.close();
+                    fr.close();
                     continue;
                 }
                 Branch branch = new Branch(br.readLine(), fileEntry.getName());
@@ -135,6 +137,7 @@ public class Repository {
             }
             String finalNameOfHead = nameOfHead;
             headBranch = branches.stream().filter(Branch -> Branch.getName().equals(finalNameOfHead)).findFirst().orElse(null);
+            branches.remove(branches.stream().filter(Branch -> Branch.getName().equals(finalNameOfHead)).findFirst());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -167,7 +170,7 @@ public class Repository {
         if (headBranch != null && headBranch.getSha1() != null)
             commit = new Commit(sha1OfRoot, headBranch.getSha1(), null, msg, username);
         else {
-            commit = new Commit(sha1OfRoot, msg, username); //first commmit
+            commit = new Commit(sha1OfRoot, msg, username); //first commit
             addNewBranch("master",commit);
         }
         headBranch.UpdateSha1(commit.getSha1());
@@ -269,6 +272,7 @@ public class Repository {
             if (commit != null){
                 branch = new Branch(commit.getSha1(), "master");
                 headBranch = branch;
+                makeFileForBranch(branch.getName(),"HEAD");            //update the head file
             }
             else
                 branch = new Branch(headBranch.getSha1(), name);
@@ -470,6 +474,7 @@ public class Repository {
 
     public void resetBranch(Commit commit) {
         headBranch.UpdateSha1(commit.getSha1());
+        makeFileForBranch(headBranch.getSha1(),headBranch.getName());
         deleteWCfiles(this.path);
         deployCommit(commit,this.path);
     }

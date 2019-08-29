@@ -1,7 +1,6 @@
 package ControlPackage;
 
 import EngineRunner.ModuleTwo;
-import Objects.Api.MagitObject;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
 import Objects.Commit.Commit;
