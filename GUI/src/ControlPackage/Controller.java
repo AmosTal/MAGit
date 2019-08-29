@@ -268,6 +268,7 @@ public class Controller {
 
         Commit selectedCommit = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getCommit();
         ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
+        refreshCommitsTree(event);
     }
 
     private void buildBranchCommitTree() {

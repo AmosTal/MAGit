@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -11,6 +10,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.effect.ColorAdjust?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -19,11 +19,11 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControlPackage.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="348.0" prefWidth="603.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControlPackage.Controller">
    <top>
-      <AnchorPane prefHeight="72.0" prefWidth="1199.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="47.0" prefWidth="608.0" BorderPane.alignment="CENTER">
          <children>
-            <AnchorPane layoutY="14.0" prefHeight="61.0" prefWidth="1094.0" AnchorPane.bottomAnchor="1.0">
+            <AnchorPane layoutY="20.0" prefHeight="24.0" prefWidth="608.0" AnchorPane.bottomAnchor="0.0">
                <children>
                   <Label layoutX="176.0" layoutY="30.0" prefHeight="25.0" prefWidth="79.0" text="Repository:" AnchorPane.bottomAnchor="0.0" />
                   <Label layoutX="14.0" layoutY="30.0" prefHeight="27.0" prefWidth="72.0" text="Username:" AnchorPane.bottomAnchor="-1.0" />
@@ -31,14 +31,12 @@
                   <Label fx:id="usernameLabel" layoutX="75.0" layoutY="35.0" prefHeight="27.0" prefWidth="88.0" text="Default" AnchorPane.bottomAnchor="-1.0" />
                   <Label layoutX="341.0" layoutY="30.0" prefHeight="27.0" prefWidth="97.0" text="Active branch:" AnchorPane.bottomAnchor="0.0" />
                   <Label fx:id="activeBranchLabel" layoutX="421.0" layoutY="34.0" prefHeight="27.0" prefWidth="134.0" AnchorPane.bottomAnchor="0.0" />
-                  <Button layoutX="584.0" layoutY="28.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="31.0" prefWidth="73.0" text="Commit" textFill="#007aff">
-                     <effect>
-                        <ColorAdjust />
-                     </effect>
-                  </Button>
                </children>
+               <effect>
+                  <Glow />
+               </effect>
             </AnchorPane>
-            <MenuBar maxWidth="2000.0" prefHeight="34.0" prefWidth="1200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <MenuBar layoutY="1.0" maxWidth="2000.0" prefHeight="27.0" prefWidth="603.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="5.0">
               <menus>
                 <Menu mnemonicParsing="false" text="Repository">
                   <items>
@@ -58,54 +56,56 @@
                 </Menu>
               </menus>
             </MenuBar>
+            <Button layoutX="257.0" layoutY="1.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="14.0" prefWidth="66.0" text="Commit" textFill="#007aff">
+               <effect>
+                  <ColorAdjust />
+               </effect>
+            </Button>
          </children>
       </AnchorPane>
    </top>
    <center>
-      <GridPane BorderPane.alignment="CENTER">
+      <GridPane prefHeight="284.0" prefWidth="603.0" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="BOTTOM" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <GridPane>
               <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="617.0" minWidth="10.0" prefWidth="497.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="930.0" minWidth="10.0" prefWidth="130.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="930.0" minWidth="10.0" prefWidth="574.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="617.0" minWidth="10.0" prefWidth="199.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="930.0" minWidth="10.0" prefWidth="404.0" />
               </columnConstraints>
               <rowConstraints>
                   <RowConstraints maxHeight="355.0" minHeight="10.0" prefHeight="342.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <VBox GridPane.columnIndex="2">
+                  <TreeView fx:id="fileSystemTreeView" prefHeight="291.0" prefWidth="420.0" />
+                  <HBox GridPane.columnIndex="1">
                      <children>
-                        <VBox prefHeight="53.0" prefWidth="538.0">
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
+                        <VBox prefHeight="138.0" prefWidth="117.0">
                            <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0">
+                              <Label text="File options:" />
+                              <Button mnemonicParsing="false" onAction="#showContentButton" prefHeight="34.0" prefWidth="113.0" text="Show file content" />
+                              <Button mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="35.0" prefWidth="113.0" text="Refresh Files" />
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="138.0" prefWidth="286.0">
+                           <children>
+                              <HBox prefHeight="48.0" prefWidth="286.0" VBox.vgrow="NEVER">
                                  <children>
                                     <Label prefHeight="15.0" prefWidth="57.0" text="File name:" />
                                     <Label fx:id="fileNameLabel" prefHeight="11.0" prefWidth="90.0" />
                                  </children>
                               </HBox>
+                              <ListView fx:id="fileContentListView" />
                            </children>
                         </VBox>
-                        <ListView fx:id="fileContentListView" prefHeight="374.0" prefWidth="574.0" />
                      </children>
-                  </VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1">
-                     <children>
-                        <Button mnemonicParsing="false" onAction="#showContentButton" prefHeight="39.0" prefWidth="134.0" text="Show file content" />
-                        <Button mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="39.0" prefWidth="134.0" text="Refresh Files" />
-                     </children>
-                  </VBox>
-                  <TreeView fx:id="fileSystemTreeView" prefHeight="200.0" prefWidth="200.0" />
+                  </HBox>
                </children>
             </GridPane>
             <GridPane GridPane.rowIndex="1">
@@ -118,22 +118,23 @@
                   <RowConstraints />
               </rowConstraints>
                <children>
-                  <HBox prefHeight="364.0" prefWidth="700.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
+                  <HBox prefHeight="136.0" prefWidth="414.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
                      <children>
-                        <VBox prefHeight="87.0" prefWidth="129.0">
+                        <VBox prefHeight="136.0" prefWidth="116.0">
                            <children>
+                              <Button mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh branches" />
+                              <Label text="Commit options:" />
                               <Button mnemonicParsing="false" onAction="#showCommitButton" prefHeight="39.0" prefWidth="134.0" text="Show commit" />
                               <Button mnemonicParsing="false" onAction="#showChangesButton" prefHeight="39.0" prefWidth="134.0" text="Show changes" />
-                              <Button mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh" />
-                              <Button mnemonicParsing="false" onAction="#resetHead" prefHeight="39.0" prefWidth="134.0" text="Reset head branch" />
+                              <Button mnemonicParsing="false" onAction="#resetHead" prefHeight="43.0" prefWidth="123.0" text="Reset head branch" textOverrun="CLIP" />
                            </children>
                         </VBox>
-                        <VBox prefHeight="131.0" prefWidth="538.0">
+                        <VBox prefHeight="138.0" prefWidth="287.0">
                            <children>
-                              <HBox prefHeight="100.0" prefWidth="200.0">
+                              <HBox prefHeight="19.0" prefWidth="287.0">
                                  <children>
-                                    <Label prefHeight="17.0" prefWidth="103.0" text="Commit message:" />
-                                    <Label fx:id="commitMsgLabel" alignment="TOP_LEFT" prefHeight="16.0" prefWidth="416.0" />
+                                    <Label prefHeight="17.0" prefWidth="106.0" text="Commit message:" />
+                                    <Label fx:id="commitMsgLabel" alignment="TOP_LEFT" prefHeight="22.0" prefWidth="193.0" />
                                  </children>
                               </HBox>
                            </children>
