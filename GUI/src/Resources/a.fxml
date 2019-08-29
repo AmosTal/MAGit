@@ -139,16 +139,16 @@
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
-                                        <Label text="Commit options:" />
-                                        <Button mnemonicParsing="false" onAction="#showCommitButton" prefHeight="39.0" prefWidth="134.0" text="Show commit">
+                                        <Label fx:id="optionsLabel1" text="Branches options:" />
+                                        <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#showCommitButton" prefHeight="39.0" prefWidth="134.0" text="Checkout">
                                  <font>
                                     <Font size="14.0" />
                                  </font></Button>
-                                        <Button mnemonicParsing="false" onAction="#showChangesButton" prefHeight="39.0" prefWidth="134.0" text="Show changes">
+                                        <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#showChangesButton" prefHeight="39.0" prefWidth="134.0" text="Delete branch">
                                  <font>
                                     <Font size="14.0" />
                                  </font></Button>
-                                        <Button mnemonicParsing="false" onAction="#resetHead" prefHeight="47.0" prefWidth="116.0" text="Reset head branch" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                                        <Button fx:id="switchButton3" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#resetHead" prefHeight="52.0" prefWidth="115.0" text="Merge" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>

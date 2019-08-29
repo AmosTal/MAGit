@@ -184,7 +184,7 @@ public class ModuleTwo {
         return activeRepo.getBranchCommits(branch);
     }
 
-    public static ArrayList<Branch> getActiveReposBranchs() {
+    public static ArrayList<Branch> getActiveReposBranches() {
         return activeRepo.getBranches();
     }
 }

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 
 public class Controller {
-
+    private boolean commit = false;
     @FXML
     private Label repositoryNameLabel;
 
@@ -39,6 +39,18 @@ public class Controller {
 
     @FXML
     private Label activeBranchLabel;
+
+    @FXML
+    private Label optionsLabel1;
+
+    @FXML
+    private Button switchButton1;
+
+    @FXML
+    private Button switchButton2;
+
+    @FXML
+    private Button switchButton3;
 
     @FXML
     void commitButton() {
@@ -73,27 +85,47 @@ public class Controller {
     }
 
 
+    void switchCommitBranchesButtons() {
+        CommitOrBranch cob = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue();
+        if(cob!=null) {
+            if (cob.isCommit() == true) {
+                switchButton1.setText("Show commit");
+                switchButton2.setText("Show changes");
+                switchButton3.setText("Reset head branch to this commit");
+                optionsLabel1.setText("Commit options:");
+                commit = true;
+            } else {
+                switchButton1.setText("Checkout");
+                switchButton2.setText("Delete branch");
+                switchButton3.setText("Merge");
+                optionsLabel1.setText("Branches options:");
+                commit = false;
+            }
+        }
+
+    }
+
+
     @FXML
     void showCommitButton(ActionEvent event) {
         TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
-        if (selectedItem.getValue().isCommit()){
+        if (selectedItem.getValue().isCommit()) {
             Commit selectedCommit = selectedItem.getValue().getCommit();
             commitMsgLabel.setText(selectedCommit.getCommitPurposeMSG());
             showCommitFiles(selectedCommit);
-        }
-        else
+        } else
             commitMsgLabel.setText("This is not a Commit");
     }
 
     private void showCommitFiles(Commit selectedCommit) {
-        String path = ModuleTwo.getActiveRepoPath()+"/.magit/Commit files";
+        String path = ModuleTwo.getActiveRepoPath() + "/.magit/Commit files";
         ModuleTwo.getActiveRepo().deleteWCfiles(path);
-        makeFilesOfCommit(selectedCommit,path);
+        makeFilesOfCommit(selectedCommit, path);
         buildFileTree(path);
     }
 
     private void makeFilesOfCommit(Commit selectedCommit, String _path) {
-        ModuleTwo.getActiveRepo().deployCommit(selectedCommit,_path);
+        ModuleTwo.getActiveRepo().deployCommit(selectedCommit, _path);
     }
 
     @FXML
@@ -125,6 +157,7 @@ public class Controller {
 
     @FXML
     private TreeView<CommitOrBranch> BranchCommitTreeView;
+
 
     @FXML
     void createEmptyRepo(ActionEvent event) {
@@ -233,14 +266,18 @@ public class Controller {
     private TreeItem<CommitOrBranch> getNodesForBranch() {
         TreeItem<CommitOrBranch> root = new TreeItem<>();
         List<Commit> commitLst;
-        for (Branch b : ModuleTwo.getActiveReposBranchs()) {
+        for (Branch b : ModuleTwo.getActiveReposBranches()) {
             if (b.getName().equals("HEAD"))
                 continue;
             TreeItem<CommitOrBranch> node = new TreeItem<CommitOrBranch>(new CommitOrBranch(b));
+
             commitLst = ModuleTwo.getActiveReposBranchCommits(b);
             node.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
             root.getChildren().add(node);
         }
+        BranchCommitTreeView.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> switchCommitBranchesButtons());
         return root;
     }
 
@@ -263,6 +300,7 @@ public class Controller {
             }
         });
     }
+
     @FXML
     void resetHead(ActionEvent event) {
 
@@ -312,7 +350,7 @@ public class Controller {
     @FXML
     void showBranches(ActionEvent event) {
         String branches = "";
-        for (Branch b : ModuleTwo.getActiveReposBranchs()) {
+        for (Branch b : ModuleTwo.getActiveReposBranches()) {
             branches = branches.concat("\n" + b.getName());
         }
         JOptionPane.showMessageDialog(null, branches, "Active Repository Branches", JOptionPane.INFORMATION_MESSAGE);
