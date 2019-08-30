@@ -17,6 +17,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="commons-codec-1.121" level="project" />
+    <orderEntry type="library" name="AncestorFinder" level="project" />
   </component>
 </module>

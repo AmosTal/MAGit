@@ -92,11 +92,15 @@
                                 <VBox prefHeight="138.0" prefWidth="115.0">
                                     <children>
                                         <Label text="File options:" />
-                                        <Button mnemonicParsing="false" onAction="#showContentButton" prefHeight="34.0" prefWidth="113.0" text="Show file content">
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#showContentButton" prefHeight="34.0" prefWidth="113.0" text="Show file content">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
-                                        <Button mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="35.0" prefWidth="113.0" text="Refresh Files" />
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="35.0" prefWidth="113.0" text="Refresh Files" />
+                                        <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#showChanges" prefHeight="38.0" prefWidth="115.0" text="Show changes" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                                 <font>
+                                    <Font size="12.0" />
+                                 </font></Button>
                                     </children>
                                 </VBox>
                             </children>
@@ -135,23 +139,16 @@
                             <children>
                                 <VBox prefHeight="136.0" prefWidth="115.0">
                                     <children>
-                                        <Button mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh branches">
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh branches">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
                                         <Label fx:id="optionsLabel1" text="Branches options:" />
-                                        <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#showCommitButton" prefHeight="39.0" prefWidth="134.0" text="Checkout">
+                                        <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#switchingButton1" prefHeight="39.0" prefWidth="134.0" text="Checkout">
                                  <font>
                                     <Font size="14.0" />
                                  </font></Button>
-                                        <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#showChangesButton" prefHeight="39.0" prefWidth="134.0" text="Delete branch">
-                                 <font>
-                                    <Font size="14.0" />
-                                 </font></Button>
-                                        <Button fx:id="switchButton3" alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#resetHead" prefHeight="52.0" prefWidth="115.0" text="Merge" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
-                                 <font>
-                                    <Font size="12.0" />
-                                 </font></Button>
+                                        <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#switchingButton2" prefHeight="52.0" prefWidth="115.0" text="Delete branch" textAlignment="CENTER" wrapText="true" />
                                     </children>
                                 </VBox>
                                 <VBox prefHeight="138.0" prefWidth="287.0">
@@ -175,7 +172,7 @@
                                 </Tab>
                                 <Tab text="Graphical view">
                            <content>
-                              <ScrollPane prefHeight="200.0" prefWidth="200.0" />
+                               <ScrollPane fx:id="scrollPane" onMouseClicked="#refreshGraphic" prefHeight="200.0" prefWidth="200.0" />
                            </content></Tab>
                             </tabs>
                         </TabPane>

@@ -9,6 +9,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+
         Parent root = FXMLLoader.load(getClass().getResource("Resources/a.fxml"));
         primaryStage.setTitle("MAGit");
         Scene scene = new Scene(root, 1200,800);

@@ -15,11 +15,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
+
 
 import javax.swing.*;
 import java.io.File;
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 
 
 public class Controller {
-    private boolean commit = false;
+    private boolean commitBool = false;
     @FXML
     private Label repositoryNameLabel;
 
@@ -50,8 +52,9 @@ public class Controller {
     private Button switchButton2;
 
     @FXML
-    private Button switchButton3;
-
+    void showChanges(ActionEvent event) {
+            JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
+    }
     @FXML
     void commitButton() {
         TextInputDialog commitDialog = new TextInputDialog("");
@@ -69,7 +72,44 @@ public class Controller {
             popAlert(e);
         }
     }
+    @FXML
+    void switchingButton1(ActionEvent event) {
+        String branchName;
+        if(commitBool) {
+            TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
+            if (selectedItem.getValue().isCommit()) {
+                Commit selectedCommit = selectedItem.getValue().getCommit();
+                commitMsgLabel.setText(selectedCommit.getCommitPurposeMSG());
+                showCommitFiles(selectedCommit);
+            } else
+                commitMsgLabel.setText("This is not a Commit");
+        }
+        else
+            try {
+                branchName=BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getBranch().getName();
+                ModuleTwo.checkout(branchName);
+                activeBranchLabel.setText(branchName);
+                buildBranchCommitTree();
+            } catch (NoActiveRepositoryException | NoSuchBranchException e) {
+                popAlert(e);
+            }
+    }
 
+    @FXML
+    void switchingButton2(ActionEvent event) {
+        if (commitBool) {
+            Commit selectedCommit = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getCommit();
+            ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
+            refreshCommitsTree(event);
+        } else {
+            try {
+                ModuleTwo.deleteBranch(BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().branch.getName());
+                buildBranchCommitTree();
+            } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
+                popAlert(e);
+            }
+        }
+    }
     @FXML
     private Label fileNameLabel;
 
@@ -85,36 +125,27 @@ public class Controller {
     }
 
 
-    void switchCommitBranchesButtons() {
-        CommitOrBranch cob = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue();
-        if(cob!=null) {
-            if (cob.isCommit() == true) {
-                switchButton1.setText("Show commit");
-                switchButton2.setText("Show changes");
-                switchButton3.setText("Reset head branch to this commit");
+    @FXML
+    void refreshGraphic(MouseEvent event) {
+
+    }
+    void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        if(BranchCommitTreeView.getSelectionModel().getSelectedItem()!=null) {
+            if (BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().isCommit() == true) {
                 optionsLabel1.setText("Commit options:");
-                commit = true;
+                switchButton1.setText("Show commit");
+                switchButton2.setText("Reset head branch to this commit");
+                commitBool = true;
             } else {
+                optionsLabel1.setText("Branches options:");
                 switchButton1.setText("Checkout");
                 switchButton2.setText("Delete branch");
-                switchButton3.setText("Merge");
-                optionsLabel1.setText("Branches options:");
-                commit = false;
+
+                commitBool = false;
             }
         }
 
-    }
-
-
-    @FXML
-    void showCommitButton(ActionEvent event) {
-        TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
-        if (selectedItem.getValue().isCommit()) {
-            Commit selectedCommit = selectedItem.getValue().getCommit();
-            commitMsgLabel.setText(selectedCommit.getCommitPurposeMSG());
-            showCommitFiles(selectedCommit);
-        } else
-            commitMsgLabel.setText("This is not a Commit");
     }
 
     private void showCommitFiles(Commit selectedCommit) {
@@ -126,11 +157,6 @@ public class Controller {
 
     private void makeFilesOfCommit(Commit selectedCommit, String _path) {
         ModuleTwo.getActiveRepo().deployCommit(selectedCommit, _path);
-    }
-
-    @FXML
-    void showChangesButton(ActionEvent event) {
-        JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @FXML
@@ -192,7 +218,6 @@ public class Controller {
         dialog.setContentText("Branch name");
         Optional<String> answer = dialog.showAndWait();
         if (answer.isPresent()) {
-
             try {
                 ModuleTwo.deleteBranch(answer.get());
                 buildBranchCommitTree();
@@ -304,9 +329,6 @@ public class Controller {
     @FXML
     void resetHead(ActionEvent event) {
 
-        Commit selectedCommit = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getCommit();
-        ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
-        refreshCommitsTree(event);
     }
 
     private void buildBranchCommitTree() {
