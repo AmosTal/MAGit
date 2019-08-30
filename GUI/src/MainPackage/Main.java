@@ -1,4 +1,5 @@
-import ControlPackage.Controller;
+package MainPackage;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +12,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
 
-        Parent root = FXMLLoader.load(getClass().getResource("Resources/a.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
         primaryStage.setTitle("MAGit");
         Scene scene = new Scene(root, 1200,800);
         scene.getStylesheets().add("Resources/caspian.css");
