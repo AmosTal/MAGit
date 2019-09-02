@@ -1,6 +1,8 @@
 package Objects.Date;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,6 +32,19 @@ public class DateAndTime implements Serializable {
 
     public String getDate() {
         return dateAndTime;
+    }
+
+    public long getDateInSeconds()  {
+        SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy-HH:mm:ss:SSS");
+        Date d = null;
+        try {
+            d = f.parse(dateAndTime);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        assert d != null;
+        return  d.getTime();
     }
 }
 

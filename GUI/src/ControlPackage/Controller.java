@@ -37,6 +37,9 @@ public class Controller {
     private Label repositoryNameLabel;
 
     @FXML
+    private ScrollPane scrollPane;
+
+    @FXML
     private Label usernameLabel;
 
     @FXML
@@ -205,7 +208,6 @@ public class Controller {
                 } catch (IOException e) {
                     popAlert(e);
                 }
-
             }
         }
     }
@@ -221,6 +223,7 @@ public class Controller {
             try {
                 ModuleTwo.deleteBranch(answer.get());
                 buildBranchCommitTree();
+                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
             } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
                 popAlert(e);
             }
@@ -252,6 +255,7 @@ public class Controller {
                     }
                 }
                 buildBranchCommitTree();
+                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
 
             } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException e) {
                 popAlert(e);
@@ -272,6 +276,8 @@ public class Controller {
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
+            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+
         } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
             popAlert(e);
         }
@@ -326,10 +332,7 @@ public class Controller {
         });
     }
 
-    @FXML
-    void resetHead(ActionEvent event) {
 
-    }
 
     private void buildBranchCommitTree() {
         BranchCommitTreeView.setRoot(getNodesForBranch());
@@ -363,6 +366,7 @@ public class Controller {
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
+            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
         } catch (NoSuchRepoException e) {
             popAlert(e);
         }
@@ -390,6 +394,7 @@ public class Controller {
                 ModuleTwo.checkout(answer.get());
                 activeBranchLabel.setText(answer.get());
                 buildBranchCommitTree();
+                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
             } catch (NoActiveRepositoryException | NoSuchBranchException e) {
                 popAlert(e);
             }

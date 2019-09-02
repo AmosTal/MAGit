@@ -3,12 +3,22 @@ package Objects.Commit;
 import Objects.Api.MagitObject;
 import Objects.Date.*;
 
-public class Commit extends MagitObject {
+public class Commit extends MagitObject implements Comparable<Commit> {
     private String rootFolderSha1;
     private String previousCommitSha1;
     private String previousCommit2Sha1;
     private String CommitPurposeMSG;
+
+    public String getNameOfModifier() {
+        return NameOfModifier;
+    }
+
     private String NameOfModifier;
+
+    public DateAndTime getDateAndTime() {
+        return dateAndTime;
+    }
+
     private DateAndTime dateAndTime;
 
     public Commit(String _rootFolderSha1, String _previousCommitSha1,
@@ -60,5 +70,10 @@ public class Commit extends MagitObject {
 
     public String getInfo() {
         return "Commit sha1: " + getSha1() + "\nCommit message: " + CommitPurposeMSG + "\nDay of creation: " + dateAndTime.getDate() + "\nCommit created by: " + NameOfModifier;
+    }
+
+    @Override
+    public int compareTo(Commit o) {
+        return this.dateAndTime.getDateInSeconds() < o .dateAndTime.getDateInSeconds() ? 1 : -1;
     }
 }

@@ -478,6 +478,17 @@ public class Repository {
         deleteWCfiles(this.path);
         deployCommit(commit,this.path);
     }
+
+    public ArrayList<Commit> getCommits() {
+        ArrayList<Commit> commitLst = new ArrayList<>();
+        for(Map.Entry<String,MagitObject> entry:objList.entrySet()){
+            if(entry.getValue() instanceof Commit){
+                commitLst.add((Commit)entry.getValue());
+            }
+        }
+        Collections.sort(commitLst);
+        return commitLst;
+    }
 }
 
 
