@@ -17,14 +17,16 @@ import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
-public class GraphicCommitNodeMaker{
+public class GraphicCommitNodeMaker {
+    public static HashMap<String, ICell> cellMap = new HashMap<>();
 
-    public static void createGraphicTree(ScrollPane scrollPane){
+    public static void createGraphicTree(ScrollPane scrollPane) {
         Graph tree = new Graph();
-        ArrayList<Commit> commitLst= ModuleTwo.getActiveRepo().getCommits();
-        GraphicCommitNodeMaker.createCommits(tree,commitLst);
+        ArrayList<Commit> commitLst = ModuleTwo.getActiveRepo().getCommits();
+        GraphicCommitNodeMaker.createCommits(tree, commitLst);
         PannableCanvas canvas = tree.getCanvas();
         //canvas.setPrefWidth(100);
         //canvas.setPrefHeight(100);
@@ -41,30 +43,19 @@ public class GraphicCommitNodeMaker{
 
         graph.beginUpdate();
         ICell c;
-        for(Commit commit : commitLst){
-            c = new CommitNode(commit.getDateAndTime().getDate(),commit.getNameOfModifier(),
+        for (Commit commit : commitLst) {
+            c = new CommitNode(commit.getDateAndTime().getDate(), commit.getNameOfModifier(),
                     commit.getCommitPurposeMSG());
+            cellMap.put(commit.getSha1(), c);
             model.addCell(c);
         }
-
-//        final Edge edgeC12 = new Edge(c1, c2);
-//        model.addEdge(edgeC12);
-//
-//        final Edge edgeC23 = new Edge(c2, c4);
-//        model.addEdge(edgeC23);
-//
-//        final Edge edgeC45 = new Edge(c4, c5);
-//        model.addEdge(edgeC45);
-//
-//        final Edge edgeC13 = new Edge(c1, c3);
-//        model.addEdge(edgeC13);
-//
-//        final Edge edgeC35 = new Edge(c3, c5);
-//        model.addEdge(edgeC35);
-
+        for (Commit commit : commitLst) {
+            if (cellMap.containsKey(commit.getPreviousCommitSha1())) {
+                final Edge edge = new Edge(cellMap.get(commit.getSha1()), cellMap.get(commit.getPreviousCommitSha1()));
+                model.addEdge(edge);
+            }
+        }
         graph.endUpdate();
-
         graph.layout(new CommitTreeLayout());
-
     }
 }

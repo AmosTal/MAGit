@@ -1,13 +1,16 @@
 package GraphicTree.layout;
 
+import EngineRunner.ModuleTwo;
+import GraphicTree.GraphicCommitNodeMaker;
 import GraphicTree.node.CommitNode;
+import Objects.Branch.Branch;
 import com.fxgraph.graph.Graph;
 import com.fxgraph.graph.ICell;
 import com.fxgraph.layout.Layout;
 
+import java.util.ArrayList;
 import java.util.List;
 
-// simple test for scattering commits in imaginary tree, where every 3rd node is in a new 'branch' (moved to the right)
 public class CommitTreeLayout implements Layout {
 
     @Override
@@ -15,16 +18,22 @@ public class CommitTreeLayout implements Layout {
         final List<ICell> cells = graph.getModel().getAllCells();
         int startX = 10;
         int startY = 50;
-        int every3rdNode = 1;
+        ArrayList<ICell> cellToMove = new ArrayList<>();
+        for(Branch br: ModuleTwo.getActiveReposBranches()){
+            String wantedCommitSha1 = br.getSha1();
+            ICell cell = GraphicCommitNodeMaker.cellMap.get(wantedCommitSha1);
+            cellToMove.add(cell);
+        }
         for (ICell cell : cells) {
             CommitNode c = (CommitNode) cell;
-            if (every3rdNode % 3 == 0) {
-                graph.getGraphic(c).relocate(startX + 50, startY);
+            if (cellToMove.contains(c)) {
+                graph.getGraphic(c).relocate(startX += 50, startY);
             } else {
                 graph.getGraphic(c).relocate(startX, startY);
             }
             startY += 50;
-            every3rdNode++;
         }
+
     }
+
 }

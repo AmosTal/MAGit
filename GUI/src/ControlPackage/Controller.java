@@ -70,6 +70,7 @@ public class Controller {
                 buildFileTree(ModuleTwo.getActiveRepoPath());
                 buildBranchCommitTree();
                 activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
             }
         } catch (NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e) {
             popAlert(e);
