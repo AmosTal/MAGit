@@ -94,6 +94,7 @@ public class Controller {
                 ModuleTwo.checkout(branchName);
                 activeBranchLabel.setText(branchName);
                 buildBranchCommitTree();
+                refreshFilesTree();
             } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
                 popAlert(e);
             }
@@ -135,7 +136,6 @@ public class Controller {
 
     @FXML
     void refreshGraphic(MouseEvent event) {
-
     }
     void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -172,7 +172,7 @@ public class Controller {
     }
 
     @FXML
-    void showContentButton(ActionEvent event) {
+    void showContentButton() {
         TreeItem<File> selectedItem = fileSystemTreeView.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             fileNameLabel.setText(selectedItem.getValue().getName());
@@ -186,7 +186,7 @@ public class Controller {
     }
 
     @FXML
-    void refreshFilesTree(ActionEvent event) {
+    void refreshFilesTree() {
         buildFileTree(ModuleTwo.getActiveRepoPath());
     }
 
@@ -198,7 +198,7 @@ public class Controller {
 
 
     @FXML
-    void createEmptyRepo(ActionEvent event) {
+    void createEmptyRepo() {
         String path;
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select repository location ");
@@ -222,7 +222,7 @@ public class Controller {
     }
 
     @FXML
-    void deleteExistingBranch(ActionEvent event) {
+    void deleteExistingBranch() {
         TextInputDialog dialog = new TextInputDialog("");
         dialog.setTitle("Delete branch");
         dialog.setHeaderText("Please enter the branch name to delete it:");
@@ -240,7 +240,7 @@ public class Controller {
     }
 
     @FXML
-    void makeNewBranch(ActionEvent event) {
+    void makeNewBranch() {
         TextInputDialog dialog = new TextInputDialog("");
         dialog.setTitle("Make new branch");
         dialog.setHeaderText("Please enter the branch name:");
@@ -406,6 +406,7 @@ public class Controller {
                 activeBranchLabel.setText(answer.get());
                 buildBranchCommitTree();
                 GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+                refreshFilesTree();
             } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
                 popAlert(e);
             }
