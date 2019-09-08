@@ -5,7 +5,7 @@ import Objects.Date.DateAndTime;
 import java.io.Serializable;
 
 
-public class Fof implements Serializable {
+public class Fof implements Serializable,Comparable {
     private String sha1;
     private String name;
     private Boolean isBlob;
@@ -44,5 +44,10 @@ public class Fof implements Serializable {
 
     public String getNameOfModifier() {
         return nameOfModifier;
+    }
+
+    @Override
+    public int compareTo(Object fof) {
+        return ((Fof)fof).sha1.compareTo(sha1);
     }
 }

@@ -68,6 +68,7 @@ public class Repository {
 
     private void createFilesForBranches() {
         makeFileForBranch(headBranch.getName(),"HEAD");
+        makeFileForBranch(headBranch.getSha1(),headBranch.getName());
         for (Branch branch : branches) {
             makeFileForBranch(branch.getSha1(), branch.getName());
         }
@@ -268,7 +269,8 @@ public class Repository {
 
     public void addNewBranch(String name,Commit commit) throws AlreadyExistingBranchException {
         Branch branch;
-        if (branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null) == null) {
+        if (branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null) == null
+                && !headBranch.getName().equals(name)) {
             if (commit != null){
                 branch = new Branch(commit.getSha1(), "master");
                 headBranch = branch;
@@ -428,11 +430,12 @@ public class Repository {
 
     public void deleteThisBranch(String input) throws DeleteHeadBranchException, NoSuchBranchException {
         boolean found = false;
+        Branch br =null;
+        if (input.equals(headBranch.getName()))
+            throw new DeleteHeadBranchException();
         for (Branch branch : branches) {
             if (branch.getName().equals(input)) {
-                if (branch.getName().equals(headBranch.getName()))
-                    throw new DeleteHeadBranchException();
-                branches.remove(branch);
+                br=branch;
                 File f = new File(path + "/.magit/branches/" + branch.getName());
                 f.delete();
                 found = true;
@@ -440,6 +443,7 @@ public class Repository {
         }
         if (!found)
             throw new NoSuchBranchException();
+        branches.remove(br);
     }
 
     public void showBranchHistory() {

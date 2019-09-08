@@ -3,6 +3,7 @@ package Objects.Folder;
 import Objects.Api.MagitObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Folder extends MagitObject {
     private ArrayList<Fof> FofList = null;
@@ -18,6 +19,7 @@ public class Folder extends MagitObject {
     }
     private static String buildContent (ArrayList<Fof> arr){
         StringBuilder content = new StringBuilder();
+        Collections.sort(arr);
         for (Fof fof:arr) {
             content.append(fof.getContent());
         }

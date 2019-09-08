@@ -11,7 +11,7 @@ import XML.XmlData;
 import XML.XmlNotValidException;
 
 
-
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,6 +55,7 @@ public class ModuleTwo {
             deleteRepo = Controller.deleteOrNot();
         }
         if (deleteRepo) {
+            new File(reader.getMagitRepository().getLocation()).mkdir();
             activeRepo = Repository.makeRepoFromXmlRepo(reader);
             activeRepo.createEmptyRepo();
             activeRepo.createFiles();
