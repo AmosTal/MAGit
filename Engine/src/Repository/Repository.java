@@ -456,6 +456,10 @@ public class Repository {
         Collections.sort(commitLst);
         return commitLst;
     }
+
+    public Branch getHeadBranch() {
+        return headBranch;
+    }
 }
 
 

@@ -298,11 +298,12 @@ public class Controller {
     private TreeItem<CommitOrBranch> getNodesForBranch() {
         TreeItem<CommitOrBranch> root = new TreeItem<>();
         List<Commit> commitLst;
+        TreeItem<CommitOrBranch> headNode =new TreeItem<CommitOrBranch>(new CommitOrBranch(ModuleTwo.getActiveRepo().getHeadBranch()));
+        commitLst = ModuleTwo.getActiveReposBranchCommits(ModuleTwo.getActiveRepo().getHeadBranch());
+        headNode.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
+        root.getChildren().add(headNode);
         for (Branch b : ModuleTwo.getActiveReposBranches()) {
-            if (b.getName().equals("HEAD"))
-                continue;
             TreeItem<CommitOrBranch> node = new TreeItem<CommitOrBranch>(new CommitOrBranch(b));
-
             commitLst = ModuleTwo.getActiveReposBranchCommits(b);
             node.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
             root.getChildren().add(node);
