@@ -3,18 +3,16 @@ package GraphicTree;
 import EngineRunner.ModuleTwo;
 import GraphicTree.layout.CommitTreeLayout;
 import GraphicTree.node.CommitNode;
-import Objects.Api.MagitObject;
+
 import Objects.Commit.Commit;
 import com.fxgraph.edges.Edge;
 import com.fxgraph.graph.Graph;
 import com.fxgraph.graph.ICell;
 import com.fxgraph.graph.Model;
 import com.fxgraph.graph.PannableCanvas;
-import javafx.application.Application;
+
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +54,6 @@ public class GraphicCommitNodeMaker {
             }
         }
         graph.endUpdate();
-        graph.layout(new CommitTreeLayout());
+        graph.layout(new CommitTreeLayout(cellMap,commitLst.get(0)));
     }
 }

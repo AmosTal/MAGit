@@ -73,4 +73,12 @@ public class Commit extends MagitObject implements Comparable<Commit> {
     public int compareTo(Commit o) {
         return this.dateAndTime.getDateInSeconds() < o .dateAndTime.getDateInSeconds() ? 1 : -1;
     }
+
+    public String getPreviousCommit2Sha1() {
+        return previousCommit2Sha1;
+    }
+
+    public void setPreviousCommit2Sha1(String previousCommit2Sha1) {
+        this.previousCommit2Sha1 = previousCommit2Sha1;
+    }
 }
