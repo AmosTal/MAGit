@@ -378,6 +378,7 @@ public class Controller {
     @FXML
     void showBranches(ActionEvent event) {
         String branches = "";
+        branches = branches.concat("HEAD: "+ ModuleTwo.getActiveBranchName());
         for (Branch b : ModuleTwo.getActiveReposBranches()) {
             branches = branches.concat("\n" + b.getName());
         }
