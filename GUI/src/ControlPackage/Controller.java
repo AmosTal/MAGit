@@ -94,7 +94,7 @@ public class Controller {
                 ModuleTwo.checkout(branchName);
                 activeBranchLabel.setText(branchName);
                 buildBranchCommitTree();
-            } catch (NoActiveRepositoryException | NoSuchBranchException e) {
+            } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
                 popAlert(e);
             }
     }
@@ -103,7 +103,11 @@ public class Controller {
     void switchingButton2(ActionEvent event) {
         if (commitBool) {
             Commit selectedCommit = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getCommit();
-            ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
+            try {
+                ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             refreshCommitsTree(event);
         } else {
             try {
@@ -154,7 +158,11 @@ public class Controller {
 
     private void showCommitFiles(Commit selectedCommit) {
         String path = ModuleTwo.getActiveRepoPath() + "/.magit/Commit files";
-        ModuleTwo.getActiveRepo().deleteWCfiles(path);
+        try {
+            ModuleTwo.getActiveRepo().deleteWCfiles(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         makeFilesOfCommit(selectedCommit, path);
         buildFileTree(path);
     }
@@ -258,7 +266,7 @@ public class Controller {
                 buildBranchCommitTree();
                 GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
 
-            } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException e) {
+            } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException | IOException e) {
                 popAlert(e);
             }
         }
@@ -398,7 +406,7 @@ public class Controller {
                 activeBranchLabel.setText(answer.get());
                 buildBranchCommitTree();
                 GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-            } catch (NoActiveRepositoryException | NoSuchBranchException e) {
+            } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
                 popAlert(e);
             }
         }

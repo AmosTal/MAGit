@@ -12,6 +12,7 @@ import Objects.Folder.Folder;
 import XML.XmlData;
 
 import XMLpackage.*;
+import org.apache.commons.io.FileUtils;
 
 
 import java.io.*;
@@ -272,7 +273,7 @@ public class Repository {
     }
 
 
-    public void switchHead(String name) throws NoSuchBranchException {
+    public void switchHead(String name) throws NoSuchBranchException, IOException {
         Branch branch = branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null);
         if (branch == null)
             throw new NoSuchBranchException();
@@ -310,12 +311,15 @@ public class Repository {
         }
     }
 
-    public void deleteWCfiles(String _path) { //Delete is not working properly. FIX DIS!
+    public void deleteWCfiles(String _path) throws IOException { //Delete is not working properly. FIX DIS!
         File file = new File(_path);
         for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
-            if (!fileEntry.getName().equals(".magit")) {
+            if (fileEntry.isDirectory() && !fileEntry.getName().equals(".magit")){
+                FileUtils.cleanDirectory(fileEntry);
                 fileEntry.delete();
-            }
+        }
+            else if (fileEntry.isFile())
+                fileEntry.delete();
         }
     }
 
@@ -439,7 +443,7 @@ public class Repository {
         return (headBranch.getSha1() != null);
     }
 
-    public void resetBranch(Commit commit) {
+    public void resetBranch(Commit commit) throws IOException {
         headBranch.UpdateSha1(commit.getSha1());
         makeFileForBranch(headBranch.getSha1(),headBranch.getName());
         deleteWCfiles(this.path);

@@ -56,9 +56,7 @@ public class XmlData {
             checkIfXmlIsValid();
         } catch (JAXBException e) {
             e.printStackTrace();
-
         }
-        System.out.println(magitRepository.getName());
     }
 
 

@@ -101,7 +101,7 @@ public class ModuleTwo {
         return activeRepo.checkDeltaChanges();
     }
 
-    public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException {
+    public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException, IOException {
 
         checkIfActiveRepoExists();
         activeRepo.switchHead(name);
@@ -147,7 +147,7 @@ public class ModuleTwo {
 //            e.printStackTrace();
 //        }
 //    }
-    public static void resetActiveRepoHeadBranch(Commit commit){
+    public static void resetActiveRepoHeadBranch(Commit commit) throws IOException {
         activeRepo.resetBranch(commit);
     }
 
