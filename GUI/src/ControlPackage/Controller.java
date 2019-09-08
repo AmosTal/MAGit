@@ -27,6 +27,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -137,10 +138,10 @@ public class Controller {
     @FXML
     void refreshGraphic(MouseEvent event) {
     }
-    void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    private void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         if(BranchCommitTreeView.getSelectionModel().getSelectedItem()!=null) {
-            if (BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().isCommit() == true) {
+            if (BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().isCommit()) {
                 optionsLabel1.setText("Commit options:");
                 switchButton1.setText("Show commit");
                 switchButton2.setText("Reset head branch to this commit");
@@ -203,20 +204,18 @@ public class Controller {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select repository location ");
         File directory = directoryChooser.showDialog(new Stage());
-        if (directory.getPath() != null) {
-            TextInputDialog dialog = new TextInputDialog("");
-            dialog.setTitle("Repository folder name");
-            dialog.setHeaderText("Enter repository folder name:");
-            dialog.setContentText("Name:");
-            Optional<String> answer = dialog.showAndWait();
-            if (answer.isPresent()) {
-                path = directory.getPath() + "/" + answer.get();
-                try {
-                    ModuleTwo.InitializeRepo(path);
-                    repositoryNameLabel.setText(answer.get());
-                } catch (IOException e) {
-                    popAlert(e);
-                }
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Repository folder name");
+        dialog.setHeaderText("Enter repository folder name:");
+        dialog.setContentText("Name:");
+        Optional<String> answer = dialog.showAndWait();
+        if (answer.isPresent()) {
+            path = directory.getPath() + "/" + answer.get();
+            try {
+                ModuleTwo.InitializeRepo(path);
+                repositoryNameLabel.setText(answer.get());
+            } catch (IOException e) {
+                popAlert(e);
             }
         }
     }
@@ -252,7 +251,7 @@ public class Controller {
 
                 String[] options = new String[]{"Yes",
                         "No"};
-                ChoiceDialog<String> choiceDialog = new ChoiceDialog<String>(options[0], options);
+                ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(options[0], options);
                 choiceDialog.setTitle("Change active branch");
                 choiceDialog.setHeaderText("Do you want to make the new branch active?");
                 choiceDialog.setContentText("Please choose an option");
@@ -293,12 +292,12 @@ public class Controller {
     }
 
     private TreeItem<File> getNodesForDirectory(File directory) {
-        TreeItem<File> root = new TreeItem<File>(directory);
-        for (File f : directory.listFiles()) {
+        TreeItem<File> root = new TreeItem<>(directory);
+        for (File f : Objects.requireNonNull(directory.listFiles())) {
             if (f.isDirectory() && !f.getName().equals(".magit"))
                 root.getChildren().add(getNodesForDirectory(f));
             else if (!f.isDirectory())
-                root.getChildren().add(new TreeItem<File>(f));
+                root.getChildren().add(new TreeItem<>(f));
         }
         return root;
     }
@@ -306,12 +305,12 @@ public class Controller {
     private TreeItem<CommitOrBranch> getNodesForBranch() {
         TreeItem<CommitOrBranch> root = new TreeItem<>();
         List<Commit> commitLst;
-        TreeItem<CommitOrBranch> headNode =new TreeItem<CommitOrBranch>(new CommitOrBranch(ModuleTwo.getActiveRepo().getHeadBranch()));
+        TreeItem<CommitOrBranch> headNode =new TreeItem<>(new CommitOrBranch(ModuleTwo.getActiveRepo().getHeadBranch()));
         commitLst = ModuleTwo.getActiveReposBranchCommits(ModuleTwo.getActiveRepo().getHeadBranch());
         headNode.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
         root.getChildren().add(headNode);
         for (Branch b : ModuleTwo.getActiveReposBranches()) {
-            TreeItem<CommitOrBranch> node = new TreeItem<CommitOrBranch>(new CommitOrBranch(b));
+            TreeItem<CommitOrBranch> node = new TreeItem<>(new CommitOrBranch(b));
             commitLst = ModuleTwo.getActiveReposBranchCommits(b);
             node.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
             root.getChildren().add(node);
@@ -436,7 +435,7 @@ public class Controller {
     public static boolean deleteOrNot() {
         String[] options = new String[]{"Delete the repository to make a new one",
                 "Keep existing repository and not load from XML."};
-        ChoiceDialog<String> choiceDialog = new ChoiceDialog<String>(options[0], options);
+        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(options[0], options);
         choiceDialog.setTitle("Magit repository already exists");
         choiceDialog.setHeaderText("There is an existing magit repository in location.");
         choiceDialog.setContentText("Please choose an option");
