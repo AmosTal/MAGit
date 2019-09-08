@@ -16,6 +16,8 @@ import XMLpackage.*;
 
 import java.io.*;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import java.util.zip.*;
@@ -138,7 +140,7 @@ public class Repository {
             }
             String finalNameOfHead = nameOfHead;
             headBranch = branches.stream().filter(Branch -> Branch.getName().equals(finalNameOfHead)).findFirst().orElse(null);
-            branches.remove(branches.stream().filter(Branch -> Branch.getName().equals(finalNameOfHead)).findFirst());
+            branches.remove(headBranch);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -172,7 +174,7 @@ public class Repository {
             commit = new Commit(sha1OfRoot, headBranch.getSha1(), null, msg, username);
         else {
             commit = new Commit(sha1OfRoot, msg, username); //first commit
-            addNewBranch("master",commit);
+            headBranch = new Branch(commit.getSha1(), "master");
         }
         headBranch.UpdateSha1(commit.getSha1());
         objList.put(commit.getSha1(), commit);
@@ -195,7 +197,7 @@ public class Repository {
         Fof fof;
         String newModifier;
         String _fofpath;
-        String brReadLine;
+        String content;
         if (file.isDirectory()) {
             for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
                 _fofpath = _path + "/" + fileEntry.getName();
@@ -216,15 +218,8 @@ public class Repository {
             obj = new Folder(fofLst);
         } else {
             try {
-                FileReader fr = new FileReader(new File(_path));
-                BufferedReader br = new BufferedReader(fr);
-                brReadLine = br.readLine();
-                if (brReadLine == null)
-                    brReadLine = "";
-                obj = new Blob(brReadLine);
-                br.close();
-                fr.close();
-
+                content = new String ( Files.readAllBytes( Paths.get(_path) ) );
+                obj = new Blob(content);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -236,25 +231,6 @@ public class Repository {
         else if (!_path.equals(path))
             currDelta.isObjectChanged(fof, _path);
         return fof;
-    }
-
-
-    public void showCommitFiles() {
-        {
-            String rootFoldersha1 = ((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1();
-            recursivePrintAllCommitFiles(rootFoldersha1, path);
-        }
-
-    }
-
-    private void recursivePrintAllCommitFiles(String folderSha1, String _path) {
-        String newPath;
-        for (Fof fof : ((Folder) objList.get(folderSha1)).getFofList()) {
-            newPath = _path + "\\" + fof.getName();
-            if (!fof.getIsBlob())
-                recursivePrintAllCommitFiles(fof.getSha1(), newPath);
-            ModuleTwo.printLine(newPath + fof.getInfo());
-        }
     }
 
     private void recursiveMapBuilder(String folderSha1, Map<String, Fof> map, String _path) {
@@ -295,10 +271,13 @@ public class Repository {
         return currDelta.getIsChanged();
     }
 
+
     public void switchHead(String name) throws NoSuchBranchException {
         Branch branch = branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null);
         if (branch == null)
             throw new NoSuchBranchException();
+        branches.add(headBranch);
+        branches.remove(branch);
         headBranch = branch;
         makeFileForBranch(headBranch.getName(), "HEAD");
         deleteWCfiles(this.path);
@@ -331,7 +310,7 @@ public class Repository {
         }
     }
 
-    public void deleteWCfiles(String _path) {
+    public void deleteWCfiles(String _path) { //Delete is not working properly. FIX DIS!
         File file = new File(_path);
         for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
             if (!fileEntry.getName().equals(".magit")) {
@@ -346,13 +325,6 @@ public class Repository {
             return noChanges;
         } else
             return currDelta.showChanges();
-    }
-
-    public void showBranches() {
-        for (Branch branch : branches) {
-            ModuleTwo.printLine("Name: " + branch.getName() + "\nSha1: " + branch.getSha1() + "\nCommit message: " + ((Commit) objList.get(branch.getSha1())).getCommitPurposeMSG() + "\n----");
-        }
-        ModuleTwo.printLine(("HEAD BRANCH :\nName: " + headBranch.getName() + "\nSha1: " + headBranch.getSha1() + "\nCommit message: ") + ((Commit) objList.get(headBranch.getSha1())).getCommitPurposeMSG() + "\n----");
     }
 
     public static Repository makeRepoFromXmlRepo(XmlData xmldata) {
@@ -386,13 +358,14 @@ public class Repository {
         MagitSingleCommit singleCommit;
         Commit newCommit;
         String rootfolderId = commit.getRootFolder().getId();
-        String prevCommitSha1;
-        if (commit.getPrecedingCommits().getPrecedingCommit().size() != 0) {
-            PrecedingCommits.PrecedingCommit prevCommit = commit.getPrecedingCommits().getPrecedingCommit().get(0);
-            singleCommit = xmlData.getCommitMap().get(prevCommit.getId());
-            prevCommitSha1 = recursiveSha1PrevCommitBuilder(singleCommit, xmlData);
-        } else
-            prevCommitSha1 = null;
+        String prevCommitSha1 = null;
+        if (commit.getPrecedingCommits() != null){
+            if(commit.getPrecedingCommits().getPrecedingCommit().size() != 0){
+                PrecedingCommits.PrecedingCommit prevCommit = commit.getPrecedingCommits().getPrecedingCommit().get(0);
+                singleCommit = xmlData.getCommitMap().get(prevCommit.getId());
+                prevCommitSha1 = recursiveSha1PrevCommitBuilder(singleCommit, xmlData);
+            }
+        }
         fof = recursiveXmlCommitBuilder(xmlData, rootfolderId, false);
         newCommit = new Commit(fof.getSha1(), prevCommitSha1, null, commit.getMessage(), commit.getAuthor(), new DateAndTime(commit.getDateOfCreation()));
         objList.put(newCommit.getSha1(), newCommit);
@@ -446,18 +419,6 @@ public class Repository {
         branches.remove(br);
     }
 
-    public void showBranchHistory() {
-        Commit commit = ((Commit) objList.get(headBranch.getSha1()));
-        while (commit != null) {
-            ModuleTwo.printLine(commit.getInfo());
-            if (commit.getPreviousCommitSha1() != null)
-                commit = (Commit) objList.get(commit.getPreviousCommitSha1());
-            else
-                commit = null;
-
-        }
-    }
-
     public List<Commit> getBranchCommits(Branch branch){
         List<Commit> res = new ArrayList<>();
         Commit commit = ((Commit) objList.get(branch.getSha1()));
@@ -471,9 +432,11 @@ public class Repository {
         }
         return res;
     }
-    public boolean hasCommitInHead() {
-        return (headBranch.getSha1() != null);
 
+    public boolean hasCommitInHead() {
+        if (headBranch == null)
+            return false;
+        return (headBranch.getSha1() != null);
     }
 
     public void resetBranch(Commit commit) {

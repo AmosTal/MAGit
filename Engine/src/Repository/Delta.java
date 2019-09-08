@@ -66,9 +66,7 @@ class Delta {
     }
 
     public boolean getIsChanged() {
-        if (isChanged || !deletedFilesFofs.isEmpty())
-            return true;
-        return false;
+        return isChanged || !deletedFilesFofs.isEmpty();
     }
 
     public String getUsername(String fofpath) {

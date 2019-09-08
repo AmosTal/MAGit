@@ -6,7 +6,7 @@ import Objects.Branch.Branch;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.*;
-import UIRunner.ModuleOne;
+
 import XML.XmlData;
 import XML.XmlNotValidException;
 
@@ -74,20 +74,17 @@ public class ModuleTwo {
             throw new CommitCannotExecutException();
     }
 
-    public static void printLine(String strToPrint) {
-        ModuleOne.PrintString(strToPrint);
-    }
 
 
-    public static void showAllCommitFiles() {
-        try {
-            checkIfActiveRepoExists();
-            checkIfHeadBranchHasCommit();
-            activeRepo.showCommitFiles();
-        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void showAllCommitFiles() {
+//        try {
+//            checkIfActiveRepoExists();
+//            checkIfHeadBranchHasCommit();
+//            activeRepo.showCommitFiles();
+//        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public static void makeNewBranch(String name) throws NoActiveRepositoryException, AlreadyExistingBranchException {
 
@@ -96,16 +93,6 @@ public class ModuleTwo {
         activeRepo.addNewBranch(name, null);
     }
 
-    public static void changesChecker() {
-        try {
-            if (checkChanges()) {
-                ModuleOne.switchHead();
-            }
-
-        } catch (NoActiveRepositoryException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public static boolean checkChanges() throws NoActiveRepositoryException {
@@ -125,16 +112,16 @@ public class ModuleTwo {
         return activeRepo.showRepoStatus();
     }
 
-    public static void showAllBranches() {
-        try {
-            checkIfActiveRepoExists();
-            checkIfHeadBranchHasCommit();
-            activeRepo.showBranches();
-        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public static void showAllBranches() {
+//        try {
+//            checkIfActiveRepoExists();
+//            checkIfHeadBranchHasCommit();
+//            activeRepo.showBranches();
+//        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
         checkIfActiveRepoExists();
@@ -151,15 +138,15 @@ public class ModuleTwo {
             throw new NoCommitInActiveBranch();
     }
 
-    public static void showActiveBranchHistory() {
-        try {
-            checkIfActiveRepoExists();
-            checkIfHeadBranchHasCommit();
-            activeRepo.showBranchHistory();
-        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void showActiveBranchHistory() {
+//        try {
+//            checkIfActiveRepoExists();
+//            checkIfHeadBranchHasCommit();
+//            activeRepo.showBranchHistory();
+//        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
+//            e.printStackTrace();
+//        }
+//    }
     public static void resetActiveRepoHeadBranch(Commit commit){
         activeRepo.resetBranch(commit);
     }

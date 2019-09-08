@@ -68,9 +68,6 @@ public class Commit extends MagitObject implements Comparable<Commit> {
         return CommitPurposeMSG;
     }
 
-    public String getInfo() {
-        return "Commit sha1: " + getSha1() + "\nCommit message: " + CommitPurposeMSG + "\nDay of creation: " + dateAndTime.getDate() + "\nCommit created by: " + NameOfModifier;
-    }
 
     @Override
     public int compareTo(Commit o) {
