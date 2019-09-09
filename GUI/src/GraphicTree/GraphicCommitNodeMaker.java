@@ -37,8 +37,8 @@ public class GraphicCommitNodeMaker {
     }
 
     public static void createCommits(Graph graph, ArrayList<Commit> commitLst) {
-        final Model model = graph.getModel();
 
+        final Model model = graph.getModel();
         graph.beginUpdate();
         ICell c;
         for (Commit commit : commitLst) {

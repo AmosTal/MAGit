@@ -1,6 +1,5 @@
 package Repository;
 
-import EngineRunner.ModuleTwo;
 import Objects.Api.MagitObject;
 import Objects.Blob.Blob;
 import Objects.Branch.AlreadyExistingBranchException;
@@ -38,9 +37,11 @@ public class Repository {
         branches = _branches;
         name = new File(_path).getName();
     }
+
     public String getPath() {
         return path;
     }
+
     public String getHeadBranchName()
     {
         return headBranch.getName();
@@ -77,11 +78,10 @@ public class Repository {
         }
 
     }
+
     public ArrayList<Branch> getBranches(){
         return branches;
     }
-
-
 
     private void makeFileForBranch(String content, String name) {
         try {
@@ -181,7 +181,6 @@ public class Repository {
         objList.put(commit.getSha1(), commit);
     }
 
-
     private Map<String, Fof> getCommitMap(Commit commit) {
         Map<String, Fof> res = new HashMap<>();
         if (commit != null) {
@@ -189,7 +188,6 @@ public class Repository {
         }
         return res;
     }
-
 
     private Fof recursiveWcToObjectBuilder(String _path, boolean isCommit, String modifier) {
         ArrayList<Fof> fofLst = new ArrayList<>();
@@ -272,7 +270,6 @@ public class Repository {
         return currDelta.getIsChanged();
     }
 
-
     public void switchHead(String name) throws NoSuchBranchException, IOException {
         Branch branch = branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null);
         if (branch == null)
@@ -281,7 +278,7 @@ public class Repository {
         branches.remove(branch);
         headBranch = branch;
         makeFileForBranch(headBranch.getName(), "HEAD");
-        deleteWCfiles(this.path);
+        deleteWCFiles(this.path);
         deployCommit((Commit) objList.get(headBranch.getSha1()),this.path);
     }
 
@@ -311,7 +308,7 @@ public class Repository {
         }
     }
 
-    public void deleteWCfiles(String _path) throws IOException { //Delete is not working properly. FIX DIS!
+    public static void deleteWCFiles(String _path) throws IOException { //Delete is not working properly. FIX DIS!
         File file = new File(_path);
         for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
             if (fileEntry.isDirectory() && !fileEntry.getName().equals(".magit")){
@@ -446,7 +443,7 @@ public class Repository {
     public void resetBranch(Commit commit) throws IOException {
         headBranch.UpdateSha1(commit.getSha1());
         makeFileForBranch(headBranch.getSha1(),headBranch.getName());
-        deleteWCfiles(this.path);
+        deleteWCFiles(this.path);
         deployCommit(commit,this.path);
     }
 
@@ -464,6 +461,7 @@ public class Repository {
     public Branch getHeadBranch() {
         return headBranch;
     }
+
     public String getPreviousCommitSha1(String sha1)
     {
         return ((Commit)objList.get(sha1)).getPreviousCommitSha1();

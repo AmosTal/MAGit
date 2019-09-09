@@ -12,10 +12,8 @@ import Repository.NoSuchRepoException;
 import XML.XmlNotValidException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -56,7 +54,7 @@ public class Controller {
     private Button switchButton2;
 
     @FXML
-    void showChanges(ActionEvent event) {
+    void showChanges() {
             JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
     }
     @FXML
@@ -78,7 +76,7 @@ public class Controller {
         }
     }
     @FXML
-    void switchingButton1(ActionEvent event) {
+    void switchingButton1() {
         String branchName;
         if(commitBool) {
             TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
@@ -102,7 +100,7 @@ public class Controller {
     }
 
     @FXML
-    void switchingButton2(ActionEvent event) {
+    void switchingButton2() {
         if (commitBool) {
             Commit selectedCommit = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getCommit();
             try {
@@ -110,7 +108,7 @@ public class Controller {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            refreshCommitsTree(event);
+            refreshCommitsTree();
         } else {
             try {
                 ModuleTwo.deleteBranch(BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().branch.getName());
@@ -130,13 +128,13 @@ public class Controller {
     private TreeView<File> fileSystemTreeView;
 
     @FXML
-    void refreshCommitsTree(ActionEvent event) {
+    void refreshCommitsTree() {
         buildBranchCommitTree();
     }
 
 
     @FXML
-    void refreshGraphic(MouseEvent event) {
+    void refreshGraphic() {
     }
     private void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -160,7 +158,7 @@ public class Controller {
     private void showCommitFiles(Commit selectedCommit) {
         String path = ModuleTwo.getActiveRepoPath() + "/.magit/Commit files";
         try {
-            ModuleTwo.getActiveRepo().deleteWCfiles(path);
+            ModuleTwo.getActiveRepo().deleteWCFiles(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -272,7 +270,7 @@ public class Controller {
     }
 
     @FXML
-    void loadRepoFromXml(ActionEvent event) {
+    void loadRepoFromXml() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Please select XML file");
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML Document", "*.xml");
@@ -365,7 +363,7 @@ public class Controller {
 
 
     @FXML
-    void openRepository(ActionEvent event) {
+    void openRepository() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Please choose the directory");
         File dir = directoryChooser.showDialog(new Stage());
@@ -383,7 +381,7 @@ public class Controller {
 
 
     @FXML
-    void showBranches(ActionEvent event) {
+    void showBranches() {
         String branches = "";
         branches = branches.concat("HEAD: "+ ModuleTwo.getActiveBranchName());
         for (Branch b : ModuleTwo.getActiveReposBranches()) {
@@ -393,7 +391,7 @@ public class Controller {
     }
 
     @FXML
-    void switchHeadBranch(ActionEvent event) {
+    void switchHeadBranch() {
         TextInputDialog dialog = new TextInputDialog("");
         dialog.setTitle("Checkout");
         dialog.setHeaderText("Please enter the branch name to switch to:");
@@ -413,7 +411,7 @@ public class Controller {
     }
 
     @FXML
-    void switchUsername(ActionEvent event) {
+    void switchUsername() {
         TextInputDialog dialog = new TextInputDialog("");
         dialog.setTitle("Switch username");
         dialog.setHeaderText("Please enter username:");

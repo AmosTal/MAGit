@@ -9,6 +9,7 @@ import Repository.*;
 
 import XML.XmlData;
 import XML.XmlNotValidException;
+import org.apache.commons.io.FileUtils;
 
 
 import java.io.File;
@@ -54,6 +55,7 @@ public class ModuleTwo {
             deleteRepo = Controller.deleteOrNot();
         }
         if (deleteRepo) {
+            FileUtils.deleteDirectory(new File(reader.getMagitRepository().getLocation()));
             new File(reader.getMagitRepository().getLocation()).mkdir();
             activeRepo = Repository.makeRepoFromXmlRepo(reader);
             activeRepo.createEmptyRepo();
@@ -72,9 +74,6 @@ public class ModuleTwo {
         } else
             throw new CommitCannotExecutException();
     }
-
-
-
 //    public static void showAllCommitFiles() {
 //        try {
 //            checkIfActiveRepoExists();
@@ -84,15 +83,12 @@ public class ModuleTwo {
 //            e.printStackTrace();
 //        }
 //    }
-
     public static void makeNewBranch(String name) throws NoActiveRepositoryException, AlreadyExistingBranchException {
 
 
         checkIfActiveRepoExists();
         activeRepo.addNewBranch(name, null);
     }
-
-
 
     public static boolean checkChanges() throws NoActiveRepositoryException {
 
@@ -121,7 +117,6 @@ public class ModuleTwo {
 //        }
 //
 //    }
-
     public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
         checkIfActiveRepoExists();
         activeRepo.deleteThisBranch(input);
@@ -165,7 +160,6 @@ public class ModuleTwo {
     public static String getActiveBranchName() {
         return activeRepo.getHeadBranchName();
     }
-
 
     public static List<Commit> getActiveReposBranchCommits(Branch branch) {
         return activeRepo.getBranchCommits(branch);
