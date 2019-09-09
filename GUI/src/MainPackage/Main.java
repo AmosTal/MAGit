@@ -26,6 +26,7 @@ public class Main extends Application {
         scene.getStylesheets().add("Resources/caspian.css");
         primaryStage.setScene(scene);
         primaryStage.show();
+        System.out.println("check2");
     }
 
 
