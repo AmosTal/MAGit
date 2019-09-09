@@ -46,7 +46,6 @@ public class ModuleTwo {
 
     public static void loadRepo(String path) throws XmlNotValidException, IOException, NoSuchRepoException {
 
-
         XmlData reader = new XmlData(path);
         String pathFromXml = reader.getMagitRepository().getLocation();
         Path p = Paths.get(pathFromXml + "/.magit");

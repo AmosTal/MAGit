@@ -464,6 +464,10 @@ public class Repository {
     public Branch getHeadBranch() {
         return headBranch;
     }
+    public String getPreviousCommitSha1(String sha1)
+    {
+        return ((Commit)objList.get(sha1)).getPreviousCommitSha1();
+    }
 }
 
 

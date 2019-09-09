@@ -16,51 +16,50 @@ import java.util.List;
 public class CommitTreeLayout implements Layout {
     HashMap<String, ICell> cellMap;
     Commit firstCommit;
-    public CommitTreeLayout(HashMap<String, ICell> _cellMap,Commit _firstCommit)
+    ArrayList<Commit> commitLst;
+    public CommitTreeLayout(HashMap<String, ICell> _cellMap,Commit _firstCommit,ArrayList<Commit> _commitLst)
     {
         cellMap=_cellMap;
         firstCommit= _firstCommit;
+        commitLst = _commitLst;
     }
     @Override
     public void execute(Graph graph) {
         final List<ICell> cells = graph.getModel().getAllCells();
-        String sha1 =firstCommit.getSha1();
         int startX = 10;
         int startY = 50;
         HashMap<ICell,Integer> cellIntMap = new HashMap<>();
-        while(sha1!=null)
-        {
-            cellIntMap.put(cellMap.get(sha1),0);
-            sha1=ModuleTwo.
+
+
+        for(Commit commit:commitLst) {
+            if(organize(cellIntMap, commit, startX))
+                startX+=50;
         }
-
-        organize(cellIntMap,firstCommit,0);
-
 //        for(Branch br: ModuleTwo.getActiveReposBranches()){
 //            String wantedCommitSha1 = br.getSha1();
 //            ICell cell = GraphicCommitNodeMaker.cellMap.get(wantedCommitSha1);
 //            cellToMove.put(cell,0);
 //        }
-//        for (ICell cell : cells) {
-//            CommitNode c = (CommitNode) cell;
-//            if (cellMap.containsKey(c)) {
-//            startY += 50;
-//        }
-        //graph.getGraphic(c).relocate(startX += 50, startY);
-        //graph.getGraphic(c).relocate(startX, startY);
+        for (ICell cell : cells) {
+            CommitNode c = (CommitNode) cell;
+            startY += 50;
+        graph.getGraphic(c).relocate(cellIntMap.get(c), startY);
+        }
     }
 
-    private void organize(HashMap<ICell,Integer> cellIntMap,Commit commit,Integer x)
+    private boolean organize(HashMap<ICell,Integer> cellIntMap,Commit commit,Integer x)
     {
-        if(commit.getPreviousCommitSha1()!=null)
-        {
-
-            if(commit.getPreviousCommit2Sha1()!=null)
+        String sha1=commit.getSha1();
+        if(cellIntMap.get(cellMap.get(commit.getSha1()))==null) {
+            while(sha1!=null)
             {
-
+                cellIntMap.put(cellMap.get(sha1),x);
+                sha1=ModuleTwo.getActiveRepo().getPreviousCommitSha1(sha1);
+                if(cellIntMap.get(cellMap.get(sha1))!=null)
+                    sha1=null;
             }
-            cellIntMap.put(cellMap.get(commit.getSha1()),x);
+            return true;
         }
-
+        return false;
     }
 }

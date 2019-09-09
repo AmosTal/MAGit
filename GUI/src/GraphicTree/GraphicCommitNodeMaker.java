@@ -54,6 +54,6 @@ public class GraphicCommitNodeMaker {
             }
         }
         graph.endUpdate();
-        graph.layout(new CommitTreeLayout(cellMap,commitLst.get(0)));
+        graph.layout(new CommitTreeLayout(cellMap,commitLst.get(0),commitLst));
     }
 }
