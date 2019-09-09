@@ -70,6 +70,9 @@ public class Repository {
         createFilesForBranches();
     }
 
+    public Commit getCommitBySha1(String sha1){
+        return (Commit)objList.get(sha1);
+    }
     private void createFilesForBranches() {
         makeFileForBranch(headBranch.getName(),"HEAD");
         makeFileForBranch(headBranch.getSha1(),headBranch.getName());

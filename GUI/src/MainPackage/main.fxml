@@ -149,7 +149,7 @@
                                     <Font size="14.0" />
                                  </font></Button>
                                         <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#switchingButton2" prefHeight="46.0" prefWidth="115.0" text="Reset head branch to this commit" textAlignment="CENTER" wrapText="true" />
-                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="37.0" prefWidth="115.0" text="Merge" />
+                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#mergeButton" prefHeight="37.0" prefWidth="115.0" text="Merge" />
                                     </children>
                                 </VBox>
                                 <VBox maxWidth="1.7976931348623157E308">

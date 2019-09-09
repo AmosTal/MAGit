@@ -10,6 +10,7 @@ import Repository.NoActiveRepositoryException;
 import Repository.NoSuchBranchException;
 import Repository.NoSuchRepoException;
 import XML.XmlNotValidException;
+import com.sun.deploy.security.SelectableSecurityManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -53,28 +54,52 @@ public class Controller {
     @FXML
     private Button switchButton2;
 
+
+    @FXML
+    void mergeButton() {
+        try {
+            if(ModuleTwo.checkChanges()){
+                JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot merge.");
+            }
+            else{
+                TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
+                if (!selectedItem.getValue().isCommit()) {
+                    ModuleTwo.merge(selectedItem.getValue().getBranch());
+                }
+                //disable merge option for commit! ------------------------------------------------------------------------ Plead Delete Dis.
+            }
+        } catch (NoActiveRepositoryException e) {
+            e.printStackTrace();
+        }
+
+    }
     @FXML
     void showChanges() {
             JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
     }
     @FXML
     void commitButton() {
-        TextInputDialog commitDialog = new TextInputDialog("");
-        commitDialog.setTitle("Execute commit");
-        commitDialog.setHeaderText("Enter commit message:");
-        Optional<String> commitMsg = commitDialog.showAndWait();
         try {
-            if (commitMsg.isPresent()) {
-                ModuleTwo.executeCommit(commitMsg.get());
-                buildFileTree(ModuleTwo.getActiveRepoPath());
-                buildBranchCommitTree();
-                activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
-                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+            if (ModuleTwo.checkChanges()) {
+                TextInputDialog commitDialog = new TextInputDialog("");
+                commitDialog.setTitle("Execute commit");
+                commitDialog.setHeaderText("Enter commit message:");
+                Optional<String> commitMsg = commitDialog.showAndWait();
+                if (commitMsg.isPresent()) {
+                    ModuleTwo.executeCommit(commitMsg.get());
+                    buildFileTree(ModuleTwo.getActiveRepoPath());
+                    buildBranchCommitTree();
+                    activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+                }
             }
-        } catch (NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e) {
-            popAlert(e);
+            else
+                throw new CommitCannotExecutException();
+            } catch(NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e){
+                popAlert(e);
+            }
+
         }
-    }
     @FXML
     void switchingButton1() {
         String branchName;
@@ -135,8 +160,7 @@ public class Controller {
 
     @FXML
     void refreshGraphic() {
-    }
-    private void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    }private void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         if(BranchCommitTreeView.getSelectionModel().getSelectedItem()!=null) {
             if (BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().isCommit()) {

@@ -1,16 +1,16 @@
 package EngineRunner;
 
+
 import ControlPackage.Controller;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.*;
-
 import XML.XmlData;
 import XML.XmlNotValidException;
 import org.apache.commons.io.FileUtils;
-
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,15 +74,7 @@ public class ModuleTwo {
         } else
             throw new CommitCannotExecutException();
     }
-//    public static void showAllCommitFiles() {
-//        try {
-//            checkIfActiveRepoExists();
-//            checkIfHeadBranchHasCommit();
-//            activeRepo.showCommitFiles();
-//        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
-//            e.printStackTrace();
-//        }
-//    }
+
     public static void makeNewBranch(String name) throws NoActiveRepositoryException, AlreadyExistingBranchException {
 
 
@@ -107,16 +99,6 @@ public class ModuleTwo {
         return activeRepo.showRepoStatus();
     }
 
-//    public static void showAllBranches() {
-//        try {
-//            checkIfActiveRepoExists();
-//            checkIfHeadBranchHasCommit();
-//            activeRepo.showBranches();
-//        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
     public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
         checkIfActiveRepoExists();
         activeRepo.deleteThisBranch(input);
@@ -127,20 +109,6 @@ public class ModuleTwo {
             throw new NoActiveRepositoryException();
     }
 
-    private static void checkIfHeadBranchHasCommit() throws NoCommitInActiveBranch {
-        if (!activeRepo.hasCommitInHead())
-            throw new NoCommitInActiveBranch();
-    }
-
-//    public static void showActiveBranchHistory() {
-//        try {
-//            checkIfActiveRepoExists();
-//            checkIfHeadBranchHasCommit();
-//            activeRepo.showBranchHistory();
-//        } catch (NoActiveRepositoryException | NoCommitInActiveBranch e) {
-//            e.printStackTrace();
-//        }
-//    }
     public static void resetActiveRepoHeadBranch(Commit commit) throws IOException {
         activeRepo.resetBranch(commit);
     }
@@ -161,11 +129,18 @@ public class ModuleTwo {
         return activeRepo.getHeadBranchName();
     }
 
-    public static List<Commit> getActiveReposBranchCommits(Branch branch) {
-        return activeRepo.getBranchCommits(branch);
+    public static List<Commit> getActiveReposBranchCommits(Branch branch) { return activeRepo.getBranchCommits(branch);
     }
 
     public static ArrayList<Branch> getActiveReposBranches() {
         return activeRepo.getBranches();
     }
+
+    public static void merge(Branch branch) {
+        Branch activeBranch = activeRepo.getHeadBranch();
+        //String sha1OfAncestor = new AncestorFinder().traceAncestor(branch.getSha1(),activeBranch.getSha1());
+        //Commit AncestorCommit = activeRepo.getCommitBySha1(sha1OfAncestor);
+
+    }
+
 }
