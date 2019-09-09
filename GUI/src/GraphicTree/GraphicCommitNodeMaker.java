@@ -6,13 +6,13 @@ import GraphicTree.node.CommitNode;
 
 import Objects.Commit.Commit;
 import com.fxgraph.edges.Edge;
-import com.fxgraph.graph.Graph;
-import com.fxgraph.graph.ICell;
-import com.fxgraph.graph.Model;
-import com.fxgraph.graph.PannableCanvas;
+import com.fxgraph.graph.*;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionModel;
+import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +39,10 @@ public class GraphicCommitNodeMaker {
     public static void createCommits(Graph graph, ArrayList<Commit> commitLst) {
 
         final Model model = graph.getModel();
+
         graph.beginUpdate();
         ICell c;
+
         for (Commit commit : commitLst) {
             c = new CommitNode(commit.getDateAndTime().getDate(), commit.getNameOfModifier(),
                     commit.getCommitPurposeMSG());
@@ -53,7 +55,9 @@ public class GraphicCommitNodeMaker {
                 model.addEdge(edge);
             }
         }
+
         graph.endUpdate();
         graph.layout(new CommitTreeLayout(cellMap,commitLst.get(0),commitLst));
+        //graph.getModel().getAllCells().forEach();
     }
 }

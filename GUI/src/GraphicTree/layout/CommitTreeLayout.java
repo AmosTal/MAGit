@@ -29,17 +29,10 @@ public class CommitTreeLayout implements Layout {
         int startX = 10;
         int startY = 50;
         HashMap<ICell,Integer> cellIntMap = new HashMap<>();
-
-
         for(Commit commit:commitLst) {
             if(organize(cellIntMap, commit, startX))
                 startX+=50;
         }
-//        for(Branch br: ModuleTwo.getActiveReposBranches()){
-//            String wantedCommitSha1 = br.getSha1();
-//            ICell cell = GraphicCommitNodeMaker.cellMap.get(wantedCommitSha1);
-//            cellToMove.put(cell,0);
-//        }
         for (ICell cell : cells) {
             CommitNode c = (CommitNode) cell;
             startY += 50;
