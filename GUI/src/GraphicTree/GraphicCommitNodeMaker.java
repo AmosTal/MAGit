@@ -11,6 +11,7 @@ import com.fxgraph.graph.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SelectionModel;
 import javafx.scene.layout.Region;
 
@@ -47,6 +48,7 @@ public class GraphicCommitNodeMaker {
             c = new CommitNode(commit.getDateAndTime().getDate(), commit.getNameOfModifier(),
                     commit.getCommitPurposeMSG());
             cellMap.put(commit.getSha1(), c);
+
             model.addCell(c);
         }
         for (Commit commit : commitLst) {
@@ -55,9 +57,9 @@ public class GraphicCommitNodeMaker {
                 model.addEdge(edge);
             }
         }
-
         graph.endUpdate();
         graph.layout(new CommitTreeLayout(cellMap,commitLst.get(0),commitLst));
+
         //graph.getModel().getAllCells().forEach();
     }
 }

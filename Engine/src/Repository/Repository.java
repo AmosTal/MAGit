@@ -12,6 +12,8 @@ import XML.XmlData;
 
 import XMLpackage.*;
 import org.apache.commons.io.FileUtils;
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
+import puk.team.course.magit.ancestor.finder.CommitRepresentative;
 
 
 import java.io.*;
@@ -20,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import java.util.function.Function;
 import java.util.zip.*;
 
 public class Repository {
@@ -61,6 +64,7 @@ public class Repository {
         new File(path + "/.magit/branches").mkdir();
         new File(path + "/.magit/objects").mkdir();
         new File(path + "/.magit/Commit files").mkdir();
+        new File(path + "/.magit/merge files").mkdir();
         File Head = new File(path + "/.magit/branches/HEAD");
         Head.createNewFile();
     }
@@ -273,6 +277,17 @@ public class Repository {
         return currDelta.getIsChanged();
     }
 
+    public Delta deltaChangesBetweenCommits(String firstSha1,String secondSha1) {
+        Map<String, Fof> commitMap = new HashMap<>();
+        if (headBranch != null) {
+            if (!headBranch.getSha1().equals(""))
+                commitMap = getCommitMap((Commit) objList.get(headBranch.getSha1()));
+        }
+        currDelta = new Delta(commitMap);
+        recursiveWcToObjectBuilder(this.path+"/.magit/merge files", false, username);
+        return currDelta;
+    }
+
     public void switchHead(String name) throws NoSuchBranchException, IOException {
         Branch branch = branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null);
         if (branch == null)
@@ -468,6 +483,18 @@ public class Repository {
     public String getPreviousCommitSha1(String sha1)
     {
         return ((Commit)objList.get(sha1)).getPreviousCommitSha1();
+    }
+    public void mergeCommits(Branch branch)
+    {
+        String sha1OfAncestor = findAncestor(branch.getSha1(),headBranch.getSha1());
+        Delta headBranchDelta = deltaChangesBetweenCommits(headBranch.getSha1(),sha1OfAncestor);
+        Delta branchDelta = deltaChangesBetweenCommits(branch.getSha1(),sha1OfAncestor);
+    }
+
+    private Function< String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
+    private String findAncestor(String sha1_1, String sha1_2){
+        AncestorFinder finder = new AncestorFinder(CommitRepresentativeMapper);
+        return finder.traceAncestor(sha1_1,sha1_2);
     }
 }
 

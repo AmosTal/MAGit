@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 
+import java.awt.*;
+import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.net.URL;
 
@@ -19,10 +21,12 @@ public class CommitNode extends AbstractCell {
     private String message;
     private CommitNodeController commitNodeController;
 
+
     public CommitNode(String timestamp, String committer, String message) {
         this.timestamp = timestamp;
         this.committer = committer;
         this.message = message;
+
     }
 
     @Override
@@ -66,4 +70,5 @@ public class CommitNode extends AbstractCell {
     public int hashCode() {
         return timestamp != null ? timestamp.hashCode() : 0;
     }
+
 }

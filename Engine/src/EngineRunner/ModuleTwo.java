@@ -139,16 +139,9 @@ public class ModuleTwo {
     }
 
     public static void merge(Branch branch) {
-        Branch activeBranch = activeRepo.getHeadBranch();
-        String sha1OfAncestor = findAncestor(branch.getSha1(),activeBranch.getSha1());
-        Commit AncestorCommit = activeRepo.getCommitBySha1(sha1OfAncestor);
+        activeRepo.mergeCommits(branch);
 
 
     }
 
-    private static Function< String, CommitRepresentative > CommitRepresentativeMapper = (String sha1 ) -> activeRepo.getCommitBySha1(sha1);
-    private static String findAncestor(String sha1_1, String sha1_2){
-        AncestorFinder finder = new AncestorFinder(CommitRepresentativeMapper);
-        return finder.traceAncestor(sha1_1,sha1_2);
-    }
 }

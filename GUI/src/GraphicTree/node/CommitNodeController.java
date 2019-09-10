@@ -3,6 +3,7 @@ package GraphicTree.node;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 
 public class CommitNodeController {
@@ -11,6 +12,12 @@ public class CommitNodeController {
     @FXML private Label messageLabel;
     @FXML private Label committerLabel;
     @FXML private Circle CommitCircle;
+    String sha1;
+    @FXML
+    void commitClicked(MouseEvent event) {
+        System.out.println("aaa");
+    }
+
 
     public void setCommitTimeStamp(String timeStamp) {
         commitTimeStampLabel.setText(timeStamp);
