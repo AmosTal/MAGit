@@ -174,8 +174,8 @@ public class Repository {
         String sha1OfRoot = recursiveWcToObjectBuilder(this.path, true, username).getSha1();
 
         Commit commit;
-        if (headBranch != null && headBranch.getSha1() != null)
-            commit = new Commit(sha1OfRoot, headBranch.getSha1(), null, msg, username);
+        if (headBranch != null && !headBranch.getSha1().equals(""))
+            commit = new Commit(sha1OfRoot, headBranch.getSha1(), "", msg, username);
         else {
             commit = new Commit(sha1OfRoot, msg, username); //first commit
             headBranch = new Branch(commit.getSha1(), "master");
@@ -265,7 +265,7 @@ public class Repository {
     public boolean checkDeltaChanges() {
         Map<String, Fof> commitMap = new HashMap<>();
         if (headBranch != null) {
-            if (headBranch.getSha1() != null)
+            if (!headBranch.getSha1().equals(""))
                 commitMap = getCommitMap((Commit) objList.get(headBranch.getSha1()));
         }
         currDelta = new Delta(commitMap);
@@ -362,7 +362,7 @@ public class Repository {
         MagitSingleCommit singleCommit;
         Commit newCommit;
         String rootfolderId = commit.getRootFolder().getId();
-        String prevCommitSha1 = null;
+        String prevCommitSha1 = "";
         if (commit.getPrecedingCommits() != null){
             if(commit.getPrecedingCommits().getPrecedingCommit().size() != 0){
                 PrecedingCommits.PrecedingCommit prevCommit = commit.getPrecedingCommits().getPrecedingCommit().get(0);
@@ -371,7 +371,7 @@ public class Repository {
             }
         }
         fof = recursiveXmlCommitBuilder(xmlData, rootfolderId, false);
-        newCommit = new Commit(fof.getSha1(), prevCommitSha1, null, commit.getMessage(), commit.getAuthor(), new DateAndTime(commit.getDateOfCreation()));
+        newCommit = new Commit(fof.getSha1(), prevCommitSha1, "", commit.getMessage(), commit.getAuthor(), new DateAndTime(commit.getDateOfCreation()));
         objList.put(newCommit.getSha1(), newCommit);
         return newCommit.getSha1();
     }
@@ -428,7 +428,7 @@ public class Repository {
         Commit commit = ((Commit) objList.get(branch.getSha1()));
         while (commit != null) {
             res.add(commit);
-            if (commit.getPreviousCommitSha1() != null){
+            if (!commit.getPreviousCommitSha1().equals("")){
                 commit = (Commit) objList.get(commit.getPreviousCommitSha1());
             }
             else
@@ -440,7 +440,7 @@ public class Repository {
     public boolean hasCommitInHead() {
         if (headBranch == null)
             return false;
-        return (headBranch.getSha1() != null);
+        return (!headBranch.getSha1().equals(""));
     }
 
     public void resetBranch(Commit commit) throws IOException {

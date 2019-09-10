@@ -58,21 +58,22 @@ public class Controller {
     @FXML
     void mergeButton() {
         try {
-            if(ModuleTwo.checkChanges()){
-                JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot merge.");
-            }
-            else{
-                TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
-                if (!selectedItem.getValue().isCommit()) {
-                    ModuleTwo.merge(selectedItem.getValue().getBranch());
+            if (!commitBool) {
+                if (ModuleTwo.checkChanges()) {
+                    JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot merge.");
+                } else {
+                    TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
+                    if (!selectedItem.getValue().isCommit()) {
+                        ModuleTwo.merge(selectedItem.getValue().getBranch());
+                    }
+                    //disable merge option for commit! ------------------------------------------------------------------------ Plead Delete Dis.
                 }
-                //disable merge option for commit! ------------------------------------------------------------------------ Plead Delete Dis.
             }
-        } catch (NoActiveRepositoryException e) {
-            e.printStackTrace();
+            } catch(NoActiveRepositoryException e){
+                e.printStackTrace();
+            }
         }
 
-    }
     @FXML
     void showChanges() {
             JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);

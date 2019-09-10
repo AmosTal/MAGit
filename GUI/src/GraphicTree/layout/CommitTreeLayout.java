@@ -44,12 +44,12 @@ public class CommitTreeLayout implements Layout {
     {
         String sha1=commit.getSha1();
         if(cellIntMap.get(cellMap.get(commit.getSha1()))==null) {
-            while(sha1!=null)
+            while(!sha1.equals(""))
             {
                 cellIntMap.put(cellMap.get(sha1),x);
                 sha1=ModuleTwo.getActiveRepo().getPreviousCommitSha1(sha1);
                 if(cellIntMap.get(cellMap.get(sha1))!=null)
-                    sha1=null;
+                    sha1="";
             }
             return true;
         }
