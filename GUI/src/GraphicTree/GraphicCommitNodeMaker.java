@@ -46,9 +46,8 @@ public class GraphicCommitNodeMaker {
 
         for (Commit commit : commitLst) {
             c = new CommitNode(commit.getDateAndTime().getDate(), commit.getNameOfModifier(),
-                    commit.getCommitPurposeMSG());
+                    commit.getCommitPurposeMSG(),commit,ModuleTwo.isPointedCommit(commit));
             cellMap.put(commit.getSha1(), c);
-
             model.addCell(c);
         }
         for (Commit commit : commitLst) {

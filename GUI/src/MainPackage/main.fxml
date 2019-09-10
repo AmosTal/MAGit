@@ -149,7 +149,7 @@
                                     <Font size="14.0" />
                                  </font></Button>
                                         <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#switchingButton2" prefHeight="46.0" prefWidth="115.0" text="Reset head branch to this commit" textAlignment="CENTER" wrapText="true" />
-                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#mergeButton" prefHeight="37.0" prefWidth="115.0" text="Merge" />
+                              <Button fx:id="mergeButtonID" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#mergeButton" prefHeight="37.0" prefWidth="115.0" text="Merge" />
                                     </children>
                                 </VBox>
                                 <VBox maxWidth="1.7976931348623157E308">
@@ -162,15 +162,15 @@
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="58.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="75.0" minHeight="10.0" prefHeight="52.0" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="45.0" minHeight="10.0" prefHeight="45.0" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="62.0" minHeight="10.0" prefHeight="49.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="75.0" minHeight="10.0" prefHeight="47.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
                                                 <Label prefHeight="17.0" text="Commit message:" GridPane.columnIndex="1" />
-                                                <Label fx:id="commitMsgLabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" prefHeight="222.0" text="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" GridPane.columnIndex="2" />
+                                                <Label fx:id="commitMsgLabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" prefHeight="222.0" GridPane.columnIndex="2" />
                                     <Label prefHeight="19.0" prefWidth="106.0" text="Commit sha1:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Label fx:id="commitMsgLabel1" alignment="TOP_LEFT" text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                    <Label fx:id="commitSha1Label" alignment="TOP_LEFT" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                        <font>
                                           <Font size="10.0" />
                                        </font>
@@ -180,7 +180,7 @@
                                           <Font size="10.0" />
                                        </font>
                                     </Label>
-                                    <Label fx:id="commitMsgLabel11" contentDisplay="CENTER" prefHeight="37.0" prefWidth="139.0" text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                    <Label fx:id="commitPrevLabel" alignment="TOP_LEFT" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                        <font>
                                           <Font size="10.0" />
                                        </font>
@@ -195,7 +195,7 @@
                                           <Font size="10.0" />
                                        </font>
                                     </Label>
-                                    <Label fx:id="commitMsgLabel111" contentDisplay="CENTER" prefHeight="37.0" prefWidth="139.0" text="ABCDEABCDEABCDEABCDEABCDEABCDEABCDEABCDE" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                    <Label fx:id="commitSecondPrevLabel" alignment="TOP_LEFT" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
                                        <font>
                                           <Font size="10.0" />
                                        </font>

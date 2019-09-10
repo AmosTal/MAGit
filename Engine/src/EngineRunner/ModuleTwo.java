@@ -144,4 +144,14 @@ public class ModuleTwo {
 
     }
 
+    public static boolean isPointedCommit(Commit commit) {
+        for(Branch branch:activeRepo.getBranches())
+        {
+            if(branch.getSha1().equals(commit.getSha1()))
+                return true;
+        }
+        if(activeRepo.getHeadBranch().getSha1().equals(commit.getSha1()))
+            return true;
+        return false;
+    }
 }

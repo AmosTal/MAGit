@@ -54,6 +54,17 @@ public class Controller {
     @FXML
     private Button switchButton2;
 
+    @FXML
+    private Button mergeButtonID;
+
+    @FXML
+    private Label commitSha1Label;
+
+    @FXML
+    private Label commitPrevLabel;
+
+    @FXML
+    private Label commitSecondPrevLabel;
 
     @FXML
     void mergeButton() {
@@ -108,7 +119,6 @@ public class Controller {
             TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem.getValue().isCommit()) {
                 Commit selectedCommit = selectedItem.getValue().getCommit();
-                commitMsgLabel.setText(selectedCommit.getCommitPurposeMSG());
                 showCommitFiles(selectedCommit);
             } else
                 commitMsgLabel.setText("This is not a Commit");
@@ -151,7 +161,7 @@ public class Controller {
     private ListView<?> fileContentListView;
 
     @FXML
-    private TreeView<File> fileSystemTreeView;
+    public TreeView<File> fileSystemTreeView;
 
     @FXML
     void refreshCommitsTree() {
@@ -168,22 +178,28 @@ public class Controller {
                 optionsLabel1.setText("Commit options:");
                 switchButton1.setText("Show commit");
                 switchButton2.setText("Reset head branch to this commit");
+                mergeButtonID.setVisible(false);
                 commitBool = true;
             } else {
                 optionsLabel1.setText("Branches options:");
                 switchButton1.setText("Checkout");
                 switchButton2.setText("Delete branch");
-
+                mergeButtonID.setVisible(true);
                 commitBool = false;
             }
         }
 
     }
 
-    private void showCommitFiles(Commit selectedCommit) {
+    public void showCommitFiles(Commit selectedCommit) {
         String path = ModuleTwo.getActiveRepoPath() + "/.magit/Commit files";
         try {
             ModuleTwo.getActiveRepo().deleteWCFiles(path);
+            commitMsgLabel.setText(selectedCommit.getCommitPurposeMSG());
+            commitSha1Label.setText(selectedCommit.getSha1());
+            commitPrevLabel.setText(selectedCommit.getPreviousCommitSha1());
+            commitSecondPrevLabel.setText(selectedCommit.getSecondPrecedingSha1());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -191,7 +207,7 @@ public class Controller {
         buildFileTree(path);
     }
 
-    private void makeFilesOfCommit(Commit selectedCommit, String _path) {
+    private static void makeFilesOfCommit(Commit selectedCommit, String _path) {
         ModuleTwo.getActiveRepo().deployCommit(selectedCommit, _path);
     }
 
@@ -314,7 +330,7 @@ public class Controller {
         }
     }
 
-    private TreeItem<File> getNodesForDirectory(File directory) {
+    public static TreeItem<File> getNodesForDirectory(File directory) {
         TreeItem<File> root = new TreeItem<>(directory);
         for (File f : Objects.requireNonNull(directory.listFiles())) {
             if (f.isDirectory() && !f.getName().equals(".magit"))
@@ -362,6 +378,7 @@ public class Controller {
                 };
             }
         });
+        fileSystemTreeView.getRoot().setExpanded(true);
     }
 
 

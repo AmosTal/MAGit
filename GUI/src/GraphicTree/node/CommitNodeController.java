@@ -1,10 +1,15 @@
 package GraphicTree.node;
 
+import ControlPackage.Controller;
+import MainPackage.Main;
+import Objects.Commit.Commit;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 public class CommitNodeController {
 
@@ -12,10 +17,12 @@ public class CommitNodeController {
     @FXML private Label messageLabel;
     @FXML private Label committerLabel;
     @FXML private Circle CommitCircle;
-    String sha1;
+    @FXML private Pane treeShape;
+
+    Commit commit;
     @FXML
     void commitClicked(MouseEvent event) {
-        System.out.println("aaa");
+        Main.controller.showCommitFiles(commit);
     }
 
 
@@ -36,5 +43,14 @@ public class CommitNodeController {
 
     public int getCircleRadius() {
         return (int)CommitCircle.getRadius();
+    }
+
+    public void setCommit(Commit commit) {
+        this.commit = commit;
+    }
+
+    public void setPointedCommit(boolean isPointed) {
+        if(isPointed)
+            treeShape.setVisible(true);
     }
 }
