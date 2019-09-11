@@ -101,25 +101,25 @@ public class Repository {
     }
 
     private void createZippedFilesForMagitObjects() {
-        String path2;
-        for (Map.Entry<String, MagitObject> entry : objList.entrySet()) {
+        for (Map.Entry<String, MagitObject> entry : objList.entrySet())
+                createSingleZippedFileForMagitObject(entry.getKey(),entry.getValue());
 
-            try {
-                path2 = this.path + "/.magit/objects/" + entry.getKey();
-                File file = new File(path2);
-                if (!file.exists()) {
-                    FileOutputStream fos = new FileOutputStream(path2);
-                    GZIPOutputStream gos = new GZIPOutputStream(fos);
-                    ObjectOutputStream oos = new ObjectOutputStream(gos);
-                    oos.writeObject(entry.getValue());
-                    oos.flush();
-                    oos.close();
-                    fos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    }
+    private void createSingleZippedFileForMagitObject(String sha1,MagitObject obj)
+    {
+        try {
+            File file = new File(this.path + "/.magit/objects/"+sha1);
+            if (!file.exists()) {
+                FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+                GZIPOutputStream gos = new GZIPOutputStream(fos);
+                ObjectOutputStream oos = new ObjectOutputStream(gos);
+                oos.writeObject(obj);
+                oos.flush();
+                oos.close();
+                fos.close();
             }
-
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -277,15 +277,11 @@ public class Repository {
         return currDelta.getIsChanged();
     }
 
-    public Delta deltaChangesBetweenCommits(String firstSha1,String secondSha1) {
-        Map<String, Fof> commitMap = new HashMap<>();
-        if (headBranch != null) {
-            if (!headBranch.getSha1().equals(""))
-                commitMap = getCommitMap((Commit) objList.get(headBranch.getSha1()));
-        }
-        currDelta = new Delta(commitMap);
+    public Delta deltaChangesBetweenCommits(String sha1) {
+        Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
+        Delta delta = new Delta(commitMap);
         recursiveWcToObjectBuilder(this.path+"/.magit/merge files", false, username);
-        return currDelta;
+        return delta;
     }
 
     public void switchHead(String name) throws NoSuchBranchException, IOException {
@@ -336,6 +332,7 @@ public class Repository {
             else if (fileEntry.isFile())
                 fileEntry.delete();
         }
+
     }
 
     public String showRepoStatus() {
@@ -484,13 +481,36 @@ public class Repository {
     {
         return ((Commit)objList.get(sha1)).getPreviousCommitSha1();
     }
-    public void mergeCommits(Branch branch)
-    {
-        String sha1OfAncestor = findAncestor(branch.getSha1(),headBranch.getSha1());
-        Delta headBranchDelta = deltaChangesBetweenCommits(headBranch.getSha1(),sha1OfAncestor);
-        Delta branchDelta = deltaChangesBetweenCommits(branch.getSha1(),sha1OfAncestor);
-    }
+    public void mergeCommits(Branch branch,String msg) throws IOException {
+        String pathMerge=path+"/.magit/merge files/";
+        new File(pathMerge).mkdir();
 
+        String sha1OfAncestor = findAncestor(branch.getSha1(),headBranch.getSha1());
+        Folder branchFolder=(Folder)objList.get(((Commit)objList.get(branch.getSha1())).getRootFolderSha1());
+        Folder headFolder=(Folder)objList.get(((Commit)objList.get(headBranch.getSha1())).getRootFolderSha1());
+
+        Commit headCommit=(Commit)objList.get(headBranch.getSha1());
+        Commit newCommit = new Commit(headCommit.getRootFolderSha1(),headCommit.getSha1(),branch.getSha1(),msg,username);
+
+        recursiveObjectToWCBuilder(headFolder,pathMerge);
+        Delta headBranchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
+        deleteWCFiles(pathMerge);
+        recursiveObjectToWCBuilder(branchFolder,pathMerge);
+        Delta branchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
+        deleteWCFiles(pathMerge);
+
+        objList.put(newCommit.getSha1(),newCommit);
+        headBranch.UpdateSha1(newCommit.getSha1());
+        makeFileForBranch(headBranch.getSha1(),headBranch.getName());
+
+        createSingleZippedFileForMagitObject(newCommit.getSha1(),objList.get(newCommit.getSha1()));
+        mergeConflicts(headBranchDelta,branchDelta);
+
+    }
+    private void mergeConflicts(Delta headDelta,Delta branchDelta)
+    {
+
+    }
     private Function< String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
     private String findAncestor(String sha1_1, String sha1_2){
         AncestorFinder finder = new AncestorFinder(CommitRepresentativeMapper);

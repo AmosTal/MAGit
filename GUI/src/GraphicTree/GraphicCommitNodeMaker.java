@@ -55,6 +55,10 @@ public class GraphicCommitNodeMaker {
                 final Edge edge = new Edge(cellMap.get(commit.getSha1()), cellMap.get(commit.getPreviousCommitSha1()));
                 model.addEdge(edge);
             }
+            if (cellMap.containsKey(commit.getSecondPrecedingSha1())) {
+                final Edge edge = new Edge(cellMap.get(commit.getSha1()), cellMap.get(commit.getSecondPrecedingSha1()));
+                model.addEdge(edge);
+            }
         }
         graph.endUpdate();
         graph.layout(new CommitTreeLayout(cellMap,commitLst.get(0),commitLst));

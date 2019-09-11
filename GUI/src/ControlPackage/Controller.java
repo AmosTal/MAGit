@@ -75,9 +75,22 @@ public class Controller {
                 } else {
                     TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
                     if (!selectedItem.getValue().isCommit()) {
-                        ModuleTwo.merge(selectedItem.getValue().getBranch());
+                        try {
+                            TextInputDialog commitDialog = new TextInputDialog("");
+                            commitDialog.setTitle("Execute commit");
+                            commitDialog.setHeaderText("Enter commit message:");
+                            Optional<String> commitMsg = commitDialog.showAndWait();
+                            if (commitMsg.isPresent()) {
+                                ModuleTwo.merge(selectedItem.getValue().getBranch(), commitMsg.get());
+                                refreshFilesTree();
+                                refreshCommitsTree();
+                                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+                            }
+
+                        } catch (IOException e) {
+                            popAlert(e);
+                        }
                     }
-                    //disable merge option for commit! ------------------------------------------------------------------------ Plead Delete Dis.
                 }
             }
             } catch(NoActiveRepositoryException e){
@@ -178,12 +191,14 @@ public class Controller {
                 optionsLabel1.setText("Commit options:");
                 switchButton1.setText("Show commit");
                 switchButton2.setText("Reset head branch to this commit");
+                switchButton2.setStyle("-fx-font: 11 arial;");
                 mergeButtonID.setVisible(false);
                 commitBool = true;
             } else {
                 optionsLabel1.setText("Branches options:");
                 switchButton1.setText("Checkout");
                 switchButton2.setText("Delete branch");
+                switchButton2.setStyle("-fx-font: 12 arial;");
                 mergeButtonID.setVisible(true);
                 commitBool = false;
             }

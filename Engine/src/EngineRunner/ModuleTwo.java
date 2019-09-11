@@ -138,10 +138,9 @@ public class ModuleTwo {
         return activeRepo.getBranches();
     }
 
-    public static void merge(Branch branch) {
-        activeRepo.mergeCommits(branch);
+    public static void merge(Branch branch,String msg) throws IOException {
 
-
+        activeRepo.mergeCommits(branch,msg);
     }
 
     public static boolean isPointedCommit(Commit commit) {

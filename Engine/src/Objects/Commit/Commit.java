@@ -88,4 +88,5 @@ public class Commit extends MagitObject implements Comparable<Commit>, CommitRep
     public String getSecondPrecedingSha1() {
         return previousCommit2Sha1;
     }
+
 }
