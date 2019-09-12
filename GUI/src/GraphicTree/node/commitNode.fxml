@@ -10,7 +10,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 
-<GridPane hgap="5.0" maxHeight="60.0" maxWidth="1.7976931348623157E308" minHeight="41.0" minWidth="-Infinity" onMouseClicked="#commitClicked" prefHeight="47.0" prefWidth="427.0" styleClass="single-commit-row-container" stylesheets="@commitNode.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GraphicTree.node.CommitNodeController">
+<GridPane hgap="5.0" maxHeight="60.0" maxWidth="1.7976931348623157E308" minHeight="41.0" minWidth="-Infinity" onMouseClicked="#commitClicked" prefHeight="47.0" styleClass="single-commit-row-container" stylesheets="@commitNode.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GraphicTree.node.CommitNodeController">
   <columnConstraints>
     <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
       <ColumnConstraints hgrow="NEVER" maxWidth="170.0" minWidth="170.0" prefWidth="170.0" />
@@ -40,6 +40,6 @@
       <Label fx:id="committerLabel" styleClass="committer-label" text="ccc" GridPane.columnIndex="3" GridPane.rowIndex="1" />
       <Separator maxHeight="20.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       <Separator maxHeight="20.0" minHeight="20.0" orientation="VERTICAL" prefHeight="20.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-      <Label fx:id="messageLabel" maxWidth="1.7976931348623157E308" styleClass="message-label" text="bbbbbbb" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+      <Label fx:id="messageLabel" maxWidth="1.7976931348623157E308" styleClass="message-label" text="bbbbbbbbbbbbbbb" GridPane.columnIndex="5" GridPane.rowIndex="1" />
    </children>
 </GridPane>
