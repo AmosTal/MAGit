@@ -45,8 +45,7 @@ public class Repository {
         return path;
     }
 
-    public String getHeadBranchName()
-    {
+    public String getHeadBranchName() {
         return headBranch.getName();
     }
 
@@ -74,19 +73,20 @@ public class Repository {
         createFilesForBranches();
     }
 
-    public Commit getCommitBySha1(String sha1){
-        return (Commit)objList.get(sha1);
+    public Commit getCommitBySha1(String sha1) {
+        return (Commit) objList.get(sha1);
     }
+
     private void createFilesForBranches() {
-        makeFileForBranch(headBranch.getName(),"HEAD");
-        makeFileForBranch(headBranch.getSha1(),headBranch.getName());
+        makeFileForBranch(headBranch.getName(), "HEAD");
+        makeFileForBranch(headBranch.getSha1(), headBranch.getName());
         for (Branch branch : branches) {
             makeFileForBranch(branch.getSha1(), branch.getName());
         }
 
     }
 
-    public ArrayList<Branch> getBranches(){
+    public ArrayList<Branch> getBranches() {
         return branches;
     }
 
@@ -102,13 +102,13 @@ public class Repository {
 
     private void createZippedFilesForMagitObjects() {
         for (Map.Entry<String, MagitObject> entry : objList.entrySet())
-                createSingleZippedFileForMagitObject(entry.getKey(),entry.getValue());
+            createSingleZippedFileForMagitObject(entry.getKey(), entry.getValue());
 
     }
-    private void createSingleZippedFileForMagitObject(String sha1,MagitObject obj)
-    {
+
+    private void createSingleZippedFileForMagitObject(String sha1, MagitObject obj) {
         try {
-            File file = new File(this.path + "/.magit/objects/"+sha1);
+            File file = new File(this.path + "/.magit/objects/" + sha1);
             if (!file.exists()) {
                 FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
                 GZIPOutputStream gos = new GZIPOutputStream(fos);
@@ -130,12 +130,12 @@ public class Repository {
 
     private void readBranches() {
         File folder = new File(this.path + "/.magit/branches");
-        String nameOfHead ="";
+        String nameOfHead = "";
         try {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
                 FileReader fr = new FileReader(fileEntry);
                 BufferedReader br = new BufferedReader(fr);
-                if (fileEntry.getName().equals("HEAD")){
+                if (fileEntry.getName().equals("HEAD")) {
                     nameOfHead = br.readLine();
                     br.close();
                     fr.close();
@@ -173,9 +173,10 @@ public class Repository {
         }
     }
 
-    public void newCommit(String msg) throws AlreadyExistingBranchException {
+    public void newCommit(String msg) {
 
-        String sha1OfRoot = recursiveWcToObjectBuilder(this.path, true, username).getSha1();
+        String sha1OfRoot;
+        sha1OfRoot = Objects.requireNonNull(recursiveWcToObjectBuilder(this.path,"", true, username,currDelta)).getSha1();
 
         Commit commit;
         if (headBranch != null && !headBranch.getSha1().equals(""))
@@ -191,14 +192,14 @@ public class Repository {
     private Map<String, Fof> getCommitMap(Commit commit) {
         Map<String, Fof> res = new HashMap<>();
         if (commit != null) {
-            recursiveMapBuilder(commit.getRootFolderSha1(), res, this.path);
+            recursiveMapBuilder(commit.getRootFolderSha1(), res, "");
         }
         return res;
     }
 
-    private Fof recursiveWcToObjectBuilder(String _path, boolean isCommit, String modifier) {
+    private Fof recursiveWcToObjectBuilder(String location,String _path, boolean isCommit, String modifier,Delta delta) {
         ArrayList<Fof> fofLst = new ArrayList<>();
-        File file = new File(_path);
+        File file = new File(location+_path);
         MagitObject obj = null;
         Fof fof;
         String newModifier;
@@ -208,23 +209,23 @@ public class Repository {
             for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
                 _fofpath = _path + "/" + fileEntry.getName();
                 if (!fileEntry.getName().equals(".magit")) {
-                    newModifier = currDelta.getUsername(_fofpath);
+                    newModifier = delta.getUsername(_fofpath);
                     if (newModifier == null) {
                         newModifier = username;
                     }
-                    fof = recursiveWcToObjectBuilder(_fofpath, isCommit, newModifier);
+                    fof = recursiveWcToObjectBuilder(location,_fofpath, isCommit, newModifier,delta);
                     if (fof != null)
                         fofLst.add(fof);
                 }
             }
             if (fofLst.size() == 0) {
-                new File(_path).delete();
+                new File(location+_path).delete();
                 return null;
             }
             obj = new Folder(fofLst);
         } else {
             try {
-                content = new String ( Files.readAllBytes( Paths.get(_path) ) );
+                content = new String(Files.readAllBytes(Paths.get(location+_path)));
                 obj = new Blob(content);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -234,8 +235,8 @@ public class Repository {
         fof = new Fof(obj.getSha1(), file.getName(), !file.isDirectory(), modifier, new DateAndTime(file.lastModified()));
         if (isCommit)
             objList.put(obj.getSha1(), obj);
-        else if (!_path.equals(path))
-            currDelta.isObjectChanged(fof, _path);
+        else if (!(_path).equals(""))
+            delta.isObjectChanged(fof, _path);
         return fof;
     }
 
@@ -249,16 +250,15 @@ public class Repository {
         }
     }
 
-    public void addNewBranch(String name,Commit commit) throws AlreadyExistingBranchException {
+    public void addNewBranch(String name, Commit commit) throws AlreadyExistingBranchException {
         Branch branch;
         if (branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null) == null
                 && !headBranch.getName().equals(name)) {
-            if (commit != null){
+            if (commit != null) {
                 branch = new Branch(commit.getSha1(), "master");
                 headBranch = branch;
-                makeFileForBranch(branch.getName(),"HEAD");            //update the head file
-            }
-            else
+                makeFileForBranch(branch.getName(), "HEAD");            //update the head file
+            } else
                 branch = new Branch(headBranch.getSha1(), name);
             branches.add(branch);
             makeFileForBranch(branch.getSha1(), branch.getName());
@@ -273,15 +273,24 @@ public class Repository {
                 commitMap = getCommitMap((Commit) objList.get(headBranch.getSha1()));
         }
         currDelta = new Delta(commitMap);
-        recursiveWcToObjectBuilder(this.path, false, username);
+        recursiveWcToObjectBuilder(this.path,"", false, username,currDelta);
         return currDelta.getIsChanged();
     }
 
-    public Delta deltaChangesBetweenCommits(String sha1) {
+    private Delta deltaChangesBetweenCommits(String sha1) {
         Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
         Delta delta = new Delta(commitMap);
-        recursiveWcToObjectBuilder(this.path+"/.magit/merge files", false, username);
+        recursiveWcToObjectBuilder(this.path+"/.magit/merge files","", false, username,delta);
         return delta;
+    }
+
+    public String deltaChangesBetweenCommitsToString(String sha1) throws IOException {
+        String commitPath = path + "/.magit/merge files/";
+        new File(commitPath).mkdir();
+        deleteWCFiles(commitPath);
+        Folder branchFolder = (Folder) objList.get(((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1());
+        recursiveObjectToWCBuilder(branchFolder, commitPath);
+        return deltaChangesBetweenCommits(sha1).showChanges();
     }
 
     public void switchHead(String name) throws NoSuchBranchException, IOException {
@@ -293,16 +302,16 @@ public class Repository {
         headBranch = branch;
         makeFileForBranch(headBranch.getName(), "HEAD");
         deleteWCFiles(this.path);
-        deployCommit((Commit) objList.get(headBranch.getSha1()),this.path);
+        deployCommit((Commit) objList.get(headBranch.getSha1()), this.path);
     }
 
-    public void deployCommit(Commit commit , String pathOfCommit) {
+    public void deployCommit(Commit commit, String pathOfCommit) throws IOException {
         if (commit != null)
             recursiveObjectToWCBuilder((Folder) objList.get(commit.getRootFolderSha1()), pathOfCommit);
 
     }
 
-    private void recursiveObjectToWCBuilder(Folder _folder, String _path) {
+    private void recursiveObjectToWCBuilder(Folder _folder, String _path) throws IOException {
         String newPath;
         for (Fof fof : _folder.getFofList()) {
             newPath = _path + "/" + fof.getName();
@@ -310,26 +319,21 @@ public class Repository {
                 new File(newPath).mkdir();
                 recursiveObjectToWCBuilder((Folder) objList.get(fof.getSha1()), newPath);
 
-            } else
-                try {
-                    PrintWriter out = new PrintWriter(newPath);
-                    out.write(objList.get(fof.getSha1()).getContent());
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+            } else {
+                PrintWriter out = new PrintWriter(newPath);
+                out.write(objList.get(fof.getSha1()).getContent());
+                out.close();
+            }
         }
     }
 
     public static void deleteWCFiles(String _path) throws IOException { //Delete is not working properly. FIX DIS!
         File file = new File(_path);
         for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
-            if (fileEntry.isDirectory() && !fileEntry.getName().equals(".magit")){
+            if (fileEntry.isDirectory() && !fileEntry.getName().equals(".magit")) {
                 FileUtils.cleanDirectory(fileEntry);
                 fileEntry.delete();
-        }
-            else if (fileEntry.isFile())
+            } else if (fileEntry.isFile())
                 fileEntry.delete();
         }
 
@@ -343,29 +347,30 @@ public class Repository {
             return currDelta.showChanges();
     }
 
-    public static Repository makeRepoFromXmlRepo(XmlData xmldata) {
+
+    public static Repository makeRepoFromXmlRepo(XmlData xmldata) throws IOException {
         MagitRepository mr = xmldata.getMagitRepository();
         MagitSingleCommit singleCommit;
         String commitSha1;
         boolean isHead;
-        Repository repo = new Repository(mr.getLocation(), new HashMap<String, MagitObject>(), new ArrayList<Branch>());
-        for (MagitSingleBranch mgbrnach : mr.getMagitBranches().getMagitSingleBranch()) {
-            isHead = mr.getMagitBranches().getHead().equals(mgbrnach.getName());
-            if (mgbrnach.getPointedCommit() != null) {
+        Repository repo = new Repository(mr.getLocation(), new HashMap<>(), new ArrayList<>());
+        for (MagitSingleBranch mgBranch : mr.getMagitBranches().getMagitSingleBranch()) {
+            isHead = mr.getMagitBranches().getHead().equals(mgBranch.getName());
+            if (mgBranch.getPointedCommit() != null) {
 
-                if (isHead && mgbrnach.getPointedCommit().getId().equals("")) {
+                if (isHead && mgBranch.getPointedCommit().getId().equals("")) {
                     repo.headBranch = new Branch("", "master");
                     return repo;
                 }
-                singleCommit = xmldata.getCommitMap().get(mgbrnach.getPointedCommit().getId());
+                singleCommit = xmldata.getCommitMap().get(mgBranch.getPointedCommit().getId());
                 commitSha1 = repo.recursiveSha1PrevCommitBuilder(singleCommit, xmldata);
                 if (isHead)
-                    repo.headBranch = new Branch(commitSha1, mgbrnach.getName());
+                    repo.headBranch = new Branch(commitSha1, mgBranch.getName());
                 else
-                    repo.branches.add(new Branch(commitSha1, mgbrnach.getName()));
+                    repo.branches.add(new Branch(commitSha1, mgBranch.getName()));
             }
         }
-        repo.deployCommit((Commit) repo.objList.get(repo.headBranch.getSha1()),repo.getPath());
+        repo.deployCommit((Commit) repo.objList.get(repo.headBranch.getSha1()), repo.getPath());
         return repo;
     }
 
@@ -375,8 +380,8 @@ public class Repository {
         Commit newCommit;
         String rootfolderId = commit.getRootFolder().getId();
         String prevCommitSha1 = "";
-        if (commit.getPrecedingCommits() != null){
-            if(commit.getPrecedingCommits().getPrecedingCommit().size() != 0){
+        if (commit.getPrecedingCommits() != null) {
+            if (commit.getPrecedingCommits().getPrecedingCommit().size() != 0) {
                 PrecedingCommits.PrecedingCommit prevCommit = commit.getPrecedingCommits().getPrecedingCommit().get(0);
                 singleCommit = xmlData.getCommitMap().get(prevCommit.getId());
                 prevCommitSha1 = recursiveSha1PrevCommitBuilder(singleCommit, xmlData);
@@ -419,12 +424,12 @@ public class Repository {
 
     public void deleteThisBranch(String input) throws DeleteHeadBranchException, NoSuchBranchException {
         boolean found = false;
-        Branch br =null;
+        Branch br = null;
         if (input.equals(headBranch.getName()))
             throw new DeleteHeadBranchException();
         for (Branch branch : branches) {
             if (branch.getName().equals(input)) {
-                br=branch;
+                br = branch;
                 File f = new File(path + "/.magit/branches/" + branch.getName());
                 f.delete();
                 found = true;
@@ -435,38 +440,32 @@ public class Repository {
         branches.remove(br);
     }
 
-    public List<Commit> getBranchCommits(Branch branch){
+    public List<Commit> getBranchCommits(Branch branch) {
         List<Commit> res = new ArrayList<>();
         Commit commit = ((Commit) objList.get(branch.getSha1()));
         while (commit != null) {
             res.add(commit);
-            if (!commit.getPreviousCommitSha1().equals("")){
+            if (!commit.getPreviousCommitSha1().equals("")) {
                 commit = (Commit) objList.get(commit.getPreviousCommitSha1());
-            }
-            else
+            } else
                 commit = null;
         }
         return res;
     }
 
-    public boolean hasCommitInHead() {
-        if (headBranch == null)
-            return false;
-        return (!headBranch.getSha1().equals(""));
-    }
 
     public void resetBranch(Commit commit) throws IOException {
         headBranch.UpdateSha1(commit.getSha1());
-        makeFileForBranch(headBranch.getSha1(),headBranch.getName());
+        makeFileForBranch(headBranch.getSha1(), headBranch.getName());
         deleteWCFiles(this.path);
-        deployCommit(commit,this.path);
+        deployCommit(commit, this.path);
     }
 
     public ArrayList<Commit> getCommits() {
         ArrayList<Commit> commitLst = new ArrayList<>();
-        for(Map.Entry<String,MagitObject> entry:objList.entrySet()){
-            if(entry.getValue() instanceof Commit){
-                commitLst.add((Commit)entry.getValue());
+        for (Map.Entry<String, MagitObject> entry : objList.entrySet()) {
+            if (entry.getValue() instanceof Commit) {
+                commitLst.add((Commit) entry.getValue());
             }
         }
         Collections.sort(commitLst);
@@ -477,44 +476,46 @@ public class Repository {
         return headBranch;
     }
 
-    public String getPreviousCommitSha1(String sha1)
-    {
-        return ((Commit)objList.get(sha1)).getPreviousCommitSha1();
+    public String getPreviousCommitSha1(String sha1) {
+        return ((Commit) objList.get(sha1)).getPreviousCommitSha1();
     }
-    public void mergeCommits(Branch branch,String msg) throws IOException {
-        String pathMerge=path+"/.magit/merge files/";
+
+    public void mergeCommits(Branch branch, String msg) throws IOException {
+        String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
 
-        String sha1OfAncestor = findAncestor(branch.getSha1(),headBranch.getSha1());
-        Folder branchFolder=(Folder)objList.get(((Commit)objList.get(branch.getSha1())).getRootFolderSha1());
-        Folder headFolder=(Folder)objList.get(((Commit)objList.get(headBranch.getSha1())).getRootFolderSha1());
+        String sha1OfAncestor = findAncestor(branch.getSha1(), headBranch.getSha1());
+        Folder branchFolder = (Folder) objList.get(((Commit) objList.get(branch.getSha1())).getRootFolderSha1());
+        Folder headFolder = (Folder) objList.get(((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1());
 
-        Commit headCommit=(Commit)objList.get(headBranch.getSha1());
-        Commit newCommit = new Commit(headCommit.getRootFolderSha1(),headCommit.getSha1(),branch.getSha1(),msg,username);
-
-        recursiveObjectToWCBuilder(headFolder,pathMerge);
+        Commit headCommit = (Commit) objList.get(headBranch.getSha1());
+        Commit newCommit = new Commit(headCommit.getRootFolderSha1(), headCommit.getSha1(), branch.getSha1(), msg, username);
+        deleteWCFiles(pathMerge);
+        recursiveObjectToWCBuilder(headFolder, pathMerge);
         Delta headBranchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
         deleteWCFiles(pathMerge);
-        recursiveObjectToWCBuilder(branchFolder,pathMerge);
+        recursiveObjectToWCBuilder(branchFolder, pathMerge);
         Delta branchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
         deleteWCFiles(pathMerge);
 
-        objList.put(newCommit.getSha1(),newCommit);
+        objList.put(newCommit.getSha1(), newCommit);
         headBranch.UpdateSha1(newCommit.getSha1());
-        makeFileForBranch(headBranch.getSha1(),headBranch.getName());
+        makeFileForBranch(headBranch.getSha1(), headBranch.getName());
 
-        createSingleZippedFileForMagitObject(newCommit.getSha1(),objList.get(newCommit.getSha1()));
-        mergeConflicts(headBranchDelta,branchDelta);
-
-    }
-    private void mergeConflicts(Delta headDelta,Delta branchDelta)
-    {
+        createSingleZippedFileForMagitObject(newCommit.getSha1(), objList.get(newCommit.getSha1()));
+        mergeConflicts(headBranchDelta, branchDelta);
 
     }
-    private Function< String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
-    private String findAncestor(String sha1_1, String sha1_2){
+
+    private void mergeConflicts(Delta headDelta, Delta branchDelta) {
+
+    }
+
+    private Function<String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
+
+    private String findAncestor(String sha1_1, String sha1_2) {
         AncestorFinder finder = new AncestorFinder(CommitRepresentativeMapper);
-        return finder.traceAncestor(sha1_1,sha1_2);
+        return finder.traceAncestor(sha1_1, sha1_2);
     }
 }
 

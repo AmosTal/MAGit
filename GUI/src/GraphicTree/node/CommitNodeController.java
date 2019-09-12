@@ -11,6 +11,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
+import java.io.IOException;
+
 public class CommitNodeController {
 
     @FXML private Label commitTimeStampLabel;
@@ -22,7 +24,11 @@ public class CommitNodeController {
     Commit commit;
     @FXML
     void commitClicked(MouseEvent event) {
-        Main.controller.showCommitFiles(commit);
+        try {
+            Main.controller.showCommitFiles(commit);
+        } catch (IOException e) {
+            Controller.popAlert(e);
+        }
     }
 
 

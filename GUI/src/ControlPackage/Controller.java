@@ -10,7 +10,6 @@ import Repository.NoActiveRepositoryException;
 import Repository.NoSuchBranchException;
 import Repository.NoSuchRepoException;
 import XML.XmlNotValidException;
-import com.sun.deploy.security.SelectableSecurityManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -35,36 +34,63 @@ public class Controller {
     private boolean commitBool = false;
     @FXML
     private Label repositoryNameLabel;
-
-    @FXML
-    private ScrollPane scrollPane;
-
     @FXML
     private Label usernameLabel;
-
     @FXML
     private Label activeBranchLabel;
-
     @FXML
     private Label optionsLabel1;
-
-    @FXML
-    private Button switchButton1;
-
-    @FXML
-    private Button switchButton2;
-
-    @FXML
-    private Button mergeButtonID;
-
     @FXML
     private Label commitSha1Label;
-
     @FXML
     private Label commitPrevLabel;
-
     @FXML
     private Label commitSecondPrevLabel;
+    @FXML
+    private Label fileNameLabel;
+    @FXML
+    private Label commitMsgLabel;
+    @FXML
+    private Button switchButton1;
+    @FXML
+    private Button switchButton2;
+    @FXML
+    private Button mergeButtonID;
+    @FXML
+    private ScrollPane scrollPane;
+    @FXML
+    private ListView<?> fileContentListView;
+    @FXML
+    public TreeView<File> fileSystemTreeView;
+    @FXML
+    private TreeView<CommitOrBranch> BranchCommitTreeView;
+
+    @FXML
+    void showDelta1() {
+
+        try {
+            String changes=ModuleTwo.changesBetweenCommitsToString(commitPrevLabel.getText());
+            if(!changes.equals(""))
+                JOptionPane.showMessageDialog(null,changes);
+            else
+                JOptionPane.showMessageDialog(null,"No changes were made");
+        } catch (IOException e) {
+            popAlert(e);
+        }
+    }
+
+    @FXML
+    void showDelta2() {
+        try {
+            String changes=ModuleTwo.changesBetweenCommitsToString(commitSecondPrevLabel.getText());
+            if(!changes.equals(""))
+                JOptionPane.showMessageDialog(null,changes);
+            else
+                JOptionPane.showMessageDialog(null,"No changes were made");
+        } catch (IOException e) {
+            popAlert(e);
+        }
+    }
 
     @FXML
     void mergeButton() {
@@ -75,33 +101,37 @@ public class Controller {
                 } else {
                     TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
                     if (!selectedItem.getValue().isCommit()) {
-                        try {
-                            TextInputDialog commitDialog = new TextInputDialog("");
-                            commitDialog.setTitle("Execute commit");
-                            commitDialog.setHeaderText("Enter commit message:");
-                            Optional<String> commitMsg = commitDialog.showAndWait();
-                            if (commitMsg.isPresent()) {
-                                ModuleTwo.merge(selectedItem.getValue().getBranch(), commitMsg.get());
-                                refreshFilesTree();
-                                refreshCommitsTree();
-                                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-                            }
+                        if (!selectedItem.getValue().getBranch().getName().equals(activeBranchLabel.getText())) {
+                            try {
+                                TextInputDialog commitDialog = new TextInputDialog("");
+                                commitDialog.setTitle("Execute merge");
+                                commitDialog.setHeaderText("Enter commit message:");
+                                Optional<String> commitMsg = commitDialog.showAndWait();
+                                if (commitMsg.isPresent()) {
+                                    ModuleTwo.merge(selectedItem.getValue().getBranch(), commitMsg.get());
+                                    refreshFilesTree();
+                                    refreshCommitsTree();
+                                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+                                }
 
-                        } catch (IOException e) {
-                            popAlert(e);
-                        }
+                            } catch (IOException e) {
+                                popAlert(e);
+                            }
+                        } else
+                            JOptionPane.showMessageDialog(null, "Cannot merge active branch to itself");
                     }
                 }
             }
-            } catch(NoActiveRepositoryException e){
-                e.printStackTrace();
-            }
+        } catch (NoActiveRepositoryException e) {
+            e.printStackTrace();
         }
+    }
 
     @FXML
     void showChanges() {
-            JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
     }
+
     @FXML
     void commitButton() {
         try {
@@ -117,28 +147,27 @@ public class Controller {
                     activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
                     GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                 }
-            }
-            else
+            } else
                 throw new CommitCannotExecutException();
-            } catch(NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e){
-                popAlert(e);
-            }
-
+        } catch (NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e) {
+            popAlert(e);
         }
+
+    }
+
     @FXML
-    void switchingButton1() {
+    void switchingButton1() throws IOException {
         String branchName;
-        if(commitBool) {
+        if (commitBool) {
             TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem.getValue().isCommit()) {
                 Commit selectedCommit = selectedItem.getValue().getCommit();
                 showCommitFiles(selectedCommit);
             } else
                 commitMsgLabel.setText("This is not a Commit");
-        }
-        else
+        } else
             try {
-                branchName=BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getBranch().getName();
+                branchName = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getBranch().getName();
                 ModuleTwo.checkout(branchName);
                 activeBranchLabel.setText(branchName);
                 buildBranchCommitTree();
@@ -167,14 +196,7 @@ public class Controller {
             }
         }
     }
-    @FXML
-    private Label fileNameLabel;
 
-    @FXML
-    private ListView<?> fileContentListView;
-
-    @FXML
-    public TreeView<File> fileSystemTreeView;
 
     @FXML
     void refreshCommitsTree() {
@@ -184,9 +206,10 @@ public class Controller {
 
     @FXML
     void refreshGraphic() {
-    }private void switchCommitBranchesButtons() {//amos help with this exceptions<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        if(BranchCommitTreeView.getSelectionModel().getSelectedItem()!=null) {
+    }
+
+    private void switchCommitBranchesButtons() {
+        if (BranchCommitTreeView.getSelectionModel().getSelectedItem() != BranchCommitTreeView.getRoot()) {
             if (BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().isCommit()) {
                 optionsLabel1.setText("Commit options:");
                 switchButton1.setText("Show commit");
@@ -206,7 +229,7 @@ public class Controller {
 
     }
 
-    public void showCommitFiles(Commit selectedCommit) {
+    public void showCommitFiles(Commit selectedCommit) throws IOException {
         String path = ModuleTwo.getActiveRepoPath() + "/.magit/Commit files";
         try {
             ModuleTwo.getActiveRepo().deleteWCFiles(path);
@@ -222,7 +245,7 @@ public class Controller {
         buildFileTree(path);
     }
 
-    private static void makeFilesOfCommit(Commit selectedCommit, String _path) {
+    private static void makeFilesOfCommit(Commit selectedCommit, String _path) throws IOException {
         ModuleTwo.getActiveRepo().deployCommit(selectedCommit, _path);
     }
 
@@ -244,12 +267,6 @@ public class Controller {
     void refreshFilesTree() {
         buildFileTree(ModuleTwo.getActiveRepoPath());
     }
-
-    @FXML
-    private Label commitMsgLabel;
-
-    @FXML
-    private TreeView<CommitOrBranch> BranchCommitTreeView;
 
 
     @FXML
@@ -359,7 +376,7 @@ public class Controller {
     private TreeItem<CommitOrBranch> getNodesForBranch() {
         TreeItem<CommitOrBranch> root = new TreeItem<>();
         List<Commit> commitLst;
-        TreeItem<CommitOrBranch> headNode =new TreeItem<>(new CommitOrBranch(ModuleTwo.getActiveRepo().getHeadBranch()));
+        TreeItem<CommitOrBranch> headNode = new TreeItem<>(new CommitOrBranch(ModuleTwo.getActiveRepo().getHeadBranch()));
         commitLst = ModuleTwo.getActiveReposBranchCommits(ModuleTwo.getActiveRepo().getHeadBranch());
         headNode.getChildren().addAll(commitLst.stream().map(c -> new TreeItem<>(new CommitOrBranch(c))).collect(Collectors.toList()));
         root.getChildren().add(headNode);
@@ -395,7 +412,6 @@ public class Controller {
         });
         fileSystemTreeView.getRoot().setExpanded(true);
     }
-
 
 
     private void buildBranchCommitTree() {
@@ -440,7 +456,7 @@ public class Controller {
     @FXML
     void showBranches() {
         String branches = "";
-        branches = branches.concat("HEAD: "+ ModuleTwo.getActiveBranchName());
+        branches = branches.concat("HEAD: " + ModuleTwo.getActiveBranchName());
         for (Branch b : ModuleTwo.getActiveReposBranches()) {
             branches = branches.concat("\n" + b.getName());
         }
@@ -461,6 +477,7 @@ public class Controller {
                 buildBranchCommitTree();
                 GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                 refreshFilesTree();
+
             } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
                 popAlert(e);
             }
@@ -480,7 +497,7 @@ public class Controller {
         }
     }
 
-    private void popAlert(Exception e) {
+    public static void popAlert(Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setContentText(e.getMessage());
         alert.showAndWait();

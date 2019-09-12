@@ -101,6 +101,9 @@ public class ModuleTwo {
         return activeRepo.showRepoStatus();
     }
 
+    public static String changesBetweenCommitsToString(String sha1) throws IOException {
+        return activeRepo.deltaChangesBetweenCommitsToString(sha1);
+    }
     public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
         checkIfActiveRepoExists();
         activeRepo.deleteThisBranch(input);

@@ -185,7 +185,7 @@
                                           <Font size="10.0" />
                                        </font>
                                     </Label>
-                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="39.0" prefWidth="68.0" text="Show delta" wrapText="true" GridPane.rowIndex="2">
+                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta1" prefHeight="39.0" prefWidth="68.0" text="Show delta" wrapText="true" GridPane.rowIndex="2">
                                        <font>
                                           <Font size="10.0" />
                                        </font>
@@ -200,7 +200,7 @@
                                           <Font size="10.0" />
                                        </font>
                                     </Label>
-                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="39.0" prefWidth="68.0" text="Show delta" wrapText="true" GridPane.rowIndex="3">
+                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta2" prefHeight="39.0" prefWidth="68.0" text="Show delta" wrapText="true" GridPane.rowIndex="3">
                                        <font>
                                           <Font size="10.0" />
                                        </font>

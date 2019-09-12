@@ -39,7 +39,7 @@ class Delta {
     }
 
 
-    String showChanges() {
+     String showChanges() {
         String linesToPrint = "";
         if (newFilesFofs.entrySet().size() != 0) {
             linesToPrint = linesToPrint.concat("The following files and folders have been created:\n");
