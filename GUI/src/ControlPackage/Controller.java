@@ -110,7 +110,7 @@ public class Controller {
                                 if (commitMsg.isPresent()) {
                                     ModuleTwo.merge(selectedItem.getValue().getBranch(), commitMsg.get());
                                     refreshFilesTree();
-                                    refreshCommitsTree();
+                                    //refreshCommitsTree();
                                     GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                                 }
 
@@ -209,24 +209,25 @@ public class Controller {
     }
 
     private void switchCommitBranchesButtons() {
-        if (BranchCommitTreeView.getSelectionModel().getSelectedItem() != BranchCommitTreeView.getRoot()) {
-            if (BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().isCommit()) {
-                optionsLabel1.setText("Commit options:");
-                switchButton1.setText("Show commit");
-                switchButton2.setText("Reset head branch to this commit");
-                switchButton2.setStyle("-fx-font: 11 arial;");
-                mergeButtonID.setVisible(false);
-                commitBool = true;
-            } else {
-                optionsLabel1.setText("Branches options:");
-                switchButton1.setText("Checkout");
-                switchButton2.setText("Delete branch");
-                switchButton2.setStyle("-fx-font: 12 arial;");
-                mergeButtonID.setVisible(true);
-                commitBool = false;
+        if(BranchCommitTreeView.getSelectionModel().getSelectedItem()!=null) {
+            if (BranchCommitTreeView.getSelectionModel().getSelectedItem() != BranchCommitTreeView.getRoot()) {
+                if (BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().isCommit()) {
+                    optionsLabel1.setText("Commit options:");
+                    switchButton1.setText("Show commit");
+                    switchButton2.setText("Reset head branch to this commit");
+                    switchButton2.setStyle("-fx-font: 11 arial;");
+                    mergeButtonID.setVisible(false);
+                    commitBool = true;
+                } else {
+                    optionsLabel1.setText("Branches options:");
+                    switchButton1.setText("Checkout");
+                    switchButton2.setText("Delete branch");
+                    switchButton2.setStyle("-fx-font: 12 arial;");
+                    mergeButtonID.setVisible(true);
+                    commitBool = false;
+                }
             }
         }
-
     }
 
     public void showCommitFiles(Commit selectedCommit) throws IOException {
