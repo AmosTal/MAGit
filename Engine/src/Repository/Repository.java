@@ -285,12 +285,11 @@ public class Repository {
     }
 
     public String deltaChangesBetweenCommitsToString(String sha1) throws IOException {
-        String commitPath = path + "/.magit/merge files/";
-        new File(commitPath).mkdir();
-        deleteWCFiles(commitPath);
-        Folder branchFolder = (Folder) objList.get(((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1());
-        recursiveObjectToWCBuilder(branchFolder, commitPath);
-        return deltaChangesBetweenCommits(sha1).showChanges();
+        String commitPath = path + "/.magit/Commit files/";
+        Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
+        Delta delta = new Delta(commitMap);
+        recursiveWcToObjectBuilder(commitPath,"", false, username,delta);
+        return delta.showChanges();
     }
 
     public void switchHead(String name) throws NoSuchBranchException, IOException {

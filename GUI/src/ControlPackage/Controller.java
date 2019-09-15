@@ -65,6 +65,16 @@ public class Controller {
     @FXML
     private TreeView<CommitOrBranch> BranchCommitTreeView;
 
+    //every place we show joptionpane with changes between commits we need to make it jtext area to have scrollbar  like this:
+//    JTextArea textArea = new JTextArea("Insert your Text here");
+//    JScrollPane scrollPane = new JScrollPane(textArea);
+//    textArea.setLineWrap(true);
+//    textArea.setWrapStyleWord(true);
+//    scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
+//    JOptionPane.showMessageDialog(null, scrollPane, "dialog test with textarea",
+//    JOptionPane.YES_NO_OPTION);
+
+
     @FXML
     void showDelta1() {
 
