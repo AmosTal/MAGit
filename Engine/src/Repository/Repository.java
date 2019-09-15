@@ -1,5 +1,7 @@
 package Repository;
 
+import Merge.MergeCase;
+import Merge.MergeCases;
 import Objects.Api.MagitObject;
 import Objects.Blob.Blob;
 import Objects.Branch.AlreadyExistingBranchException;
@@ -507,8 +509,11 @@ public class Repository {
     }
 
     private void mergeConflicts(Delta headDelta, Delta branchDelta) {
-
+        //for on each maps in delta
+        Optional<MergeCases> mg = MergeCase.caseIs(false,true,false,false,false,false);
+        System.out.println(mg.toString());
     }
+
 
     private Function<String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
 
