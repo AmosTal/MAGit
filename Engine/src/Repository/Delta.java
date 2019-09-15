@@ -8,11 +8,27 @@ import java.util.Map;
 
 class Delta {
 
+
     private Map<String, Fof> updatedFilesFofs; // <Path,Fof>
     private Map<String, Fof> newFilesFofs;
     private Map<String, Fof> deletedFilesFofs;
     private Map<String, Fof> commitMap;
     private boolean isChanged = false;
+
+    public Map<String, Fof> getCommitMap() {
+        return commitMap;
+    }
+    public Map<String, Fof> getUpdatedFilesFofs() {
+        return updatedFilesFofs;
+    }
+    public Map<String, Fof> getNewFilesFofs() {
+        return newFilesFofs;
+    }
+
+    public Map<String, Fof> getDeletedFilesFofs() {
+        return deletedFilesFofs;
+    }
+
 
 
     Delta(Map<String, Fof> _currentCommitMap) {

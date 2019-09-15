@@ -509,9 +509,28 @@ public class Repository {
     }
 
     private void mergeConflicts(Delta headDelta, Delta branchDelta) {
-        //for on each maps in delta
-        Optional<MergeCases> mg = MergeCase.caseIs(false,true,false,false,false,false);
-        System.out.println(mg.toString());
+        boolean existsInBase,  existsInTarget,  existsInAncestor,  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1;
+
+        for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
+        {
+            if(branchDelta.getCommitMap().get(entry.getKey())!=null)
+            {
+                if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null)
+                {
+                    existsInTarget=true;
+                }
+            }
+            else
+            {
+                existsInTarget=false;
+                baseEqualsTargetSha1=false;
+            }
+            //if()
+            Optional<MergeCases> mg = MergeCase.caseIs(true,);
+
+        }
+            Optional<MergeCases> mg = MergeCase.caseIs(false,true,false,false,false,false);
+
     }
 
 
