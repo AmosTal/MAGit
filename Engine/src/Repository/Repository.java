@@ -513,20 +513,21 @@ public class Repository {
 
         for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
         {
-            if(branchDelta.getCommitMap().get(entry.getKey())!=null)
+            if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null)
             {
-                if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null)
-                {
-                    existsInTarget=true;
-                }
+                existsInTarget=true;
             }
             else
-            {
                 existsInTarget=false;
-                baseEqualsTargetSha1=false;
+            if(headDelta.getDeletedFilesFofs().get(entry.getKey())==null)
+            {
+                existsInBase=true;
             }
-            //if()
-            Optional<MergeCases> mg = MergeCase.caseIs(true,);
+            else
+                existsInBase=false;
+
+            Optional<MergeCases> mg = MergeCase.caseIs(existsInBase,existsInTarget,true,
+                    baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
 
         }
             Optional<MergeCases> mg = MergeCase.caseIs(false,true,false,false,false,false);
