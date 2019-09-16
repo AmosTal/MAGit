@@ -513,19 +513,45 @@ public class Repository {
 
         for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
         {
+            String baseSha1="noBase";
+            String targetSha1="noTarget";
             if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null)
             {
                 existsInTarget=true;
+                if(branchDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
+                {
+                    targetSha1=branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
+                    targetEqualsAncestorSha1=false;
+                }
+                else
+                    targetEqualsAncestorSha1=true;
             }
-            else
-                existsInTarget=false;
+            else {
+                targetEqualsAncestorSha1=false;
+                existsInTarget = false;
+            }
             if(headDelta.getDeletedFilesFofs().get(entry.getKey())==null)
             {
+                if(headDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
+                {
+                    baseSha1=branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
+                    baseEqualsAncestorSha1=false;
+                }
+                else {
+                    baseEqualsAncestorSha1 = true;
+                }
                 existsInBase=true;
             }
+            else {
+                    baseEqualsAncestorSha1=false;
+                    existsInBase = false;
+                }
+            if((targetEqualsAncestorSha1&&baseEqualsAncestorSha1)||(baseSha1.equals(targetSha1)))
+            {
+                baseEqualsTargetSha1=true;
+            }
             else
-                existsInBase=false;
-
+                baseEqualsTargetSha1=false;
             Optional<MergeCases> mg = MergeCase.caseIs(existsInBase,existsInTarget,true,
                     baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
 
