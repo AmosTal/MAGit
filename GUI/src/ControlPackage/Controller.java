@@ -5,10 +5,7 @@ import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
-import Repository.DeleteHeadBranchException;
-import Repository.NoActiveRepositoryException;
-import Repository.NoSuchBranchException;
-import Repository.NoSuchRepoException;
+import Repository.*;
 import XML.XmlNotValidException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -124,7 +121,7 @@ public class Controller {
                                     GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                                 }
 
-                            } catch (IOException e) {
+                            } catch (IOException | CannotMergeException e) {
                                 popAlert(e);
                             }
                         } else
@@ -159,7 +156,7 @@ public class Controller {
                 }
             } else
                 throw new CommitCannotExecutException();
-        } catch (NoActiveRepositoryException | CommitCannotExecutException | AlreadyExistingBranchException e) {
+        } catch (NoActiveRepositoryException | CommitCannotExecutException e) {
             popAlert(e);
         }
 
@@ -373,7 +370,7 @@ public class Controller {
         }
     }
 
-    public static TreeItem<File> getNodesForDirectory(File directory) {
+    private static TreeItem<File> getNodesForDirectory(File directory) {
         TreeItem<File> root = new TreeItem<>(directory);
         for (File f : Objects.requireNonNull(directory.listFiles())) {
             if (f.isDirectory() && !f.getName().equals(".magit"))

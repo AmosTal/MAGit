@@ -15,17 +15,17 @@ class Delta {
     private Map<String, Fof> commitMap;
     private boolean isChanged = false;
 
-    public Map<String, Fof> getCommitMap() {
+    Map<String, Fof> getCommitMap() {
         return commitMap;
     }
-    public Map<String, Fof> getUpdatedFilesFofs() {
+    Map<String, Fof> getUpdatedFilesFofs() {
         return updatedFilesFofs;
     }
-    public Map<String, Fof> getNewFilesFofs() {
+    Map<String, Fof> getNewFilesFofs() {
         return newFilesFofs;
     }
 
-    public Map<String, Fof> getDeletedFilesFofs() {
+    Map<String, Fof> getDeletedFilesFofs() {
         return deletedFilesFofs;
     }
 
@@ -81,11 +81,11 @@ class Delta {
         return msg;
     }
 
-    public boolean getIsChanged() {
+    boolean getIsChanged() {
         return isChanged || !deletedFilesFofs.isEmpty();
     }
 
-    public String getUsername(String fofpath) {
+    String getUsername(String fofpath) {
         Fof fof = commitMap.get(fofpath);
         if (fof == null)
             return null;

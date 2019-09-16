@@ -67,7 +67,7 @@ public class ModuleTwo {
         }
     }
 
-    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException, AlreadyExistingBranchException {
+    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException{
         checkIfActiveRepoExists();
         if (activeRepo.checkDeltaChanges()) {
             activeRepo.newCommit(msg);
@@ -141,7 +141,7 @@ public class ModuleTwo {
         return activeRepo.getBranches();
     }
 
-    public static void merge(Branch branch,String msg) throws IOException {
+    public static void merge(Branch branch,String msg) throws IOException, CannotMergeException {
 
         activeRepo.mergeCommits(branch,msg);
     }

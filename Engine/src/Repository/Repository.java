@@ -35,6 +35,7 @@ public class Repository {
     private String name;
     private static String username = "default";
     private Delta currDelta;
+    private HashMap<String, Optional<MergeCases>> conflictMap;
 
     public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches) {
         path = _path;
@@ -45,6 +46,9 @@ public class Repository {
 
     public String getPath() {
         return path;
+    }
+    public HashMap<String, Optional<MergeCases>> getConflictMap() {
+        return conflictMap;
     }
 
     public String getHeadBranchName() {
@@ -75,7 +79,7 @@ public class Repository {
         createFilesForBranches();
     }
 
-    public Commit getCommitBySha1(String sha1) {
+    private Commit getCommitBySha1(String sha1) {
         return (Commit) objList.get(sha1);
     }
 
@@ -286,7 +290,7 @@ public class Repository {
         return delta;
     }
 
-    public String deltaChangesBetweenCommitsToString(String sha1) throws IOException {
+    public String deltaChangesBetweenCommitsToString(String sha1){
         String commitPath = path + "/.magit/Commit files/";
         Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
         Delta delta = new Delta(commitMap);
@@ -481,7 +485,7 @@ public class Repository {
         return ((Commit) objList.get(sha1)).getPreviousCommitSha1();
     }
 
-    public void mergeCommits(Branch branch, String msg) throws IOException {//need to check if branch is ancestor of branch
+    public void mergeCommits(Branch branch, String msg) throws IOException, CannotMergeException {
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
 
@@ -505,20 +509,27 @@ public class Repository {
             makeFileForBranch(headBranch.getSha1(), headBranch.getName());
 
             createSingleZippedFileForMagitObject(newCommit.getSha1(), objList.get(newCommit.getSha1()));
-            ArrayList<Optional<MergeCases>> mergeList=mergeConflicts(headBranchDelta, branchDelta);
+            conflictMap=mergeConflicts(headBranchDelta, branchDelta);
+
         }
         else
-        {}
-
+        {
+            if(sha1OfAncestor.equals(headBranch.getSha1()))
+                throw new CannotMergeException();
+            else{
+                headBranch.UpdateSha1(branch.getSha1());
+                makeFileForBranch(headBranch.getSha1(), headBranch.getName());
+            }
+        }
     }
 
-    private ArrayList<Optional<MergeCases>>  mergeConflicts(Delta headDelta, Delta branchDelta) {
+    private HashMap<String,Optional<MergeCases>>  mergeConflicts(Delta headDelta, Delta branchDelta) {
 
         boolean existsInTarget=false;
-        ArrayList<Optional<MergeCases>> mergeList=new ArrayList<>();
+        HashMap<String,Optional<MergeCases>> mergeMap=new HashMap<>();
         for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
         {
-            mergeList.add(sixBooleanGoneWild(headDelta,branchDelta,entry));
+            mergeMap.put(entry.getKey(),sixBooleanGoneWild(headDelta,branchDelta,entry));
         }
         for(Map.Entry<String,Fof> entry:headDelta.getNewFilesFofs().entrySet())
         {
@@ -526,18 +537,17 @@ public class Repository {
                 branchDelta.getNewFilesFofs().remove(entry.getKey());
                 existsInTarget=true;
             }
-            mergeList.add(MergeCase.caseIs(true,existsInTarget,false,
+            mergeMap.put(entry.getKey(),MergeCase.caseIs(true,existsInTarget,false,
                 false,false,false));
             existsInTarget=false;
-            //System.out.println(mg.toString());
-            //need to check if it works with different cases<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                                        //need to check if it works with different cases<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         }
         for(Map.Entry<String,Fof> entry:branchDelta.getNewFilesFofs().entrySet())
         {
-            mergeList.add(MergeCase.caseIs(false,true,false,
+            mergeMap.put(entry.getKey(),MergeCase.caseIs(false,true,false,
                     false,false,false));
         }
-        return mergeList;
+        return mergeMap;
     }
 
 
@@ -580,12 +590,12 @@ public class Repository {
             existsInBase = false;
         }
         baseEqualsTargetSha1= (targetEqualsAncestorSha1 && baseEqualsAncestorSha1) || (baseSha1.equals(targetSha1));
-        if((existsInBase&&existsInTarget&&existsInAncestor)&&!(baseEqualsAncestorSha1&&targetEqualsAncestorSha1&&baseEqualsTargetSha1)) {
-            baseEqualsAncestorSha1 = false;
+        if(existsInBase && existsInTarget && !(baseEqualsAncestorSha1 && targetEqualsAncestorSha1)) {
+            baseEqualsTargetSha1 = false;
             targetEqualsAncestorSha1 = false;
             baseEqualsAncestorSha1 = false;
         }
-        return  MergeCase.caseIs(existsInBase,existsInTarget,existsInAncestor,
+        return  MergeCase.caseIs(existsInBase,existsInTarget, true,
                 baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
 
     }
@@ -593,6 +603,8 @@ public class Repository {
         AncestorFinder finder = new AncestorFinder(CommitRepresentativeMapper);
         return finder.traceAncestor(sha1_1, sha1_2);
     }
+
+
 }
 
 
