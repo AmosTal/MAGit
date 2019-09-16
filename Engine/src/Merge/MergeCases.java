@@ -1,17 +1,17 @@
 package Merge;
 
 public enum MergeCases {
-        Case4(true, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
-        Case6(true, true, false, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
-        Case9(false, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
-        Case8(true, false, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
-        Case10(true, false, false, false, false, false){ @Override public String takeOursOrTheirs() { return ""; }},
-    Case1(true, true, true, true, true, true){ @Override public String takeOursOrTheirs() { return "ours"; } },
+        Case1(true, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case2(true, true, false, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case3(false, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case4(true, false, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case5(true, false, false, false, false, false){ @Override public String takeOursOrTheirs() { return ""; }},
+        Case6(true, true, true, true, true, true){ @Override public String takeOursOrTheirs() { return "ours"; } },
         Case7(true, false, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
-        Case3(true, true, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
-        Case11(false, true, false, false, false, false) { @Override public String takeOursOrTheirs() { return "ours"; }},
-        Case2(true, true, true, true, false, false){ @Override public String takeOursOrTheirs() { return "theirs"; }},
-        Case5(true, true, false, true, false, false){@Override public String takeOursOrTheirs() { return "theirs"; }},
+        Case8(true, true, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
+        Case9(false, true, false, false, false, false) { @Override public String takeOursOrTheirs() { return "ours"; }},
+        Case10(true, true, true, true, false, false){ @Override public String takeOursOrTheirs() { return "theirs"; }},
+        Case11(true, true, false, true, false, false){@Override public String takeOursOrTheirs() { return "theirs"; }},
         Case12(false, false, true, false, false, false)  {@Override public String takeOursOrTheirs() { return "theirs"; }};
 
 

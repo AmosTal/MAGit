@@ -146,14 +146,14 @@ public class ModuleTwo {
         activeRepo.mergeCommits(branch,msg);
     }
 
-    public static boolean isPointedCommit(Commit commit) {
+    public static String isPointedCommit(Commit commit) {
         for(Branch branch:activeRepo.getBranches())
         {
             if(branch.getSha1().equals(commit.getSha1()))
-                return true;
+                return branch.getName();
         }
         if(activeRepo.getHeadBranch().getSha1().equals(commit.getSha1()))
-            return true;
-        return false;
+            return activeRepo.getHeadBranch().getName();
+        return "";
     }
 }

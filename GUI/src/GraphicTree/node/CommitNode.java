@@ -20,10 +20,10 @@ public class CommitNode extends AbstractCell {
     private String message;
     private Commit commit;
     private CommitNodeController commitNodeController;
-    private boolean isPointed;
+    private String isPointed;
 
 
-    public CommitNode(String timestamp, String committer, String message,Commit commit,boolean isPointed) {
+    public CommitNode(String timestamp, String committer, String message,Commit commit,String isPointed) {
         this.timestamp = timestamp;
         this.committer = committer;
         this.message = message;

@@ -20,7 +20,7 @@ public class CommitNodeController {
     @FXML private Label committerLabel;
     @FXML private Circle CommitCircle;
     @FXML private Pane treeShape;
-
+    @FXML private Label branchLabel;
     Commit commit;
     @FXML
     void commitClicked(MouseEvent event) {
@@ -55,8 +55,10 @@ public class CommitNodeController {
         this.commit = commit;
     }
 
-    public void setPointedCommit(boolean isPointed) {
-        if(isPointed)
+    public void setPointedCommit(String isPointed) {
+        if (!isPointed.equals("")) {
             treeShape.setVisible(true);
+            branchLabel.setText(isPointed);
+        }
     }
 }

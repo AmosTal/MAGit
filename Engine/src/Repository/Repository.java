@@ -481,88 +481,114 @@ public class Repository {
         return ((Commit) objList.get(sha1)).getPreviousCommitSha1();
     }
 
-    public void mergeCommits(Branch branch, String msg) throws IOException {
+    public void mergeCommits(Branch branch, String msg) throws IOException {//need to check if branch is ancestor of branch
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
 
         String sha1OfAncestor = findAncestor(branch.getSha1(), headBranch.getSha1());
-        Folder branchFolder = (Folder) objList.get(((Commit) objList.get(branch.getSha1())).getRootFolderSha1());
-        Folder headFolder = (Folder) objList.get(((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1());
+        if(!(sha1OfAncestor.equals(branch.getSha1())||sha1OfAncestor.equals(headBranch.getSha1()))) {
+            Folder branchFolder = (Folder) objList.get(((Commit) objList.get(branch.getSha1())).getRootFolderSha1());
+            Folder headFolder = (Folder) objList.get(((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1());
 
-        Commit headCommit = (Commit) objList.get(headBranch.getSha1());
-        Commit newCommit = new Commit(headCommit.getRootFolderSha1(), headCommit.getSha1(), branch.getSha1(), msg, username);
-        deleteWCFiles(pathMerge);
-        recursiveObjectToWCBuilder(headFolder, pathMerge);
-        Delta headBranchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
-        deleteWCFiles(pathMerge);
-        recursiveObjectToWCBuilder(branchFolder, pathMerge);
-        Delta branchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
-        deleteWCFiles(pathMerge);
+            Commit headCommit = (Commit) objList.get(headBranch.getSha1());
+            Commit newCommit = new Commit(headCommit.getRootFolderSha1(), headCommit.getSha1(), branch.getSha1(), msg, username);
+            deleteWCFiles(pathMerge);
+            recursiveObjectToWCBuilder(headFolder, pathMerge);
+            Delta headBranchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
+            deleteWCFiles(pathMerge);
+            recursiveObjectToWCBuilder(branchFolder, pathMerge);
+            Delta branchDelta = deltaChangesBetweenCommits(sha1OfAncestor);
+            deleteWCFiles(pathMerge);
 
-        objList.put(newCommit.getSha1(), newCommit);
-        headBranch.UpdateSha1(newCommit.getSha1());
-        makeFileForBranch(headBranch.getSha1(), headBranch.getName());
+            objList.put(newCommit.getSha1(), newCommit);
+            headBranch.UpdateSha1(newCommit.getSha1());
+            makeFileForBranch(headBranch.getSha1(), headBranch.getName());
 
-        createSingleZippedFileForMagitObject(newCommit.getSha1(), objList.get(newCommit.getSha1()));
-        mergeConflicts(headBranchDelta, branchDelta);
+            createSingleZippedFileForMagitObject(newCommit.getSha1(), objList.get(newCommit.getSha1()));
+            ArrayList<Optional<MergeCases>> mergeList=mergeConflicts(headBranchDelta, branchDelta);
+        }
+        else
+        {}
 
     }
 
-    private void mergeConflicts(Delta headDelta, Delta branchDelta) {
-        boolean existsInBase,  existsInTarget,  existsInAncestor,  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1;
+    private ArrayList<Optional<MergeCases>>  mergeConflicts(Delta headDelta, Delta branchDelta) {
 
+        boolean existsInTarget=false;
+        ArrayList<Optional<MergeCases>> mergeList=new ArrayList<>();
         for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
         {
-            String baseSha1="noBase";
-            String targetSha1="noTarget";
-            if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null)
-            {
-                existsInTarget=true;
-                if(branchDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
-                {
-                    targetSha1=branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
-                    targetEqualsAncestorSha1=false;
-                }
-                else
-                    targetEqualsAncestorSha1=true;
-            }
-            else {
-                targetEqualsAncestorSha1=false;
-                existsInTarget = false;
-            }
-            if(headDelta.getDeletedFilesFofs().get(entry.getKey())==null)
-            {
-                if(headDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
-                {
-                    baseSha1=branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
-                    baseEqualsAncestorSha1=false;
-                }
-                else {
-                    baseEqualsAncestorSha1 = true;
-                }
-                existsInBase=true;
-            }
-            else {
-                    baseEqualsAncestorSha1=false;
-                    existsInBase = false;
-                }
-            if((targetEqualsAncestorSha1&&baseEqualsAncestorSha1)||(baseSha1.equals(targetSha1)))
-            {
-                baseEqualsTargetSha1=true;
-            }
-            else
-                baseEqualsTargetSha1=false;
-            Optional<MergeCases> mg = MergeCase.caseIs(existsInBase,existsInTarget,true,
-                    baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
-
+            mergeList.add(sixBooleanGoneWild(headDelta,branchDelta,entry));
         }
-            Optional<MergeCases> mg = MergeCase.caseIs(false,true,false,false,false,false);
-
+        for(Map.Entry<String,Fof> entry:headDelta.getNewFilesFofs().entrySet())
+        {
+            if(branchDelta.getNewFilesFofs().get(entry.getKey())!=null) {
+                branchDelta.getNewFilesFofs().remove(entry.getKey());
+                existsInTarget=true;
+            }
+            mergeList.add(MergeCase.caseIs(true,existsInTarget,false,
+                false,false,false));
+            existsInTarget=false;
+            //System.out.println(mg.toString());
+            //need to check if it works with different cases<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        }
+        for(Map.Entry<String,Fof> entry:branchDelta.getNewFilesFofs().entrySet())
+        {
+            mergeList.add(MergeCase.caseIs(false,true,false,
+                    false,false,false));
+        }
+        return mergeList;
     }
 
 
     private Function<String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
 
+    private Optional<MergeCases> sixBooleanGoneWild(Delta headDelta, Delta branchDelta,Map.Entry<String,Fof> entry)
+    {
+        boolean  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1, existsInAncestor = true, existsInBase, existsInTarget;
+        String baseSha1="noBase";
+        String targetSha1="noTarget";
+        if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null)
+        {
+            existsInTarget=true;
+            if(branchDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
+            {
+                targetSha1=branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
+                targetEqualsAncestorSha1=false;
+            }
+            else
+                targetEqualsAncestorSha1=true;
+        }
+        else {
+            targetEqualsAncestorSha1=false;
+            existsInTarget = false;
+        }
+        if(headDelta.getDeletedFilesFofs().get(entry.getKey())==null)
+        {
+            existsInBase=true;
+            if(headDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
+            {
+                baseSha1=headDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
+                baseEqualsAncestorSha1=false;
+            }
+            else {
+                baseEqualsAncestorSha1 = true;
+            }
+        }
+        else {
+            baseEqualsAncestorSha1=false;
+            existsInBase = false;
+        }
+        baseEqualsTargetSha1= (targetEqualsAncestorSha1 && baseEqualsAncestorSha1) || (baseSha1.equals(targetSha1));
+        if((existsInBase&&existsInTarget&&existsInAncestor)&&!(baseEqualsAncestorSha1&&targetEqualsAncestorSha1&&baseEqualsTargetSha1)) {
+            baseEqualsAncestorSha1 = false;
+            targetEqualsAncestorSha1 = false;
+            baseEqualsAncestorSha1 = false;
+        }
+        return  MergeCase.caseIs(existsInBase,existsInTarget,existsInAncestor,
+                baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
+
+    }
     private String findAncestor(String sha1_1, String sha1_2) {
         AncestorFinder finder = new AncestorFinder(CommitRepresentativeMapper);
         return finder.traceAncestor(sha1_1, sha1_2);
