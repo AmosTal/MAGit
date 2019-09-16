@@ -20,15 +20,13 @@ import java.util.HashMap;
 
 
 public class GraphicCommitNodeMaker {
-    public static HashMap<String, ICell> cellMap = new HashMap<>();
+    private static HashMap<String, ICell> cellMap = new HashMap<>();
 
     public static void createGraphicTree(ScrollPane scrollPane) {
         Graph tree = new Graph();
         ArrayList<Commit> commitLst = ModuleTwo.getActiveRepo().getCommits();
         GraphicCommitNodeMaker.createCommits(tree, commitLst);
         PannableCanvas canvas = tree.getCanvas();
-        //canvas.setPrefWidth(100);
-        //canvas.setPrefHeight(100);
         scrollPane.setContent(canvas);
 
         Platform.runLater(() -> {
@@ -37,7 +35,7 @@ public class GraphicCommitNodeMaker {
         });
     }
 
-    public static void createCommits(Graph graph, ArrayList<Commit> commitLst) {
+    private static void createCommits(Graph graph, ArrayList<Commit> commitLst) {
 
         final Model model = graph.getModel();
 
@@ -46,7 +44,7 @@ public class GraphicCommitNodeMaker {
 
         for (Commit commit : commitLst) {
             c = new CommitNode(commit.getDateAndTime().getDate(), commit.getNameOfModifier(),
-                    commit.getCommitPurposeMSG(),commit,ModuleTwo.isPointedCommit(commit));
+                    commit.getCommitPurposeMSG(), commit, ModuleTwo.isPointedCommit(commit));
             cellMap.put(commit.getSha1(), c);
             model.addCell(c);
         }
@@ -61,8 +59,6 @@ public class GraphicCommitNodeMaker {
             }
         }
         graph.endUpdate();
-        graph.layout(new CommitTreeLayout(cellMap,commitLst.get(0),commitLst));
-
-        //graph.getModel().getAllCells().forEach();
+        graph.layout(new CommitTreeLayout(cellMap, commitLst.get(0), commitLst));
     }
 }

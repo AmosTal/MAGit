@@ -35,7 +35,7 @@ public class Repository {
     private String name;
     private static String username = "default";
     private Delta currDelta;
-    private HashMap<String, Optional<MergeCases>> conflictMap;
+    private HashMap<String, Optional<MergeCases>> conflictMap = null;
 
     public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches) {
         path = _path;
@@ -605,6 +605,9 @@ public class Repository {
     }
 
 
+    public boolean isConflictsEmpty() {
+        return conflictMap.isEmpty();
+    }
 }
 
 

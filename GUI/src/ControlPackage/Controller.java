@@ -10,7 +10,15 @@ import XML.XmlNotValidException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -19,8 +27,10 @@ import org.apache.commons.io.FileUtils;
 
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,37 +71,35 @@ public class Controller {
     public TreeView<File> fileSystemTreeView;
     @FXML
     private TreeView<CommitOrBranch> BranchCommitTreeView;
-
-    //every place we show joptionpane with changes between commits we need to make it jtext area to have scrollbar  like this:
-//    JTextArea textArea = new JTextArea("Insert your Text here");
-//    JScrollPane scrollPane = new JScrollPane(textArea);
-//    textArea.setLineWrap(true);
-//    textArea.setWrapStyleWord(true);
-//    scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
-//    JOptionPane.showMessageDialog(null, scrollPane, "dialog test with textarea",
-//    JOptionPane.YES_NO_OPTION);
-
-
     @FXML
     void showDelta1() {
 
         try {
             String changes=ModuleTwo.changesBetweenCommitsToString(commitPrevLabel.getText());
             if(!changes.equals(""))
-                JOptionPane.showMessageDialog(null,changes);
+                printJscrollpane(changes);
             else
                 JOptionPane.showMessageDialog(null,"No changes were made");
         } catch (IOException e) {
             popAlert(e);
         }
     }
-
+    private void printJscrollpane(String text)
+    {
+        JTextArea textArea = new JTextArea(text);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
+        JOptionPane.showMessageDialog(null, scrollPane, "dialog test with textarea",
+                JOptionPane.PLAIN_MESSAGE);
+    }
     @FXML
     void showDelta2() {
         try {
             String changes=ModuleTwo.changesBetweenCommitsToString(commitSecondPrevLabel.getText());
             if(!changes.equals(""))
-                JOptionPane.showMessageDialog(null,changes);
+                printJscrollpane(changes);
             else
                 JOptionPane.showMessageDialog(null,"No changes were made");
         } catch (IOException e) {
@@ -120,7 +128,24 @@ public class Controller {
                                     //refreshCommitsTree();
                                     GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                                 }
+                                if(ModuleTwo.getActiveRepo().isConflictsEmpty()){
+                                    try {
+                                        FXMLLoader fxmlLoader = new FXMLLoader();
+                                        URL url = getClass().getResource("MergeWindow.fxml");
+                                        fxmlLoader.setLocation(url);
+                                        GridPane head = fxmlLoader.load(url.openStream());
+                                        Scene scene = new Scene(head, 1200,800);
+                                        scene.getStylesheets().add("Resources/caspian.css");
+                                        Stage stage = new Stage();
+                                        stage.setTitle("Conflicts");
+                                        stage.setScene(scene);
+                                        stage.show();
 
+                                    }
+                                    catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             } catch (IOException | CannotMergeException e) {
                                 popAlert(e);
                             }
@@ -130,7 +155,7 @@ public class Controller {
                 }
             }
         } catch (NoActiveRepositoryException e) {
-            e.printStackTrace();
+            popAlert(e);
         }
     }
 

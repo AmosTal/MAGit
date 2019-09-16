@@ -1,4 +1,4 @@
-package MergeWindow;
+package ControlPackage;
 import EngineRunner.ModuleTwo;
 import Merge.MergeCases;
 import javafx.fxml.FXML;
