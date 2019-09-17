@@ -45,7 +45,7 @@
             <RowConstraints vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="makeNewFileButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" text="Make new file" />
+            <Button fx:id="makeNewFileButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#makeNewFileButton" text="Make new file" />
             <Button fx:id="cancelButton" alignment="BASELINE_LEFT" contentDisplay="BOTTOM" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" text="Cancel" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
          </children>
       </GridPane>

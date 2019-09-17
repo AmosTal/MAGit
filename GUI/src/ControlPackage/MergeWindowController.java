@@ -1,20 +1,15 @@
 package ControlPackage;
 import EngineRunner.ModuleTwo;
 import Merge.MergeCase;
-import Merge.MergeCases;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Callback;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
 
 public class MergeWindowController {
 
@@ -38,9 +33,17 @@ public class MergeWindowController {
     private Button makeNewFileButton;
 
     @FXML
+    void makeNewFileButton() throws IOException {
+        TreeItem<String> selectedItem = conflictTreeView.getSelectionModel().getSelectedItem();
+        File file = new File(selectedItem.getValue());
+        file.getParentFile().mkdirs();
+        FileWriter writer = new FileWriter(file);
+    }
+
+    @FXML
     private Button cancelButton;
     private static HashMap<String, MergeCase> pathLst;
-    public void updateConflictTreeView(){
+    void updateConflictTreeView(){
         conflictTreeView.setRoot(getNodes());
         conflictTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 
@@ -68,7 +71,7 @@ public class MergeWindowController {
         return root;
     }
 
-    public void showFiles() throws IOException {
+    public void showFiles() {
         TreeItem<String> selectedItem = conflictTreeView.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
 
