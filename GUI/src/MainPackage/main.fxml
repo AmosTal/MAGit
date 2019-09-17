@@ -25,7 +25,7 @@
     <top>
         <AnchorPane prefHeight="47.0" prefWidth="608.0" BorderPane.alignment="CENTER">
             <children>
-                <MenuBar layoutX="-8.0" layoutY="1.0" maxWidth="2000.0" prefHeight="31.0" prefWidth="613.0" AnchorPane.leftAnchor="-8.0" AnchorPane.rightAnchor="3.0">
+                <MenuBar layoutX="-8.0" layoutY="1.0" maxWidth="2000.0" prefHeight="31.0" prefWidth="397.0" AnchorPane.leftAnchor="-8.0" AnchorPane.rightAnchor="3.0">
                     <menus>
                         <Menu mnemonicParsing="false" text="Repository">
                             <items>
@@ -45,19 +45,19 @@
                         </Menu>
                     </menus>
                 </MenuBar>
-                <Button alignment="CENTER" contentDisplay="CENTER" layoutX="257.0" layoutY="2.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="28.0" prefWidth="84.0" text="Commit" textFill="#007aff">
+                <Button alignment="CENTER" contentDisplay="CENTER" layoutX="257.0" layoutY="2.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="30.0" prefWidth="130.0" text="Commit" textFill="#007aff">
                     <effect>
                         <ColorAdjust />
                     </effect>
                 </Button>
-                <AnchorPane layoutY="25.0" prefHeight="24.0" prefWidth="608.0" AnchorPane.bottomAnchor="-5.0">
+                <AnchorPane layoutY="25.0" prefHeight="27.0" prefWidth="612.0" AnchorPane.bottomAnchor="-5.0">
                     <children>
-                        <Label layoutX="173.0" layoutY="2.0" prefHeight="25.0" prefWidth="64.0" text="Repository:" AnchorPane.bottomAnchor="0.0" />
+                        <Label layoutX="173.0" layoutY="2.0" prefHeight="25.0" prefWidth="77.0" text="Repository:" AnchorPane.bottomAnchor="0.0" />
                         <Label layoutX="14.0" layoutY="30.0" prefHeight="27.0" prefWidth="72.0" text="Username:" AnchorPane.bottomAnchor="-1.0" />
-                        <Label fx:id="repositoryNameLabel" layoutX="235.0" layoutY="2.0" prefHeight="27.0" prefWidth="83.0" AnchorPane.bottomAnchor="-2.0" />
-                        <Label fx:id="usernameLabel" layoutX="77.0" layoutY="1.0" prefHeight="27.0" prefWidth="88.0" text="Default" AnchorPane.bottomAnchor="-1.0" />
-                        <Label layoutX="327.0" prefHeight="27.0" prefWidth="77.0" text="Active branch:" AnchorPane.bottomAnchor="0.0" />
-                        <Label fx:id="activeBranchLabel" layoutX="404.0" prefHeight="27.0" prefWidth="134.0" AnchorPane.bottomAnchor="0.0" />
+                        <Label fx:id="repositoryNameLabel" layoutX="251.0" layoutY="2.0" prefHeight="24.0" prefWidth="73.0" AnchorPane.bottomAnchor="1.0" />
+                        <Label fx:id="usernameLabel" layoutX="87.0" layoutY="1.0" prefHeight="27.0" prefWidth="88.0" text="Default" AnchorPane.bottomAnchor="-1.0" />
+                        <Label layoutX="327.0" prefHeight="27.0" prefWidth="102.0" text="Active branch:" AnchorPane.bottomAnchor="0.0" />
+                        <Label fx:id="activeBranchLabel" layoutX="422.0" prefHeight="27.0" prefWidth="134.0" AnchorPane.bottomAnchor="0.0" />
                     </children>
                     <effect>
                         <Glow />
@@ -92,12 +92,12 @@
                                 <VBox prefHeight="138.0" prefWidth="115.0">
                                     <children>
                                         <Label text="File options:" />
-                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#showContentButton" prefHeight="34.0" prefWidth="113.0" text="Show file content">
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#showContentButton" prefHeight="40.0" prefWidth="140.0" text="Show file content" wrapText="true">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
-                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="35.0" prefWidth="113.0" text="Refresh Files" />
-                                        <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#showChanges" prefHeight="38.0" prefWidth="115.0" text="Show changes" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="40.0" prefWidth="140.0" text="Refresh Files" wrapText="true" />
+                                        <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#showChanges" prefHeight="40.0" prefWidth="140.0" text="Show changes" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
@@ -139,17 +139,17 @@
                             <children>
                                 <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="136.0" prefWidth="115.0">
                                     <children>
-                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh branches">
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="40.0" prefWidth="140.0" text="Refresh branches" wrapText="true">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
                                         <Label fx:id="optionsLabel1" text="Branches options:" />
-                                        <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#switchingButton1" prefHeight="27.0" prefWidth="115.0" text="Checkout">
+                                        <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#switchingButton1" prefHeight="40.0" prefWidth="140.0" text="Checkout">
                                  <font>
                                     <Font size="14.0" />
                                  </font></Button>
-                                        <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#switchingButton2" prefHeight="48.0" prefWidth="115.0" text="Delete Branch" textAlignment="CENTER" wrapText="true" />
-                              <Button fx:id="mergeButtonID" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#mergeButton" prefHeight="37.0" prefWidth="115.0" text="Merge" />
+                                        <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#switchingButton2" prefHeight="40.0" prefWidth="140.0" text="Delete Branch" textAlignment="CENTER" wrapText="true" />
+                              <Button fx:id="mergeButtonID" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#mergeButton" prefHeight="40.0" prefWidth="140.0" text="Merge" />
                                     </children>
                                 </VBox>
                                 <VBox maxWidth="1.7976931348623157E308">
@@ -185,7 +185,7 @@
                                           <Font size="10.0" />
                                        </font>
                                     </Label>
-                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta1" prefHeight="39.0" prefWidth="68.0" text="Show delta" wrapText="true" GridPane.rowIndex="2">
+                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta1" prefHeight="39.0" prefWidth="88.0" text="Show delta" wrapText="true" GridPane.rowIndex="2">
                                        <font>
                                           <Font size="10.0" />
                                        </font>
@@ -200,7 +200,7 @@
                                           <Font size="10.0" />
                                        </font>
                                     </Label>
-                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta2" prefHeight="39.0" prefWidth="68.0" text="Show delta" wrapText="true" GridPane.rowIndex="3">
+                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta2" prefHeight="39.0" prefWidth="68.0" text="Show delta" GridPane.rowIndex="3">
                                        <font>
                                           <Font size="10.0" />
                                        </font>
