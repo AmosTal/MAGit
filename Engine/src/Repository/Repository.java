@@ -511,6 +511,7 @@ public class Repository {
             createSingleZippedFileForMagitObject(newCommit.getSha1(), objList.get(newCommit.getSha1()));
             conflictMap=mergeConflicts(headBranchDelta, branchDelta);
 
+
         }
         else
         {
@@ -527,28 +528,37 @@ public class Repository {
 
         boolean existsInTarget=false;
         HashMap<String,MergeCase> mergeMap=new HashMap<>();
+        String baseContent=null,ancestorContent=null,targetContent=null;
         for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
         {
-            if(entry.getValue().getIsBlob())
+            //if(entry.getValue().getIsBlob())
                 mergeMap.put(entry.getKey(),sixBooleanGoneWild(headDelta,branchDelta,entry));
         }
         for(Map.Entry<String,Fof> entry:headDelta.getNewFilesFofs().entrySet())
         {
+            baseContent=objList.get(entry.getValue().getSha1()).getContent();
             if(branchDelta.getNewFilesFofs().get(entry.getKey())!=null) {
-                if(entry.getValue().getIsBlob()) {
-                    MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, false,
-                            false, false, false), "", "", "");
-                    mergeMap.put(entry.getKey(), mc);
-                }
+                targetContent=objList.get(branchDelta.getNewFilesFofs().get(entry.getKey()).getSha1()).getContent();
+                MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, false,
+                        false, false, false), baseContent, targetContent, null);
+                mergeMap.put(entry.getKey(), mc);
                 branchDelta.getNewFilesFofs().remove(entry.getKey());
             }
-                                        //need to check if it works with different cases<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            else
+            {
+                MergeCase mc = new MergeCase(MergeCase.caseIs(true, false, false,
+                        false, false, false), baseContent, targetContent, null);
+                mergeMap.put(entry.getKey(), mc);
+            }
+            targetContent=null;
         }
-//        for(Map.Entry<String,Fof> entry:branchDelta.getNewFilesFofs().entrySet())
-//        {
-//            mergeMap.put(entry.getKey(),MergeCase.caseIs(false,true,false,
-//                    false,false,false));
-//        }
+        for(Map.Entry<String,Fof> entry:branchDelta.getNewFilesFofs().entrySet())
+        {
+            targetContent=objList.get(branchDelta.getNewFilesFofs().get(entry.getKey()).getSha1()).getContent();
+            MergeCase mc = new MergeCase(MergeCase.caseIs(false, true, false,
+                    false, false, false), null, targetContent, null);
+            mergeMap.put(entry.getKey(), mc);
+        }
         return mergeMap;
     }
 

@@ -16,21 +16,28 @@ public class MergeWindowController {
 
     @FXML
     private TextArea currentBranchContent;
-
     @FXML
     private TextArea mergedBranchContent;
-
     @FXML
     private TextArea ancestorCommitContent;
-
     @FXML
     private TreeView<String> conflictTreeView;
-
     @FXML
     private TextArea newFileTextArea;
-
     @FXML
     private Button makeNewFileButton;
+    @FXML
+    private Button cancelButton1;
+    @FXML
+    private Button cancelButton;
+
+    private static HashMap<String, MergeCase> pathLst;
+    @FXML
+    void cancelMerge() { }
+    @FXML
+    void deleteFile() { }
+    @FXML
+    void mergeDone() { }
 
     @FXML
     void makeNewFileButton() throws IOException {
@@ -40,9 +47,7 @@ public class MergeWindowController {
         FileWriter writer = new FileWriter(file);
     }
 
-    @FXML
-    private Button cancelButton;
-    private static HashMap<String, MergeCase> pathLst;
+
     void updateConflictTreeView(){
         conflictTreeView.setRoot(getNodes());
         conflictTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
@@ -53,10 +58,8 @@ public class MergeWindowController {
                     @Override
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
-
                         setText((empty || item == null) ? "" : (item));
                     }
-
                 };
             }
         });
