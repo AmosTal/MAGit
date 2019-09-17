@@ -3,18 +3,11 @@ package GraphicTree;
 import EngineRunner.ModuleTwo;
 import GraphicTree.layout.CommitTreeLayout;
 import GraphicTree.node.CommitNode;
-
 import Objects.Commit.Commit;
 import com.fxgraph.edges.Edge;
 import com.fxgraph.graph.*;
-
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.SelectionModel;
-import javafx.scene.layout.Region;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 

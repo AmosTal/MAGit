@@ -5,6 +5,16 @@ import java.util.Optional;
 
 public class MergeCase {
     String baseContent,targetContent,ancestorContent;
+
+    boolean isFolder;
+    public boolean getIsFolder() {
+        return isFolder;
+    }
+
+    public Optional<MergeCases> getMergecases() {
+        return mergecases;
+    }
+
     Optional<MergeCases> mergecases;
     public String getBaseContent() {
         return baseContent;
@@ -19,9 +29,10 @@ public class MergeCase {
     }
 
 
-    public MergeCase(Optional<MergeCases> mergecases,String...args)
+    public MergeCase(Optional<MergeCases> mergecases,boolean isFolder,String...args)
     {
         this.mergecases=mergecases;
+        this.isFolder=isFolder;
         baseContent=args[0];
         targetContent=args[1];
         ancestorContent=args[2];
