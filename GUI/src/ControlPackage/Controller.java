@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 
 public class Controller {
+    public static MergeWindowController mergeController;
     private boolean commitBool = false;
     @FXML
     private Label repositoryNameLabel;
@@ -128,8 +129,7 @@ public class Controller {
                                     //refreshCommitsTree();
                                     GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                                 }
-                                if(ModuleTwo.getActiveRepo().isConflictsEmpty()){
-                                    try {
+                                if(!ModuleTwo.getActiveRepo().isConflictsEmpty()){
                                         FXMLLoader fxmlLoader = new FXMLLoader();
                                         URL url = getClass().getResource("MergeWindow.fxml");
                                         fxmlLoader.setLocation(url);
@@ -138,13 +138,11 @@ public class Controller {
                                         scene.getStylesheets().add("Resources/caspian.css");
                                         Stage stage = new Stage();
                                         stage.setTitle("Conflicts");
+                                        mergeController=fxmlLoader.getController();
                                         stage.setScene(scene);
                                         stage.show();
-
-                                    }
-                                    catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                        mergeController.updateConflictTreeView();
+                                        mergeController.showFiles();
                                 }
                             } catch (IOException | CannotMergeException e) {
                                 popAlert(e);

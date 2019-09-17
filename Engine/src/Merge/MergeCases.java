@@ -1,7 +1,7 @@
 package Merge;
 
 public enum MergeCases {
-        Case1(true, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case1(true, true, true, false, false, false) {@Override public String takeOursOrTheirs() { return ""; }},
         Case2(true, true, false, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
         Case3(false, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
         Case4(true, false, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
@@ -16,7 +16,6 @@ public enum MergeCases {
 
 
     private boolean existsInBase,  existsInTarget,  existsInAncestor,  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1;
-
 MergeCases(boolean existsInBase, boolean existsInTarget, boolean existsInAncestor, boolean baseEqualsTargetSha1, boolean targetEqualsAncestorSha1, boolean baseEqualsAncestorSha1){
     this.existsInBase =existsInBase;
     this.existsInTarget = existsInTarget;
@@ -27,6 +26,7 @@ MergeCases(boolean existsInBase, boolean existsInTarget, boolean existsInAncesto
 }
 
     public boolean whichCaseIsIt(boolean existsInBase, boolean existsInTarget, boolean existsInAncestor, boolean baseEqualsTargetSha1, boolean targetEqualsAncestorSha1, boolean baseEqualsAncestorSha1){
+
         return (existsInBase == this.existsInBase&&
                 existsInTarget == this.existsInTarget&&
                 existsInAncestor == this.existsInAncestor&&
@@ -35,4 +35,5 @@ MergeCases(boolean existsInBase, boolean existsInTarget, boolean existsInAncesto
                 baseEqualsAncestorSha1 == this.baseEqualsAncestorSha1);
     }
 public abstract String takeOursOrTheirs();
+
 }

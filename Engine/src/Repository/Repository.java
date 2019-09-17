@@ -35,7 +35,7 @@ public class Repository {
     private String name;
     private static String username = "default";
     private Delta currDelta;
-    private HashMap<String, Optional<MergeCases>> conflictMap = null;
+    private HashMap<String,MergeCase> conflictMap = null;
 
     public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches) {
         path = _path;
@@ -47,7 +47,7 @@ public class Repository {
     public String getPath() {
         return path;
     }
-    public HashMap<String, Optional<MergeCases>> getConflictMap() {
+    public HashMap<String,MergeCase> getConflictMap() {
         return conflictMap;
     }
 
@@ -523,51 +523,55 @@ public class Repository {
         }
     }
 
-    private HashMap<String,Optional<MergeCases>>  mergeConflicts(Delta headDelta, Delta branchDelta) {
+    private HashMap<String,MergeCase>  mergeConflicts(Delta headDelta, Delta branchDelta) {
 
         boolean existsInTarget=false;
-        HashMap<String,Optional<MergeCases>> mergeMap=new HashMap<>();
+        HashMap<String,MergeCase> mergeMap=new HashMap<>();
         for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
         {
-            mergeMap.put(entry.getKey(),sixBooleanGoneWild(headDelta,branchDelta,entry));
+            if(entry.getValue().getIsBlob())
+                mergeMap.put(entry.getKey(),sixBooleanGoneWild(headDelta,branchDelta,entry));
         }
         for(Map.Entry<String,Fof> entry:headDelta.getNewFilesFofs().entrySet())
         {
             if(branchDelta.getNewFilesFofs().get(entry.getKey())!=null) {
+                if(entry.getValue().getIsBlob()) {
+                    MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, false,
+                            false, false, false), "", "", "");
+                    mergeMap.put(entry.getKey(), mc);
+                }
                 branchDelta.getNewFilesFofs().remove(entry.getKey());
-                existsInTarget=true;
             }
-            mergeMap.put(entry.getKey(),MergeCase.caseIs(true,existsInTarget,false,
-                false,false,false));
-            existsInTarget=false;
                                         //need to check if it works with different cases<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         }
-        for(Map.Entry<String,Fof> entry:branchDelta.getNewFilesFofs().entrySet())
-        {
-            mergeMap.put(entry.getKey(),MergeCase.caseIs(false,true,false,
-                    false,false,false));
-        }
+//        for(Map.Entry<String,Fof> entry:branchDelta.getNewFilesFofs().entrySet())
+//        {
+//            mergeMap.put(entry.getKey(),MergeCase.caseIs(false,true,false,
+//                    false,false,false));
+//        }
         return mergeMap;
     }
 
 
     private Function<String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
 
-    private Optional<MergeCases> sixBooleanGoneWild(Delta headDelta, Delta branchDelta,Map.Entry<String,Fof> entry)
+    private MergeCase sixBooleanGoneWild(Delta headDelta, Delta branchDelta,Map.Entry<String,Fof> entry)
     {
         boolean  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1, existsInAncestor = true, existsInBase, existsInTarget;
         String baseSha1="noBase";
         String targetSha1="noTarget";
-        if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null)
-        {
-            existsInTarget=true;
-            if(branchDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
-            {
-                targetSha1=branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
-                targetEqualsAncestorSha1=false;
+        String contentAncestor=objList.get(branchDelta.getCommitMap().get(entry.getKey()).getSha1()).getContent();
+        String contentBase=null,contentTarget=null;
+        if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null) {
+            existsInTarget = true;
+            if (branchDelta.getUpdatedFilesFofs().get(entry.getKey()) != null) {
+                contentTarget = objList.get(branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1()).getContent();
+                targetSha1 = branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
+                targetEqualsAncestorSha1 = false;
+            } else {
+                targetEqualsAncestorSha1 = true;
+                contentTarget=contentAncestor;
             }
-            else
-                targetEqualsAncestorSha1=true;
         }
         else {
             targetEqualsAncestorSha1=false;
@@ -578,11 +582,13 @@ public class Repository {
             existsInBase=true;
             if(headDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
             {
+                contentBase=objList.get(headDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1()).getContent();
                 baseSha1=headDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
                 baseEqualsAncestorSha1=false;
             }
             else {
                 baseEqualsAncestorSha1 = true;
+                contentBase=contentAncestor;
             }
         }
         else {
@@ -595,8 +601,10 @@ public class Repository {
             targetEqualsAncestorSha1 = false;
             baseEqualsAncestorSha1 = false;
         }
-        return  MergeCase.caseIs(existsInBase,existsInTarget, true,
-                baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
+        Optional<MergeCases> res=MergeCase.caseIs(existsInBase,existsInTarget, true,
+            baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
+
+        return  new MergeCase(res,contentBase,contentTarget,contentAncestor);
 
     }
     private String findAncestor(String sha1_1, String sha1_2) {
