@@ -33,6 +33,10 @@
                                 <MenuItem mnemonicParsing="false" onAction="#openRepository" text="Open Repository" />
                                 <MenuItem mnemonicParsing="false" onAction="#loadRepoFromXml" text="Load xml repository" />
                                 <MenuItem mnemonicParsing="false" onAction="#switchUsername" text="Set username" />
+                        <MenuItem mnemonicParsing="false" onAction="#cloneRepo" text="Clone" />
+                        <MenuItem mnemonicParsing="false" onAction="#fetch" text="Fetch" />
+                        <MenuItem mnemonicParsing="false" onAction="#pull" text="Pull" />
+                        <MenuItem mnemonicParsing="false" onAction="#push" text="Push" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Branches">
