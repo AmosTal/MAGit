@@ -129,8 +129,10 @@ public class Controller {
             throw new IOException();
         path = directory.getPath() + "/" + name;
         ModuleTwo.getActiveRepo().Clone(path);
+        String pathOfOldRepo = ModuleTwo.getActiveRepoPath();
         try {
             ModuleTwo.SwitchRepo(path);
+            ModuleTwo.getActiveRepo().setRemoteRepository(pathOfOldRepo);
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
