@@ -35,10 +35,9 @@ public class Repository {
     private String name;
     private static String username = "default";
     private Delta currDelta;
-    private HashMap<String,MergeCase> conflictMap=new HashMap<>();
-    private String latestMergedBranchSha1=null;
+    private HashMap<String, MergeCase> conflictMap = new HashMap<>();
+    private String latestMergedBranchSha1 = null;
     private String remoteRepoPath = "";
-
 
 
     public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches) {
@@ -51,7 +50,8 @@ public class Repository {
     public String getPath() {
         return path;
     }
-    public HashMap<String,MergeCase> getConflictMap() {
+
+    public HashMap<String, MergeCase> getConflictMap() {
         return conflictMap;
     }
 
@@ -65,17 +65,6 @@ public class Repository {
 
     public static void updateUsername(String name) {
         username = name;
-    }
-
-    public void Clone(String _path) throws IOException {
-        String name = this.name;
-        File srcDir = new File(this.path);
-        File destDir = new File(_path);
-        FileUtils.copyDirectory(srcDir, destDir);
-        srcDir = new File(_path+"/.magit/branches");
-        destDir = new File(_path+"/.magit/branches/"+name);
-        FileUtils.copyDirectory(srcDir, destDir);
-        new File(_path+"/.magit/branches/remote branches/"+name).delete();
     }
 
     public void createEmptyRepo() throws IOException {
@@ -154,7 +143,7 @@ public class Repository {
         String nameOfHead = "";
         try {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
-                if(fileEntry.isDirectory())
+                if (fileEntry.isDirectory())
                     continue;
                 FileReader fr = new FileReader(fileEntry);
                 BufferedReader br = new BufferedReader(fr);
@@ -199,7 +188,7 @@ public class Repository {
     public void newCommit(String msg) {
 
         String sha1OfRoot;
-        sha1OfRoot = Objects.requireNonNull(recursiveWcToObjectBuilder(this.path,"", true, username,currDelta)).getSha1();
+        sha1OfRoot = Objects.requireNonNull(recursiveWcToObjectBuilder(this.path, "", true, username, currDelta)).getSha1();
 
         Commit commit;
         if (headBranch != null && !headBranch.getSha1().equals(""))
@@ -220,9 +209,9 @@ public class Repository {
         return res;
     }
 
-    private Fof recursiveWcToObjectBuilder(String location,String _path, boolean isCommit, String modifier,Delta delta) {
+    private Fof recursiveWcToObjectBuilder(String location, String _path, boolean isCommit, String modifier, Delta delta) {
         ArrayList<Fof> fofLst = new ArrayList<>();
-        File file = new File(location+_path);
+        File file = new File(location + _path);
         MagitObject obj = null;
         Fof fof;
         String newModifier;
@@ -236,19 +225,19 @@ public class Repository {
                     if (newModifier == null) {
                         newModifier = username;
                     }
-                    fof = recursiveWcToObjectBuilder(location,_fofpath, isCommit, newModifier,delta);
+                    fof = recursiveWcToObjectBuilder(location, _fofpath, isCommit, newModifier, delta);
                     if (fof != null)
                         fofLst.add(fof);
                 }
             }
             if (fofLst.size() == 0) {
-                new File(location+_path).delete();
+                new File(location + _path).delete();
                 return null;
             }
             obj = new Folder(fofLst);
         } else {
             try {
-                content = new String(Files.readAllBytes(Paths.get(location+_path)));
+                content = new String(Files.readAllBytes(Paths.get(location + _path)));
                 obj = new Blob(content);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -296,22 +285,22 @@ public class Repository {
                 commitMap = getCommitMap((Commit) objList.get(headBranch.getSha1()));
         }
         currDelta = new Delta(commitMap);
-        recursiveWcToObjectBuilder(this.path,"", false, username,currDelta);
+        recursiveWcToObjectBuilder(this.path, "", false, username, currDelta);
         return currDelta.getIsChanged();
     }
 
     private Delta deltaChangesBetweenCommits(String sha1) {
         Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
         Delta delta = new Delta(commitMap);
-        recursiveWcToObjectBuilder(this.path+"/.magit/merge files","", false, username,delta);
+        recursiveWcToObjectBuilder(this.path + "/.magit/merge files", "", false, username, delta);
         return delta;
     }
 
-    public String deltaChangesBetweenCommitsToString(String sha1){
+    public String deltaChangesBetweenCommitsToString(String sha1) {
         String commitPath = path + "/.magit/Commit files/";
         Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
         Delta delta = new Delta(commitMap);
-        recursiveWcToObjectBuilder(commitPath,"", false, username,delta);
+        recursiveWcToObjectBuilder(commitPath, "", false, username, delta);
         return delta.showChanges();
     }
 
@@ -504,22 +493,23 @@ public class Repository {
 
     public void buildCommitForMerge(String msg) throws IOException {
         deleteWCFiles(this.path);
-        String sha1OfRoot = Objects.requireNonNull(recursiveWcToObjectBuilder(path + "/.magit/merge files/","", true, username,currDelta)).getSha1();
-        Folder commitFolder=(Folder)objList.get(sha1OfRoot);
+        String sha1OfRoot = Objects.requireNonNull(recursiveWcToObjectBuilder(path + "/.magit/merge files/", "", true, username, currDelta)).getSha1();
+        Folder commitFolder = (Folder) objList.get(sha1OfRoot);
         Commit commit = new Commit(commitFolder.getSha1(), headBranch.getSha1(), latestMergedBranchSha1, msg, username);
-        recursiveObjectToWCBuilder(commitFolder,this.path);
+        recursiveObjectToWCBuilder(commitFolder, this.path);
         objList.put(commit.getSha1(), commit);
         headBranch.UpdateSha1(commit.getSha1());
         makeFileForBranch(headBranch.getSha1(), headBranch.getName());
         createZippedFilesForMagitObjects();
     }
+
     public boolean mergeCommits(Branch branch) throws IOException, CannotMergeException {
-        latestMergedBranchSha1=branch.getSha1();
+        latestMergedBranchSha1 = branch.getSha1();
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
 
         String sha1OfAncestor = findAncestor(branch.getSha1(), headBranch.getSha1());
-        if(!(sha1OfAncestor.equals(branch.getSha1())||sha1OfAncestor.equals(headBranch.getSha1()))) {
+        if (!(sha1OfAncestor.equals(branch.getSha1()) || sha1OfAncestor.equals(headBranch.getSha1()))) {
             Folder branchFolder = (Folder) objList.get(((Commit) objList.get(branch.getSha1())).getRootFolderSha1());
             Folder headFolder = (Folder) objList.get(((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1());
 
@@ -532,9 +522,8 @@ public class Repository {
             deleteWCFiles(pathMerge);
 
 
-            conflictMap=mergeConflicts(headBranchDelta, branchDelta);
-        }
-        else {
+            conflictMap = mergeConflicts(headBranchDelta, branchDelta);
+        } else {
             if (sha1OfAncestor.equals(headBranch.getSha1())) {
                 headBranch.UpdateSha1(branch.getSha1());
                 makeFileForBranch(headBranch.getSha1(), headBranch.getName());
@@ -544,25 +533,22 @@ public class Repository {
         return true;
     }
 
-    private HashMap<String,MergeCase>  mergeConflicts(Delta headDelta, Delta branchDelta) {
+    private HashMap<String, MergeCase> mergeConflicts(Delta headDelta, Delta branchDelta) {
 
-        boolean existsInTarget=false;
-        HashMap<String,MergeCase> mergeMap=new HashMap<>();
-        String baseContent=null,ancestorContent=null,targetContent=null;
-        for(Map.Entry<String,Fof> entry:headDelta.getCommitMap().entrySet())
-        {
-            if(entry.getValue().getIsBlob())
-                mergeMap.put(entry.getKey(),sixBooleanGoneWild(headDelta,branchDelta,entry));
-            else
-            {
+        boolean existsInTarget = false;
+        HashMap<String, MergeCase> mergeMap = new HashMap<>();
+        String baseContent = null, ancestorContent = null, targetContent = null;
+        for (Map.Entry<String, Fof> entry : headDelta.getCommitMap().entrySet()) {
+            if (entry.getValue().getIsBlob())
+                mergeMap.put(entry.getKey(), sixBooleanGoneWild(headDelta, branchDelta, entry));
+            else {
                 MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, true,
-                        true, true, true),true,null, null, null);
+                        true, true, true), true, null, null, null);
                 mergeMap.put(entry.getKey(), mc);
             }
         }
-        for(Map.Entry<String,Fof> entry:headDelta.getNewFilesFofs().entrySet())
-        {
-            if(entry.getValue().getIsBlob()) {
+        for (Map.Entry<String, Fof> entry : headDelta.getNewFilesFofs().entrySet()) {
+            if (entry.getValue().getIsBlob()) {
                 baseContent = objList.get(entry.getValue().getSha1()).getContent();
                 if (branchDelta.getNewFilesFofs().get(entry.getKey()) != null) {
                     targetContent = objList.get(branchDelta.getNewFilesFofs().get(entry.getKey()).getSha1()).getContent();
@@ -576,26 +562,21 @@ public class Repository {
                     mergeMap.put(entry.getKey(), mc);
                 }
                 targetContent = null;
-            }
-            else
-            {
+            } else {
                 MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, true,
-                        true, true, true),true,null, null, null);
+                        true, true, true), true, null, null, null);
                 mergeMap.put(entry.getKey(), mc);
             }
         }
-        for(Map.Entry<String,Fof> entry:branchDelta.getNewFilesFofs().entrySet())
-        {
-            if(entry.getValue().getIsBlob()) {
+        for (Map.Entry<String, Fof> entry : branchDelta.getNewFilesFofs().entrySet()) {
+            if (entry.getValue().getIsBlob()) {
                 targetContent = objList.get(branchDelta.getNewFilesFofs().get(entry.getKey()).getSha1()).getContent();
                 MergeCase mc = new MergeCase(MergeCase.caseIs(false, true, false,
-                        false, false, false),false, null, targetContent, null);
+                        false, false, false), false, null, targetContent, null);
                 mergeMap.put(entry.getKey(), mc);
-            }
-            else
-            {
+            } else {
                 MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, true,
-                        true, true, true),true,null, null, null);
+                        true, true, true), true, null, null, null);
                 mergeMap.put(entry.getKey(), mc);
             }
         }
@@ -605,14 +586,13 @@ public class Repository {
 
     private Function<String, CommitRepresentative> CommitRepresentativeMapper = this::getCommitBySha1;
 
-    private MergeCase sixBooleanGoneWild(Delta headDelta, Delta branchDelta,Map.Entry<String,Fof> entry)
-    {
-        boolean  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1, existsInAncestor = true, existsInBase, existsInTarget;
-        String baseSha1="noBase";
-        String targetSha1="noTarget";
-        String contentAncestor=objList.get(branchDelta.getCommitMap().get(entry.getKey()).getSha1()).getContent();
-        String contentBase=null,contentTarget=null;
-        if(branchDelta.getDeletedFilesFofs().get(entry.getKey())==null) {
+    private MergeCase sixBooleanGoneWild(Delta headDelta, Delta branchDelta, Map.Entry<String, Fof> entry) {
+        boolean baseEqualsTargetSha1, targetEqualsAncestorSha1, baseEqualsAncestorSha1, existsInAncestor = true, existsInBase, existsInTarget;
+        String baseSha1 = "noBase";
+        String targetSha1 = "noTarget";
+        String contentAncestor = objList.get(branchDelta.getCommitMap().get(entry.getKey()).getSha1()).getContent();
+        String contentBase = null, contentTarget = null;
+        if (branchDelta.getDeletedFilesFofs().get(entry.getKey()) == null) {
             existsInTarget = true;
             if (branchDelta.getUpdatedFilesFofs().get(entry.getKey()) != null) {
                 contentTarget = objList.get(branchDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1()).getContent();
@@ -620,43 +600,39 @@ public class Repository {
                 targetEqualsAncestorSha1 = false;
             } else {
                 targetEqualsAncestorSha1 = true;
-                contentTarget=contentAncestor;
+                contentTarget = contentAncestor;
             }
-        }
-        else {
-            targetEqualsAncestorSha1=false;
+        } else {
+            targetEqualsAncestorSha1 = false;
             existsInTarget = false;
         }
-        if(headDelta.getDeletedFilesFofs().get(entry.getKey())==null)
-        {
-            existsInBase=true;
-            if(headDelta.getUpdatedFilesFofs().get(entry.getKey())!=null)
-            {
-                contentBase=objList.get(headDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1()).getContent();
-                baseSha1=headDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
-                baseEqualsAncestorSha1=false;
-            }
-            else {
+        if (headDelta.getDeletedFilesFofs().get(entry.getKey()) == null) {
+            existsInBase = true;
+            if (headDelta.getUpdatedFilesFofs().get(entry.getKey()) != null) {
+                contentBase = objList.get(headDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1()).getContent();
+                baseSha1 = headDelta.getUpdatedFilesFofs().get(entry.getKey()).getSha1();
+                baseEqualsAncestorSha1 = false;
+            } else {
                 baseEqualsAncestorSha1 = true;
-                contentBase=contentAncestor;
+                contentBase = contentAncestor;
             }
-        }
-        else {
-            baseEqualsAncestorSha1=false;
+        } else {
+            baseEqualsAncestorSha1 = false;
             existsInBase = false;
         }
-        baseEqualsTargetSha1= (targetEqualsAncestorSha1 && baseEqualsAncestorSha1) || (baseSha1.equals(targetSha1));
-        if(existsInBase && existsInTarget && !(baseEqualsAncestorSha1 && targetEqualsAncestorSha1)) {
+        baseEqualsTargetSha1 = (targetEqualsAncestorSha1 && baseEqualsAncestorSha1) || (baseSha1.equals(targetSha1));
+        if (existsInBase && existsInTarget && !(baseEqualsAncestorSha1 && targetEqualsAncestorSha1)) {
             baseEqualsTargetSha1 = false;
             targetEqualsAncestorSha1 = false;
             baseEqualsAncestorSha1 = false;
         }
-        Optional<MergeCases> res=MergeCase.caseIs(existsInBase,existsInTarget, true,
-            baseEqualsTargetSha1,targetEqualsAncestorSha1,baseEqualsAncestorSha1);
+        Optional<MergeCases> res = MergeCase.caseIs(existsInBase, existsInTarget, true,
+                baseEqualsTargetSha1, targetEqualsAncestorSha1, baseEqualsAncestorSha1);
 
-        return  new MergeCase(res,false,contentBase,contentTarget,contentAncestor);
+        return new MergeCase(res, false, contentBase, contentTarget, contentAncestor);
 
     }
+
     private String findAncestor(String sha1_1, String sha1_2) {
         AncestorFinder finder = new AncestorFinder(CommitRepresentativeMapper);
         return finder.traceAncestor(sha1_1, sha1_2);
@@ -667,15 +643,35 @@ public class Repository {
         return conflictMap.isEmpty();
     }
 
-    public void fetch() {
-        File file = new File(this.path + "/.magit/branches");
-        for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
+    public void setRemoteRepository(String pathOfOldRepo) {
+        remoteRepoPath = pathOfOldRepo;
+    }
+
+    public void Clone(String _path) throws IOException {
+        String name = this.name;
+        File srcDir = new File(this.path);
+        File destDir = new File(_path);
+        FileUtils.copyDirectory(srcDir, destDir);
+        srcDir = new File(_path + "/.magit/branches");
+        destDir = new File(_path + "/.magit/branches/" + name);
+        FileUtils.copyDirectory(srcDir, destDir);
+        new File(_path + "/.magit/branches/remote branches/" + name).delete();
+    }
+
+    public void fetch() throws IOException {
+        File branches = new File(remoteRepoPath + "/.magit/branches");
+        for (File fileEntry : Objects.requireNonNull(branches.listFiles())) {
             if (fileEntry.isFile()) {
-                FileUtils.copyFile(fileEntry, new File());
-            }
-    
+                File fileToDelete = new File(this.path + "/.magit/branches/" + fileEntry.getName());
+                fileToDelete.delete();
+                FileUtils.copyFile(fileEntry, fileToDelete);
             }
         }
+        File theirObjects = new File(remoteRepoPath + "/.magit/objects");
+        File myObjects = new File(this.path + "/.magit/objects");
+        System.out.println("My path is : "+this.path +  "/.magit/objects" + "\nTheir path is"+ remoteRepoPath+"/.magit/objects");
+        FileUtils.copyDirectory(theirObjects, myObjects);
     }
+}
 
 
