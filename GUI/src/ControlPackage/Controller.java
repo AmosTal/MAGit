@@ -110,7 +110,7 @@ public class Controller {
 
     @FXML
     void fetch() {
-
+        ModuleTwo.getActiveRepo().fetch();
     }
     @FXML
     void pull() {
