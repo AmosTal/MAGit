@@ -11,7 +11,6 @@ import Objects.Date.DateAndTime;
 import Objects.Folder.Fof;
 import Objects.Folder.Folder;
 import XML.XmlData;
-
 import XMLpackage.*;
 import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
@@ -655,6 +654,9 @@ public class Repository {
     }
 
     public void fetch() throws IOException {
+        File theirObjects = new File(remoteRepoPath + "/.magit/objects");
+        File myObjects = new File(this.path + "/.magit/objects");
+        FileUtils.copyDirectory(theirObjects, myObjects);
         File branches = new File(remoteRepoPath + "/.magit/branches");
         for (File fileEntry : Objects.requireNonNull(branches.listFiles())) {
             if (fileEntry.isFile()) {
@@ -663,9 +665,6 @@ public class Repository {
                 FileUtils.copyFile(fileEntry, fileToDelete);
             }
         }
-        File theirObjects = new File(remoteRepoPath + "/.magit/objects");
-        File myObjects = new File(this.path + "/.magit/objects");
-        FileUtils.copyDirectory(theirObjects, myObjects);
     }
 
     public void makeRemoteRepositoryFile(String pathOfOldRepo) throws IOException {
@@ -679,7 +678,7 @@ public class Repository {
 
     public void updateRemoteRepoPath() throws IOException {
         File remoteRepoPathFile = new File(path+"/.magit/remoteRepositoryPath.txt");
-        if(remoteRepoPathFile.exists()){
+        if(remoteRepoPathFile.isFile()){
             BufferedReader r = new BufferedReader(new FileReader(remoteRepoPathFile));
             remoteRepoPath = r.readLine();
             r.close();

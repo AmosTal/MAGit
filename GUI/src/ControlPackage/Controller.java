@@ -12,14 +12,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -147,11 +145,12 @@ public class Controller {
     void fetch() {
         try {
             ModuleTwo.getActiveRepo().fetch();
+            ModuleTwo.SwitchRepo(ModuleTwo.getActiveRepoPath());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
             GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-        } catch (IOException e) {
+        } catch (IOException | NoSuchRepoException e) {
             popAlert(e);
         }
     }
