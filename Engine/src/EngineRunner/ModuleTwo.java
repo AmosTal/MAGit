@@ -2,22 +2,26 @@ package EngineRunner;
 
 
 import ControlPackage.Controller;
-import Objects.Branch.*;
+import Objects.Branch.AlreadyExistingBranchException;
+import Objects.Branch.Branch;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.*;
 import XML.XmlData;
 import XML.XmlNotValidException;
 import org.apache.commons.io.FileUtils;
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
+import puk.team.course.magit.ancestor.finder.CommitRepresentative;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.function.Function;
 
 public class ModuleTwo {
 
@@ -27,18 +31,13 @@ public class ModuleTwo {
         Repository.updateUsername(name);
     }
 
-    public static void makeRemoteRepositoryFiles(String path) throws IOException {
-        activeRepo.makeRemoteRepositoryFiles(path);
-    }
-
-    public static void SwitchRepo(String path) throws NoSuchRepoException, IOException, ClassNotFoundException {
+    public static void SwitchRepo(String path) throws NoSuchRepoException, IOException {
         Path p = Paths.get(path + "/.magit");
         if (Files.isDirectory(p)) {
             Repository repo = new Repository(path, new HashMap<>(), new ArrayList<>());
             repo.readRepoFiles();
-            repo.updateRemoteRepoPath();
-            repo.updateRemoteRepoName();
             activeRepo = repo;
+            activeRepo.updateRemoteRepoPath();
         } else
             throw new NoSuchRepoException();
     }
@@ -49,7 +48,7 @@ public class ModuleTwo {
         activeRepo = repo;
     }
 
-    public static void loadRepo(String path) throws XmlNotValidException, IOException, NoSuchRepoException, ClassNotFoundException {
+    public static void loadRepo(String path) throws XmlNotValidException, IOException, NoSuchRepoException {
 
         XmlData reader = new XmlData(path);
         String pathFromXml = reader.getMagitRepository().getLocation();
@@ -63,14 +62,13 @@ public class ModuleTwo {
             new File(reader.getMagitRepository().getLocation()).mkdir();
             activeRepo = Repository.makeRepoFromXmlRepo(reader);
             activeRepo.createEmptyRepo();
-            activeRepo.makeRemoteFiles();
             activeRepo.createFiles();
         } else {
             SwitchRepo(pathFromXml);
         }
     }
 
-    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException, IOException {
+    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException{
         checkIfActiveRepoExists();
         if (activeRepo.checkDeltaChanges()) {
             activeRepo.newCommit(msg);
@@ -80,34 +78,33 @@ public class ModuleTwo {
             throw new CommitCannotExecutException();
     }
 
-    public static void makeNewBranch(String name, String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException, BranchNoNameException, FileNotFoundException {
+    public static void makeNewBranch(String name) throws NoActiveRepositoryException, AlreadyExistingBranchException {
 
 
         checkIfActiveRepoExists();
-        activeRepo.addNewBranch(name, sha1);
+        activeRepo.addNewBranch(name, null);
     }
 
-    public static boolean checkChanges() throws NoActiveRepositoryException, IOException {
+    public static boolean checkChanges() throws NoActiveRepositoryException {
 
         checkIfActiveRepoExists();
         return activeRepo.checkDeltaChanges();
     }
 
-    public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException, IOException, CheckOutHeadException {
+    public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException, IOException {
 
         checkIfActiveRepoExists();
         activeRepo.switchHead(name);
 
     }
 
-    public static String showStatus() throws IOException {
+    public static String showStatus() {
         return activeRepo.showRepoStatus();
     }
 
     public static String changesBetweenCommitsToString(String sha1) throws IOException {
         return activeRepo.deltaChangesBetweenCommitsToString(sha1);
     }
-
     public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
         checkIfActiveRepoExists();
         activeRepo.deleteThisBranch(input);
@@ -138,73 +135,26 @@ public class ModuleTwo {
         return activeRepo.getHeadBranchName();
     }
 
-    public static List<Commit> getActiveReposBranchCommits(Branch branch) {
-        return activeRepo.getBranchCommits(branch);
+    public static List<Commit> getActiveReposBranchCommits(Branch branch) { return activeRepo.getBranchCommits(branch);
     }
 
     public static ArrayList<Branch> getActiveReposBranches() {
         return activeRepo.getBranches();
     }
 
-    public static boolean merge(String branchSha1) throws IOException, CannotMergeException {
+    public static boolean merge(Branch branch) throws IOException, CannotMergeException {
 
-        return activeRepo.mergeCommits(branchSha1);
+        return activeRepo.mergeCommits(branch);
     }
 
-    public static String isPointedCommitBranchList(Commit commit) {
-        String res = "";
-        for (Branch branch : activeRepo.getBranches()) {
-            if (branch.getSha1().equals(commit.getSha1())) {
-                if (res.equals(""))
-                    res = branch.getName();
-                else
-                    res = res + ", " + branch.getName();
-            }
-        }
-        if (activeRepo.getHeadBranch().getSha1().equals(commit.getSha1())) {
-            if (res.equals(""))
-                res = activeRepo.getHeadBranch().getName();
-            else
-                res = res + ", " + activeRepo.getHeadBranch().getName();
-        }
-        return res;
-    }
-
-    public static String isPointedCommit(String commitSha1) {
-        for (Branch branch : activeRepo.getBranches()) {
-            if (branch.getSha1().equals(commitSha1))
+    public static String isPointedCommit(Commit commit) {
+        for(Branch branch:activeRepo.getBranches())
+        {
+            if(branch.getSha1().equals(commit.getSha1()))
                 return branch.getName();
         }
-        if (activeRepo.getHeadBranch().getSha1().equals(commitSha1))
+        if(activeRepo.getHeadBranch().getSha1().equals(commit.getSha1()))
             return activeRepo.getHeadBranch().getName();
         return "";
-    }
-
-
-
-    public static void push() throws IOException, NoSuchRepoException, ClassNotFoundException {
-            ArrayList<String> arr = activeRepo.getWantedSha1sForPush();
-            String activeRepoPath = getActiveRepoPath();
-            SwitchRepo(activeRepo.getRemoteRepositoryPath());
-            activeRepo.updateCommits(activeRepoPath, arr);
-            activeRepo.updateHeadBranch(activeRepoPath);
-            SwitchRepo(activeRepoPath);
-            activeRepo.updateRB();
-    }
-
-    public static void pull() throws IOException, NoSuchRepoException, ClassNotFoundException {
-        if (activeRepo.isHeadBranchRTB() && activeRepo.lrIsPushed()) {
-            String myPath = getActiveRepoPath();
-            File headBranchFile= new File(getActiveRepoPath()+"/.magit/branches/"+activeRepo.getHeadBranchName());
-            BufferedReader r = new BufferedReader(new FileReader(headBranchFile));
-            String sha1OfCurrHeadCommit = r.readLine();
-            SwitchRepo(ModuleTwo.activeRepo.getRemoteRepositoryPath());
-            ArrayList<String> arr = activeRepo.getWantedSha1sForPull(sha1OfCurrHeadCommit);
-
-            activeRepo.updateCommitsForPull(myPath, arr);
-            activeRepo.updateHeadBranchForPull(myPath);
-            SwitchRepo(myPath);
-            activeRepo.updateRB();
-        }
     }
 }
