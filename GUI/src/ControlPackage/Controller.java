@@ -67,6 +67,7 @@ public class Controller {
 
     @FXML
     private Button mergeButtonID;
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -75,6 +76,7 @@ public class Controller {
     public TreeView<File> fileSystemTreeView;
     @FXML
     private TreeView<CommitOrBranch> BranchCommitTreeView;
+
     @FXML
     void showDelta1() {
 
