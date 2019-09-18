@@ -100,7 +100,7 @@ public class Controller {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
-        JOptionPane.showMessageDialog(null, scrollPane, "dialog test with textarea",
+        JOptionPane.showMessageDialog(null, scrollPane, "dialog test with textarea",//FIX DISSSSSSSSSSSSSSSSSSSSSSSSSSSS
                 JOptionPane.PLAIN_MESSAGE);
     }
     @FXML
@@ -127,17 +127,13 @@ public class Controller {
                     if (!selectedItem.getValue().isCommit()) {
                         if (!selectedItem.getValue().getBranch().getName().equals(activeBranchLabel.getText())) {
                             try {
-                                TextInputDialog commitDialog = new TextInputDialog("");
-                                commitDialog.setTitle("Execute merge");
-                                commitDialog.setHeaderText("Enter commit message:");
-                                Optional<String> commitMsg = commitDialog.showAndWait();
-                                if (commitMsg.isPresent()) {
-                                    if (ModuleTwo.merge(selectedItem.getValue().getBranch()))
-                                    {
-                                        refreshFilesTree();
-                                        //refreshCommitsTree();
-                                        GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-
+                                if (ModuleTwo.merge(selectedItem.getValue().getBranch()))
+                                {
+                                    TextInputDialog commitDialog = new TextInputDialog("");
+                                    commitDialog.setTitle("Execute merge");
+                                    commitDialog.setHeaderText("Enter commit message:");
+                                    Optional<String> commitMsg = commitDialog.showAndWait();
+                                    if (commitMsg.isPresent()) {
                                         if (!ModuleTwo.getActiveRepo().isConflictsEmpty()) {
                                             FXMLLoader fxmlLoader = new FXMLLoader();
                                             URL url = getClass().getResource("MergeWindow.fxml");
@@ -159,7 +155,16 @@ public class Controller {
                                             refreshCommitsTree();
                                         }
                                     }
+                                    refreshFilesTree();
+                                    //refreshCommitsTree();
+                                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                                 }
+                                else {
+                                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                                    alert.setContentText("Nothing to merge: active branch is already made from the merged branch");
+                                    alert.showAndWait();
+                                }
+
                             } catch (IOException | CannotMergeException e) {
                                 popAlert(e);
                             }
