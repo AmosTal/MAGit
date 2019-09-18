@@ -501,7 +501,7 @@ public class Repository {
         makeFileForBranch(headBranch.getSha1(), headBranch.getName());
         createZippedFilesForMagitObjects();
     }
-    public void mergeCommits(Branch branch, String msg) throws IOException, CannotMergeException {
+    public void mergeCommits(Branch branch) throws IOException, CannotMergeException {
         latestMergedBranchSha1=branch.getSha1();
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();

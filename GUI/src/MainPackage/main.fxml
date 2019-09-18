@@ -214,15 +214,15 @@
                         </HBox>
                         <TabPane maxWidth="870.0" tabClosingPolicy="UNAVAILABLE" GridPane.rowSpan="2">
                             <tabs>
+                                <Tab text="Graphical view">
+                           <content>
+                               <ScrollPane fx:id="scrollPane" onMouseClicked="#refreshGraphic" prefHeight="200.0" prefWidth="200.0" />
+                           </content></Tab>
                                 <Tab text="Normal view">
                                     <content>
                                         <TreeView fx:id="BranchCommitTreeView" prefHeight="200.0" prefWidth="200.0" />
                                     </content>
                                 </Tab>
-                                <Tab text="Graphical view">
-                           <content>
-                               <ScrollPane fx:id="scrollPane" onMouseClicked="#refreshGraphic" prefHeight="200.0" prefWidth="200.0" />
-                           </content></Tab>
                             </tabs>
                         </TabPane>
                     </children>

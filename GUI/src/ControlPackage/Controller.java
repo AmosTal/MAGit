@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 public class Controller {
     public static MergeWindowController mergeController;
     private boolean commitBool = false;
+    public Stage mergeStage;
     @FXML
     private Label repositoryNameLabel;
     @FXML
@@ -130,7 +131,7 @@ public class Controller {
                                 commitDialog.setHeaderText("Enter commit message:");
                                 Optional<String> commitMsg = commitDialog.showAndWait();
                                 if (commitMsg.isPresent()) {
-                                    ModuleTwo.merge(selectedItem.getValue().getBranch(), commitMsg.get());
+                                    ModuleTwo.merge(selectedItem.getValue().getBranch());
                                     refreshFilesTree();
                                     //refreshCommitsTree();
                                     GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
@@ -142,11 +143,13 @@ public class Controller {
                                         GridPane head = fxmlLoader.load(url.openStream());
                                         Scene scene = new Scene(head, 1200,800);
                                         scene.getStylesheets().add("Resources/caspian.css");
-                                        Stage stage = new Stage();
-                                        stage.setTitle("Conflicts");
+                                        mergeStage = new Stage();
+                                        mergeStage.setTitle("Conflicts");
                                         mergeController=fxmlLoader.getController();
-                                        stage.setScene(scene);
-                                        stage.show();
+                                        mergeController.setMainController(this);
+                                        mergeController.setMsg(commitMsg.get());
+                                        mergeStage.setScene(scene);
+                                        mergeStage.show();
                                         mergeController.updateConflictTreeView();
                                         mergeController.showFiles();
                                 }

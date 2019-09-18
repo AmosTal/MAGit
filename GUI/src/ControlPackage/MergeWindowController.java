@@ -11,7 +11,7 @@ import java.util.Map;
 
 
 public class MergeWindowController {
-
+    private Controller mainController;
 
     @FXML
     private TextArea currentBranchContent;
@@ -24,38 +24,51 @@ public class MergeWindowController {
     @FXML
     private TextArea newFileTextArea;
 
+    private String msg;
+
+    private  HashMap<String, MergeCase> pathLst=new HashMap<>();
+    private  HashMap<String, MergeCase> conflictLst=new HashMap<>();
     @FXML
-    private Button cancelButton1;
-    @FXML
-    private Button cancelButton;
-    private String msg="";//fix dis<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    private String sha1OfMergeBranch;
-    private static HashMap<String, MergeCase> pathLst=new HashMap<>();
-    private static HashMap<String, MergeCase> conflictLst=new HashMap<>();
-    @FXML
-    void cancelMerge() { }
-    @FXML
-    void deleteFile() { }
+    void cancelMerge() {
+        String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
+        mainController.mergeStage.close();
+    }
+
     @FXML
     void mergeDone() throws IOException {
         if(conflictLst.isEmpty())
         {
             String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
             ModuleTwo.getActiveRepo().buildCommitForMerge(msg);
+            mainController.mergeStage.close();
+            mainController.refreshGraphic();
 
         }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("There are conflicts, can't merge without solving all the conflicts.");
+            alert.showAndWait();
+        }
     }
-
+    @FXML
+    void deleteFile() throws FileNotFoundException {
+        TreeItem<String> selectedItem = conflictTreeView.getSelectionModel().getSelectedItem();
+        conflictLst.remove(selectedItem.getValue());
+        updateConflictTreeView();
+    }
     @FXML
     void makeNewFileButton() throws IOException {
 
         String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
         TreeItem<String> selectedItem = conflictTreeView.getSelectionModel().getSelectedItem();
-        PrintWriter out = new PrintWriter(pathMerge+selectedItem.getValue());
-        out.write(newFileTextArea.getText());
-        out.close();
-        conflictLst.remove(selectedItem.getValue());
-        updateConflictTreeView();
+        if(selectedItem!=null) {
+            PrintWriter out = new PrintWriter(pathMerge + selectedItem.getValue());
+            out.write(newFileTextArea.getText());
+            out.close();
+            conflictLst.remove(selectedItem.getValue());
+            updateConflictTreeView();
+        }
     }
 
 
@@ -140,4 +153,11 @@ public class MergeWindowController {
     }
 
 
+    public void setMainController(Controller controller) {
+        mainController=controller;
+    }
+
+    public void setMsg(String msg) {
+        this.msg=msg;
+    }
 }
