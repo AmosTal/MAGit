@@ -67,20 +67,20 @@ public class Repository {
     }
 
     public void Clone(String _path) throws IOException {
+        String name = this.name;
         File srcDir = new File(this.path);
         File destDir = new File(_path);
         FileUtils.copyDirectory(srcDir, destDir);
         srcDir = new File(_path+"/.magit/branches");
-        destDir = new File(_path+"/.magit/branches/remote branches");
+        destDir = new File(_path+"/.magit/branches/"+name);
         FileUtils.copyDirectory(srcDir, destDir);
-        new File(_path+"/.magit/branches/remote branches/remote branches").delete();
+        new File(_path+"/.magit/branches/remote branches/"+name).delete();
     }
 
     public void createEmptyRepo() throws IOException {
         new File(path).mkdir();
         new File(path + "/.magit").mkdir();
         new File(path + "/.magit/branches").mkdir();
-        new File(path + "/.magit/branches/remote branches").mkdir();
         new File(path + "/.magit/objects").mkdir();
         new File(path + "/.magit/Commit files").mkdir();
         new File(path + "/.magit/merge files").mkdir();
