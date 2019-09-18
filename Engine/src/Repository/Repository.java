@@ -667,15 +667,15 @@ public class Repository {
         return conflictMap.isEmpty();
     }
 
-    public void fetch() {
-        File file = new File(this.path + "/.magit/branches");
-        for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
-            if (fileEntry.isFile()) {
-                FileUtils.copyFile(fileEntry, new File());
-            }
-    
-            }
-        }
+//    public void fetch() {
+//        File file = new File(this.path + "/.magit/branches");
+//        for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
+//            if (fileEntry.isFile()) {
+//                FileUtils.copyFile(fileEntry, new File());
+//            }
+//    
+//            }
+//        }
     }
 
 

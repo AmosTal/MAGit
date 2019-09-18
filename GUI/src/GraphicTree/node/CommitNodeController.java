@@ -12,6 +12,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
+import java.util.Map;
 
 public class CommitNodeController {
 
@@ -26,6 +27,18 @@ public class CommitNodeController {
     void commitClicked(MouseEvent event) {
         try {
             Main.controller.showCommitFiles(commit);
+            Main.controller.resetContext.setVisible(true);
+            Main.controller.newBranchContext.setVisible(true);
+            if(treeShape.isVisible()) {
+                Main.controller.mergeContext.setVisible(true);
+                Main.controller.deleteBranchContext.setVisible(true);
+            }
+            else
+            {
+                Main.controller.mergeContext.setVisible(false);
+                Main.controller.deleteBranchContext.setVisible(false);
+            }
+            Main.controller.justClickedOnGraphic=true;
         } catch (IOException e) {
             Controller.popAlert(e);
         }
