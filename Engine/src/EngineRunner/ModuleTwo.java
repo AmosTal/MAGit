@@ -10,9 +10,6 @@ import Repository.*;
 import XML.XmlData;
 import XML.XmlNotValidException;
 import org.apache.commons.io.FileUtils;
-import puk.team.course.magit.ancestor.finder.AncestorFinder;
-import puk.team.course.magit.ancestor.finder.CommitRepresentative;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
+
 
 public class ModuleTwo {
 
