@@ -31,12 +31,13 @@ public class ModuleTwo {
         Repository.updateUsername(name);
     }
 
-    public static void SwitchRepo(String path) throws NoSuchRepoException {
+    public static void SwitchRepo(String path) throws NoSuchRepoException, IOException {
         Path p = Paths.get(path + "/.magit");
         if (Files.isDirectory(p)) {
             Repository repo = new Repository(path, new HashMap<>(), new ArrayList<>());
             repo.readRepoFiles();
             activeRepo = repo;
+            activeRepo.updateRemoteRepoPath();
         } else
             throw new NoSuchRepoException();
     }

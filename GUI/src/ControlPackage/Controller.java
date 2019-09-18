@@ -132,7 +132,7 @@ public class Controller {
         String pathOfOldRepo = ModuleTwo.getActiveRepoPath();
         try {
             ModuleTwo.SwitchRepo(path);
-            ModuleTwo.getActiveRepo().setRemoteRepository(pathOfOldRepo);
+            ModuleTwo.getActiveRepo().makeRemoteRepositoryFile(pathOfOldRepo);
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
@@ -583,7 +583,7 @@ public class Controller {
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
             GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-        } catch (NoSuchRepoException e) {
+        } catch (NoSuchRepoException | IOException e) {
             popAlert(e);
         }
     }

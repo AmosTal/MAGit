@@ -643,10 +643,6 @@ public class Repository {
         return conflictMap.isEmpty();
     }
 
-    public void setRemoteRepository(String pathOfOldRepo) {
-        remoteRepoPath = pathOfOldRepo;
-    }
-
     public void Clone(String _path) throws IOException {
         String name = this.name;
         File srcDir = new File(this.path);
@@ -669,9 +665,27 @@ public class Repository {
         }
         File theirObjects = new File(remoteRepoPath + "/.magit/objects");
         File myObjects = new File(this.path + "/.magit/objects");
-        System.out.println("My path is : "+this.path +  "/.magit/objects" + "\nTheir path is"+ remoteRepoPath+"/.magit/objects");
         FileUtils.copyDirectory(theirObjects, myObjects);
     }
+
+    public void makeRemoteRepositoryFile(String pathOfOldRepo) throws IOException {
+        File pathOfRepoFile = new File(this.path+"/.magit/remoteRepositoryPath.txt");
+        if(pathOfRepoFile.createNewFile()) {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(pathOfRepoFile));
+            writer.write(pathOfOldRepo);
+            writer.close();
+        }
+    }
+
+    public void updateRemoteRepoPath() throws IOException {
+        File remoteRepoPathFile = new File(path+"/.magit/remoteRepositoryPath.txt");
+        if(remoteRepoPathFile.exists()){
+            BufferedReader r = new BufferedReader(new FileReader(remoteRepoPathFile));
+            remoteRepoPath = r.readLine();
+            r.close();
+        }
+    }
 }
+
 
 
