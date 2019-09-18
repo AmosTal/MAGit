@@ -28,9 +28,9 @@ public class MergeWindowController {
     private Button cancelButton1;
     @FXML
     private Button cancelButton;
-    private String msg="";//fix dis<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    private String msg="";//fix dis<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     private String sha1OfMergeBranch;
-    private static HashMap<String, MergeCase> pathLst;
+    private static HashMap<String, MergeCase> pathLst=new HashMap<>();
     private static HashMap<String, MergeCase> conflictLst=new HashMap<>();
     @FXML
     void cancelMerge() { }
@@ -54,8 +54,7 @@ public class MergeWindowController {
         PrintWriter out = new PrintWriter(pathMerge+selectedItem.getValue());
         out.write(newFileTextArea.getText());
         out.close();
-        conflictLst.remove(selectedItem);
-
+        conflictLst.remove(selectedItem.getValue());
         updateConflictTreeView();
     }
 
@@ -79,6 +78,7 @@ public class MergeWindowController {
     }
     private void recursiveFolderBuilder(String pathMerge,HashMap<String, MergeCase> folderLst)
     {
+
         HashMap<String, MergeCase> newFolderLst=new HashMap<>();
         for(Map.Entry<String, MergeCase> entry:folderLst.entrySet())
             if(entry.getValue().getIsFolder())
@@ -90,32 +90,30 @@ public class MergeWindowController {
             recursiveFolderBuilder(pathMerge,newFolderLst);
     }
     private TreeItem<String> getNodes() throws FileNotFoundException {
-         pathLst= ModuleTwo.getActiveRepo().getConflictMap();
-        String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
-        new File(pathMerge).mkdir();
-        recursiveFolderBuilder(pathMerge,pathLst);
-        //conflictLst.putAll(pathLst.entrySet().stream().filter(e->e.getValue().getIsFolder()));
+        if(conflictLst.isEmpty()&&pathLst.isEmpty())
+        {
+            pathLst = ModuleTwo.getActiveRepo().getConflictMap();
+            String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
+            new File(pathMerge).mkdir();
+            recursiveFolderBuilder(pathMerge, pathLst);
+            //conflictLst.putAll(pathLst.entrySet().stream().filter(e->e.getValue().getIsFolder()));
 
             //possible solution: sort the array
 
-         for(Map.Entry<String, MergeCase> entry:pathLst.entrySet())
-        {
-            if(!entry.getValue().getIsFolder()) {
-                if(entry.getValue().getMergecases().get().takeOursOrTheirs().equals(""))
-                    conflictLst.put(entry.getKey(), entry.getValue());
-                else
-                {
-                    if(entry.getValue().getMergecases().get().takeOursOrTheirs().equals("ours"))
-                    {
-                        PrintWriter out = new PrintWriter(pathMerge+entry.getKey());
-                        out.write(entry.getValue().getBaseContent());
-                        out.close();
-                    }
-                    else
-                    {
-                        PrintWriter out = new PrintWriter(pathMerge+entry.getKey());
-                        out.write(entry.getValue().getTargetContent());
-                        out.close();
+            for (Map.Entry<String, MergeCase> entry : pathLst.entrySet()) {
+                if (!entry.getValue().getIsFolder()) {
+                    if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals(""))
+                        conflictLst.put(entry.getKey(), entry.getValue());
+                    else {
+                        if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals("ours")) {
+                            PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
+                            out.write(entry.getValue().getBaseContent());
+                            out.close();
+                        } else {
+                            PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
+                            out.write(entry.getValue().getTargetContent());
+                            out.close();
+                        }
                     }
                 }
             }
@@ -123,6 +121,7 @@ public class MergeWindowController {
         //filter the folders...
         //filter the cases- keep 1-5 only
         //all the files remaining put in the folder..
+
         TreeItem<String> root = new TreeItem<>("");
         for(String path : conflictLst.keySet()){
             root.getChildren().add(new TreeItem<>(path));

@@ -33,13 +33,20 @@ public static Controller controller;
         changeSkinButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(scene.getStylesheets().contains("Resources/secondSkin.css")) {scene.getStylesheets().remove("Resources/secondSkin.css");
-
-                if(!scene.getStylesheets().contains("Resources/secondSkin.css")) scene.getStylesheets().add("Resources/secondSkin.css");}
-                else{
+                if(scene.getStylesheets().contains("Resources/caspian.css")) {
+                    scene.getStylesheets().remove("Resources/caspian.css");
+                    if(!scene.getStylesheets().contains("Resources/secondSkin.css"))
+                        scene.getStylesheets().add("Resources/secondSkin.css");
+                }
+                else if (scene.getStylesheets().contains("Resources/secondSkin.css")){
                     scene.getStylesheets().remove("Resources/secondSkin.css");
-
-                if(!scene.getStylesheets().contains("Resources/firstSkin.css")) scene.getStylesheets().add("Resources/firstSkin.css");}
+                    if(!scene.getStylesheets().contains("Resources/firstSkin.css"))
+                        scene.getStylesheets().add("Resources/firstSkin.css");
+                }
+                else{
+                    scene.getStylesheets().remove("Resources/firstSkin.css");
+                    scene.getStylesheets().add("Resources/caspian.css");
+                }
             }
         });
         primaryStage.setScene(scene);
