@@ -35,7 +35,7 @@ public class Repository {
     private String name;
     private static String username = "default";
     private Delta currDelta;
-    private HashMap<String,MergeCase> conflictMap = null;
+    private HashMap<String,MergeCase> conflictMap=new HashMap<>();
     private String latestMergedBranchSha1=null;
 
     public String getLatestMergedBranchSha1() {
@@ -501,7 +501,7 @@ public class Repository {
         makeFileForBranch(headBranch.getSha1(), headBranch.getName());
         createZippedFilesForMagitObjects();
     }
-    public void mergeCommits(Branch branch) throws IOException, CannotMergeException {
+    public boolean mergeCommits(Branch branch) throws IOException, CannotMergeException {
         latestMergedBranchSha1=branch.getSha1();
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
@@ -522,15 +522,14 @@ public class Repository {
 
             conflictMap=mergeConflicts(headBranchDelta, branchDelta);
         }
-        else
-        {
-            if(sha1OfAncestor.equals(headBranch.getSha1()))
-                throw new CannotMergeException();
-            else{
+        else {
+            if (sha1OfAncestor.equals(headBranch.getSha1())) {
                 headBranch.UpdateSha1(branch.getSha1());
                 makeFileForBranch(headBranch.getSha1(), headBranch.getName());
-            }
+            } else
+                return false;
         }
+        return true;
     }
 
     private HashMap<String,MergeCase>  mergeConflicts(Delta headDelta, Delta branchDelta) {

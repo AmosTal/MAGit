@@ -70,7 +70,7 @@ public class Controller {
     private Button mergeButtonID;
 
     @FXML
-    private ScrollPane scrollPane;
+    public ScrollPane scrollPane;
     @FXML
     private ListView<?> fileContentListView;
     @FXML
@@ -131,27 +131,33 @@ public class Controller {
                                 commitDialog.setHeaderText("Enter commit message:");
                                 Optional<String> commitMsg = commitDialog.showAndWait();
                                 if (commitMsg.isPresent()) {
-                                    ModuleTwo.merge(selectedItem.getValue().getBranch());
-                                    refreshFilesTree();
-                                    //refreshCommitsTree();
-                                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-                                }
-                                if(!ModuleTwo.getActiveRepo().isConflictsEmpty()){
-                                        FXMLLoader fxmlLoader = new FXMLLoader();
-                                        URL url = getClass().getResource("MergeWindow.fxml");
-                                        fxmlLoader.setLocation(url);
-                                        GridPane head = fxmlLoader.load(url.openStream());
-                                        Scene scene = new Scene(head, 1200,800);
-                                        scene.getStylesheets().add("Resources/caspian.css");
-                                        mergeStage = new Stage();
-                                        mergeStage.setTitle("Conflicts");
-                                        mergeController=fxmlLoader.getController();
-                                        mergeController.setMainController(this);
-                                        mergeController.setMsg(commitMsg.get());
-                                        mergeStage.setScene(scene);
-                                        mergeStage.show();
-                                        mergeController.updateConflictTreeView();
-                                        mergeController.showFiles();
+                                    if (ModuleTwo.merge(selectedItem.getValue().getBranch()))
+                                    {
+                                        refreshFilesTree();
+                                        //refreshCommitsTree();
+                                        GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+
+                                        if (!ModuleTwo.getActiveRepo().isConflictsEmpty()) {
+                                            FXMLLoader fxmlLoader = new FXMLLoader();
+                                            URL url = getClass().getResource("MergeWindow.fxml");
+                                            fxmlLoader.setLocation(url);
+                                            GridPane head = fxmlLoader.load(url.openStream());
+                                            Scene scene = new Scene(head, 1200, 800);
+                                            scene.getStylesheets().add("Resources/caspian.css");
+                                            mergeStage = new Stage();
+                                            mergeStage.setTitle("Conflicts");
+                                            mergeController = fxmlLoader.getController();
+                                            mergeController.setMainController(this);
+                                            mergeController.setMsg(commitMsg.get());
+                                            mergeStage.setScene(scene);
+                                            mergeStage.show();
+                                            mergeController.updateConflictTreeView();
+                                            mergeController.showFiles();
+                                        } else {
+
+                                            refreshCommitsTree();
+                                        }
+                                    }
                                 }
                             } catch (IOException | CannotMergeException e) {
                                 popAlert(e);
@@ -454,7 +460,7 @@ public class Controller {
     }
 
 
-    private void buildBranchCommitTree() {
+    public void buildBranchCommitTree() {
         BranchCommitTreeView.setRoot(getNodesForBranch());
         BranchCommitTreeView.setCellFactory(new Callback<TreeView<CommitOrBranch>, TreeCell<CommitOrBranch>>() {
 

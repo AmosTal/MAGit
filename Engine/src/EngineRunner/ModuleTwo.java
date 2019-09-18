@@ -141,9 +141,9 @@ public class ModuleTwo {
         return activeRepo.getBranches();
     }
 
-    public static void merge(Branch branch) throws IOException, CannotMergeException {
+    public static boolean merge(Branch branch) throws IOException, CannotMergeException {
 
-        activeRepo.mergeCommits(branch);
+        return activeRepo.mergeCommits(branch);
     }
 
     public static String isPointedCommit(Commit commit) {

@@ -38,10 +38,11 @@ public class MergeWindowController {
     void mergeDone() throws IOException {
         if(conflictLst.isEmpty())
         {
-            String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
             ModuleTwo.getActiveRepo().buildCommitForMerge(msg);
+            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(mainController.scrollPane);
+            mainController.buildBranchCommitTree();
+            mainController.refreshCommitsTree();
             mainController.mergeStage.close();
-            mainController.refreshGraphic();
 
         }
         else
