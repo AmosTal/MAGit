@@ -17,6 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 public class Controller {
     public static MergeWindowController mergeController;
     private boolean commitBool = false;
+
     public Stage mergeStage;
     @FXML
     private Label repositoryNameLabel;
@@ -66,10 +68,10 @@ public class Controller {
     private Button switchButton2;
     @FXML
     public Button changeSkinButton;
-
     @FXML
     private Button mergeButtonID;
-
+    @FXML
+    public ContextMenu contextMenu;
     @FXML
     public ScrollPane scrollPane;
     @FXML
@@ -78,7 +80,38 @@ public class Controller {
     public TreeView<File> fileSystemTreeView;
     @FXML
     private TreeView<CommitOrBranch> BranchCommitTreeView;
+    @FXML
+    public MenuItem resetContext;
 
+    @FXML
+    public MenuItem newBranchContext;
+
+    @FXML
+    public MenuItem mergeContext;
+
+    @FXML
+    public MenuItem deleteBranchContext;
+
+    @FXML
+    public void resetContextPressed()
+    {
+        //ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
+    }
+    @FXML
+    public void newBranchContextPressed()
+    {
+
+    }
+    @FXML
+    public void mergeContextPressed()
+    {
+
+    }
+    @FXML
+    public void deleteBranchContextPressed()
+    {
+
+    }
     @FXML
     void cloneRepo() throws IOException {
         String path,name = null;
@@ -110,7 +143,15 @@ public class Controller {
 
     @FXML
     void fetch() {
-        ModuleTwo.getActiveRepo().fetch();
+        try {
+            ModuleTwo.getActiveRepo().fetch();
+            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+            buildFileTree(ModuleTwo.getActiveRepoPath());
+            buildBranchCommitTree();
+            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+        } catch (IOException e) {
+            popAlert(e);
+        }
     }
     @FXML
     void pull() {
@@ -634,6 +675,17 @@ public class Controller {
             return commit;
         }
 
+    }
+public static boolean justClickedOnGraphic=false;
+    @FXML
+    void updateContextMenuToNull() {
+        if(!justClickedOnGraphic) {
+            Main.controller.resetContext.setVisible(false);
+            Main.controller.newBranchContext.setVisible(false);
+            Main.controller.mergeContext.setVisible(false);
+            Main.controller.deleteBranchContext.setVisible(false);
+        }
+        justClickedOnGraphic=false;
     }
 }
 

@@ -1,7 +1,6 @@
 package GraphicTree.node;
 
 import ControlPackage.Controller;
-import EngineRunner.ModuleTwo;
 import MainPackage.Main;
 import Objects.Commit.Commit;
 import javafx.fxml.FXML;
@@ -25,13 +24,12 @@ public class CommitNodeController {
     @FXML private Label branchLabel;
     Commit commit;
     @FXML
-    void commitClicked() {
+    void commitClicked(MouseEvent event) {
         try {
             Main.controller.showCommitFiles(commit);
-            Main.controller.graphicCommit=commit;
             Main.controller.resetContext.setVisible(true);
             Main.controller.newBranchContext.setVisible(true);
-            if(treeShape.isVisible()&&(!branchLabel.getText().equals(ModuleTwo.getActiveBranchName()))) {
+            if(treeShape.isVisible()) {
                 Main.controller.mergeContext.setVisible(true);
                 Main.controller.deleteBranchContext.setVisible(true);
             }
