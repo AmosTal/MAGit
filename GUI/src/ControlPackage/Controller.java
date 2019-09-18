@@ -80,6 +80,47 @@ public class Controller {
     private TreeView<CommitOrBranch> BranchCommitTreeView;
 
     @FXML
+    void cloneRepo() throws IOException {
+        String path,name = null;
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select repository location ");
+        File directory = directoryChooser.showDialog(new Stage());
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Repository folder name");
+        dialog.setHeaderText("Enter repository folder name:");
+        dialog.setContentText("Name:");
+        Optional<String> answer = dialog.showAndWait();
+        if (answer.isPresent())
+            name = answer.get();
+        else
+            throw new IOException();
+        path = directory.getPath() + "/" + name;
+        ModuleTwo.getActiveRepo().Clone(path);
+        try {
+            ModuleTwo.SwitchRepo(path);
+            repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
+            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+            buildFileTree(ModuleTwo.getActiveRepoPath());
+            buildBranchCommitTree();
+            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+        } catch (NoSuchRepoException e) {
+            popAlert(e);
+        }
+    }
+
+    @FXML
+    void fetch() {
+
+    }
+    @FXML
+    void pull() {
+    }
+
+    @FXML
+    void push() {
+    }
+
+    @FXML
     void showDelta1() {
 
         try {
