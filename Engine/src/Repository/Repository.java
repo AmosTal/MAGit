@@ -492,6 +492,7 @@ public class Repository {
     }
 
     public void buildCommitForMerge(String msg) throws IOException {
+        deleteWCFiles(this.path);
         String sha1OfRoot = Objects.requireNonNull(recursiveWcToObjectBuilder(path + "/.magit/merge files/","", true, username,currDelta)).getSha1();
         Folder commitFolder=(Folder)objList.get(sha1OfRoot);
         Commit commit = new Commit(commitFolder.getSha1(), headBranch.getSha1(), latestMergedBranchSha1, msg, username);
