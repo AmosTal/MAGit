@@ -66,9 +66,14 @@ public class Repository {
         username = name;
     }
 
-    public void Clone(String path,String name){ // need to get a name!!!!
-        Repository newRepo = new Repository(path,this.objList,this.branches);
-
+    public void Clone(String _path) throws IOException {
+        File srcDir = new File(this.path);
+        File destDir = new File(_path);
+        FileUtils.copyDirectory(srcDir, destDir);
+        srcDir = new File(_path+"/.magit/branches");
+        destDir = new File(_path+"/.magit/branches/remote branches");
+        FileUtils.copyDirectory(srcDir, destDir);
+        new File(_path+"/.magit/branches/remote branches/remote branches").delete();
     }
 
     public void createEmptyRepo() throws IOException {
@@ -148,6 +153,8 @@ public class Repository {
         String nameOfHead = "";
         try {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
+                if(fileEntry.isDirectory())
+                    continue;
                 FileReader fr = new FileReader(fileEntry);
                 BufferedReader br = new BufferedReader(fr);
                 if (fileEntry.getName().equals("HEAD")) {
@@ -341,7 +348,7 @@ public class Repository {
         }
     }
 
-    public static void deleteWCFiles(String _path) throws IOException { //Delete is not working properly. FIX DIS!
+    public static void deleteWCFiles(String _path) throws IOException {
         File file = new File(_path);
         for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
             if (fileEntry.isDirectory() && !fileEntry.getName().equals(".magit")) {
@@ -411,7 +418,7 @@ public class Repository {
         ArrayList<Fof> foflst = new ArrayList<>();
         String name;
         String username;
-        String lastmodifed;
+        String lastModified;
         MagitObject obj;
         boolean isFolder;
         String content;
@@ -423,16 +430,16 @@ public class Repository {
             obj = new Folder(foflst);
             name = xmlData.getFolderMap().get(ID).getName();
             username = xmlData.getFolderMap().get(ID).getLastUpdater();
-            lastmodifed = xmlData.getFolderMap().get(ID).getLastUpdateDate();
+            lastModified = xmlData.getFolderMap().get(ID).getLastUpdateDate();
         } else {
             content = xmlData.getBlobMap().get(ID).getContent();
             obj = new Blob(content);
             name = xmlData.getBlobMap().get(ID).getName();
             username = xmlData.getBlobMap().get(ID).getLastUpdater();
-            lastmodifed = xmlData.getBlobMap().get(ID).getLastUpdateDate();
+            lastModified = xmlData.getBlobMap().get(ID).getLastUpdateDate();
         }
         objList.put(obj.getSha1(), obj);
-        return new Fof(obj.getSha1(), name, isBlob, username, new DateAndTime(lastmodifed));
+        return new Fof(obj.getSha1(), name, isBlob, username, new DateAndTime(lastModified));
 
     }
 
