@@ -1,6 +1,7 @@
 package ControlPackage;
 
 import EngineRunner.ModuleTwo;
+import MainPackage.Main;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
 import Objects.Commit.Commit;
@@ -142,7 +143,7 @@ public class Controller {
                                         fxmlLoader.setLocation(url);
                                         GridPane head = fxmlLoader.load(url.openStream());
                                         Scene scene = new Scene(head, 1200,800);
-                                        scene.getStylesheets().add("Resources/caspian.css");
+                                        scene.getStylesheets().add(Main.getSkinPath());
                                         mergeStage = new Stage();
                                         mergeStage.setTitle("Conflicts");
                                         mergeController=fxmlLoader.getController();

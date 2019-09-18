@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 
 public class Main extends Application {
+    static String skin = "";
 public static Controller controller;
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -28,24 +29,24 @@ public static Controller controller;
         primaryStage.setTitle("MAGit");
         controller=fxmlLoader.getController();
         Scene scene = new Scene(root, 1200,800);
-        scene.getStylesheets().add("Resources/caspian.css");
-                Button changeSkinButton = controller.changeSkinButton;
+        addSkin("Resources/caspian.css",scene);
+        Button changeSkinButton = controller.changeSkinButton;
         changeSkinButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if(scene.getStylesheets().contains("Resources/caspian.css")) {
                     scene.getStylesheets().remove("Resources/caspian.css");
                     if(!scene.getStylesheets().contains("Resources/secondSkin.css"))
-                        scene.getStylesheets().add("Resources/secondSkin.css");
+                        addSkin("Resources/secondSkin.css",scene);
                 }
                 else if (scene.getStylesheets().contains("Resources/secondSkin.css")){
                     scene.getStylesheets().remove("Resources/secondSkin.css");
                     if(!scene.getStylesheets().contains("Resources/firstSkin.css"))
-                        scene.getStylesheets().add("Resources/firstSkin.css");
+                        addSkin("Resources/firstSkin.css",scene);
                 }
                 else{
                     scene.getStylesheets().remove("Resources/firstSkin.css");
-                    scene.getStylesheets().add("Resources/caspian.css");
+                    addSkin("Resources/caspian.css",scene);
                 }
             }
         });
@@ -53,6 +54,13 @@ public static Controller controller;
         primaryStage.show();
     }
 
+    private void addSkin(String skinPath, Scene scene){
+        skin = skinPath;
+        scene.getStylesheets().add(skinPath);
+    }
+    public static String getSkinPath(){
+        return skin;
+    }
 
     public static void main(String[] args) {
         launch(args);
