@@ -3,20 +3,17 @@
 }
 
 .label {
-    -fx-font-size: 11pt;
     -fx-font-family: "Segoe UI Semibold";
     -fx-opacity: 0.6;
     -fx-border-width: null;
 }
 
 .label-bright {
-    -fx-font-size: 11pt;
     -fx-font-family: "Segoe UI Semibold";
     -fx-opacity: 1;
 }
 
 .label-header {
-    -fx-font-size: 20pt;
     -fx-font-family: "Segoe UI Light";
     -fx-text-fill: white;
     -fx-opacity: 1;
@@ -24,8 +21,8 @@
 
 .table-view {
     -fx-base: #1d1d1d;
-    -fx-control-inner-background: #1d1d1d;
-    -fx-background-color: #1d1d1d;
+    -fx-control-inner-background: yellowgreen;
+    -fx-background-color: yellowgreen;
     -fx-table-cell-border-color: transparent;
     -fx-table-header-border-color: transparent;
     -fx-padding: 5;
@@ -36,7 +33,6 @@
 }
 
 .table-view .column-header, .table-view .filler {
-    -fx-size: 35;
     -fx-border-width: 0 0 1 0;
     -fx-background-color: transparent;
     -fx-border-color:
@@ -48,7 +44,6 @@
 }
 
 .table-view .column-header .label {
-    -fx-font-size: 20pt;
     -fx-font-family: "Segoe UI Light";
     -fx-text-fill: white;
     -fx-alignment: center-left;
@@ -77,7 +72,7 @@
 }
 
 .menu-bar .label {
-    -fx-font-size: 14pt;
+    -fx-font-size: 15;
     -fx-font-family: "Segoe UI Light";
     -fx-text-fill: white;
     -fx-opacity: 0.9;
@@ -88,25 +83,22 @@
 }
 
 .text-field {
-    -fx-font-size: 12pt;
     -fx-font-family: "Segoe UI Semibold";
     -fx-border-width: null;
 }
 
 .button {
-    -fx-padding: 5 22 5 22;
     -fx-border-color: #e2e2e2;
     -fx-background-radius: 0;
-    -fx-background-color: #1d1d1d;
+    -fx-background-color: seagreen;
     -fx-font-family: "Segoe UI", Helvetica, Arial, sans-serif;
-    -fx-font-size: 8pt;
     -fx-text-fill: #d8d8d8;
     -fx-background-insets: 0 0 0 0, 0, 1, 2;
     -fx-border-width: null;
 }
 
 .button:hover {
-    -fx-background-color: #3a3a3a;
+    -fx-background-color: darkseagreen;
 }
 
 .button:pressed, .button:default:hover:pressed {
@@ -138,3 +130,22 @@
 }
 
 
+.tab-pane *.tab-header-area *.tab-header-background {
+    -fx-background-color:transparent;
+}
+
+.tab-pane {
+    -fx-tab-min-width:120px;
+    -fx-tab-max-width:120px;
+    -fx-tab-min-height:50px;
+    -fx-tab-max-height:50px;
+}
+
+.tab {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-background-color:greenyellow ;
+}
+
+.tab:selected {
+    -fx-background-color:darkgreen ;
+}
