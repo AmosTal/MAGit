@@ -37,6 +37,7 @@ public class Repository {
     private Delta currDelta;
     private HashMap<String,MergeCase> conflictMap=new HashMap<>();
     private String latestMergedBranchSha1=null;
+    private String remoteRepoPath = "";
 
 
 
@@ -665,6 +666,16 @@ public class Repository {
     public boolean isConflictsEmpty() {
         return conflictMap.isEmpty();
     }
-}
+
+    public void fetch() {
+        File file = new File(this.path + "/.magit/branches");
+        for (File fileEntry : Objects.requireNonNull(file.listFiles())) {
+            if (fileEntry.isFile()) {
+                FileUtils.copyFile(fileEntry, new File());
+            }
+    
+            }
+        }
+    }
 
 
