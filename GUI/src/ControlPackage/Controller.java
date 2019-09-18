@@ -63,6 +63,9 @@ public class Controller {
     @FXML
     private Button switchButton2;
     @FXML
+    public Button changeSkinButton;
+
+    @FXML
     private Button mergeButtonID;
     @FXML
     private ScrollPane scrollPane;
@@ -85,6 +88,7 @@ public class Controller {
             popAlert(e);
         }
     }
+
     private void printJscrollpane(String text)
     {
         JTextArea textArea = new JTextArea(text);
