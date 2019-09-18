@@ -77,14 +77,26 @@ public class MergeWindowController {
         });
         conflictTreeView.getRoot().setExpanded(true);
     }
+    private void recursiveFolderBuilder(String pathMerge,HashMap<String, MergeCase> folderLst)
+    {
+        HashMap<String, MergeCase> newFolderLst=new HashMap<>();
+        for(Map.Entry<String, MergeCase> entry:folderLst.entrySet())
+            if(entry.getValue().getIsFolder())
+                if((!new File(pathMerge+entry.getKey()).mkdir())&&!(new File(pathMerge+entry.getKey()).isDirectory()))
+                {
+                    newFolderLst.put(entry.getKey(),entry.getValue());
+                }
+        if(!newFolderLst.isEmpty())
+            recursiveFolderBuilder(pathMerge,newFolderLst);
+    }
     private TreeItem<String> getNodes() throws FileNotFoundException {
          pathLst= ModuleTwo.getActiveRepo().getConflictMap();
         String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
         new File(pathMerge).mkdir();
+        recursiveFolderBuilder(pathMerge,pathLst);
         //conflictLst.putAll(pathLst.entrySet().stream().filter(e->e.getValue().getIsFolder()));
-        for(Map.Entry<String, MergeCase> entry:pathLst.entrySet())
-            if(entry.getValue().getIsFolder())
-                new File(pathMerge+entry.getKey()).mkdir();
+
+            //possible solution: sort the array
 
          for(Map.Entry<String, MergeCase> entry:pathLst.entrySet())
         {

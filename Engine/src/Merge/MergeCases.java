@@ -9,7 +9,7 @@ public enum MergeCases {
         Case6(true, true, true, true, true, true){ @Override public String takeOursOrTheirs() { return "ours"; } },
         Case7(true, false, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
         Case8(true, true, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
-        Case9(false, true, false, false, false, false) { @Override public String takeOursOrTheirs() { return "ours"; }},
+        Case9(false, true, false, false, false, false) { @Override public String takeOursOrTheirs() { return "theirs"; }},
         Case10(true, true, true, true, false, false){ @Override public String takeOursOrTheirs() { return "theirs"; }},
         Case11(true, true, false, true, false, false){@Override public String takeOursOrTheirs() { return "theirs"; }},
         Case12(false, false, true, false, false, false)  {@Override public String takeOursOrTheirs() { return "theirs"; }};

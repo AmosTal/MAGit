@@ -581,6 +581,12 @@ public class Repository {
                         false, false, false),false, null, targetContent, null);
                 mergeMap.put(entry.getKey(), mc);
             }
+            else
+            {
+                MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, true,
+                        true, true, true),true,null, null, null);
+                mergeMap.put(entry.getKey(), mc);
+            }
         }
         return mergeMap;
     }
