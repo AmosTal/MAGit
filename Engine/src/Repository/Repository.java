@@ -38,9 +38,6 @@ public class Repository {
     private HashMap<String,MergeCase> conflictMap=new HashMap<>();
     private String latestMergedBranchSha1=null;
 
-    public String getLatestMergedBranchSha1() {
-        return latestMergedBranchSha1;
-    }
 
 
     public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches) {
@@ -69,10 +66,16 @@ public class Repository {
         username = name;
     }
 
+    public void Clone(String path,String name){ // need to get a name!!!!
+        Repository newRepo = new Repository(path,this.objList,this.branches);
+
+    }
+
     public void createEmptyRepo() throws IOException {
         new File(path).mkdir();
         new File(path + "/.magit").mkdir();
         new File(path + "/.magit/branches").mkdir();
+        new File(path + "/.magit/branches/remote branches").mkdir();
         new File(path + "/.magit/objects").mkdir();
         new File(path + "/.magit/Commit files").mkdir();
         new File(path + "/.magit/merge files").mkdir();
