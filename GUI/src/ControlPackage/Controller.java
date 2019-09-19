@@ -24,8 +24,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
-
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -336,11 +334,6 @@ public class Controller {
     @FXML
     void refreshCommitsTree() {
         buildBranchCommitTree();
-    }
-
-
-    @FXML
-    void refreshGraphic() {
     }
 
     private void switchCommitBranchesButtons() {
