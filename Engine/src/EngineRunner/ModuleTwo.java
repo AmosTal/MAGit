@@ -12,8 +12,8 @@ import Repository.*;
 import XML.XmlData;
 import XML.XmlNotValidException;
 import org.apache.commons.io.FileUtils;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -182,14 +182,9 @@ public class ModuleTwo {
         return "";
     }
 
-    public static boolean activeRepoHeadHasRtbOfRb() throws IOException {
-        return getActiveRepo().headHasRtb();
-    }
 
 
     public static void push() throws IOException, NoSuchRepoException {
-
-        if (activeRepo.isHeadBranchRTB()) {
             ArrayList<String> arr = activeRepo.getWantedSha1sForPush();
             String activeRepoPath = getActiveRepoPath();
             SwitchRepo(activeRepo.getRemoteRepositoryPath());
@@ -197,15 +192,21 @@ public class ModuleTwo {
             activeRepo.updateHeadBranch(activeRepoPath);
             SwitchRepo(activeRepoPath);
             activeRepo.updateRB();
-        }
     }
 
     public static void pull() throws IOException, NoSuchRepoException {
-        if (activeRepo.isHeadBranchRTB() && !activeRepo.lrIsPushed()) {
+        if (activeRepo.isHeadBranchRTB() && activeRepo.lrIsPushed()) {
             String myPath = getActiveRepoPath();
+            File headBranchFile= new File(getActiveRepoPath()+"/.magit/branches/"+activeRepo.getHeadBranchName());
+            BufferedReader r = new BufferedReader(new FileReader(headBranchFile));
+            String sha1OfCurrHeadCommit = r.readLine();
             SwitchRepo(ModuleTwo.activeRepo.getRemoteRepositoryPath());
-            push();
+            ArrayList<String> arr = activeRepo.getWantedSha1sForPull(sha1OfCurrHeadCommit);
+
+            activeRepo.updateCommitsForPull(myPath, arr);
+            activeRepo.updateHeadBranchForPull(myPath);
             SwitchRepo(myPath);
+            activeRepo.updateRB();
         }
     }
 }
