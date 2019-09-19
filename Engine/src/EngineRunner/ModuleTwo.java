@@ -33,6 +33,7 @@ public class ModuleTwo {
     public static void makeRemoteRepositoryFiles(String path) throws IOException {
         activeRepo.makeRemoteRepositoryFiles(path);
     }
+
     public static void SwitchRepo(String path) throws NoSuchRepoException, IOException {
         Path p = Paths.get(path + "/.magit");
         if (Files.isDirectory(p)) {
@@ -71,7 +72,7 @@ public class ModuleTwo {
         }
     }
 
-    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException{
+    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException {
         checkIfActiveRepoExists();
         if (activeRepo.checkDeltaChanges()) {
             activeRepo.newCommit(msg);
@@ -81,11 +82,11 @@ public class ModuleTwo {
             throw new CommitCannotExecutException();
     }
 
-    public static void makeNewBranch(String name,String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException, BranchNoNameException {
+    public static void makeNewBranch(String name, String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException, BranchNoNameException {
 
 
         checkIfActiveRepoExists();
-        activeRepo.addNewBranch(name,sha1);
+        activeRepo.addNewBranch(name, sha1);
     }
 
     public static boolean checkChanges() throws NoActiveRepositoryException {
@@ -108,6 +109,7 @@ public class ModuleTwo {
     public static String changesBetweenCommitsToString(String sha1) {
         return activeRepo.deltaChangesBetweenCommitsToString(sha1);
     }
+
     public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
         checkIfActiveRepoExists();
         activeRepo.deleteThisBranch(input);
@@ -138,7 +140,8 @@ public class ModuleTwo {
         return activeRepo.getHeadBranchName();
     }
 
-    public static List<Commit> getActiveReposBranchCommits(Branch branch) { return activeRepo.getBranchCommits(branch);
+    public static List<Commit> getActiveReposBranchCommits(Branch branch) {
+        return activeRepo.getBranchCommits(branch);
     }
 
     public static ArrayList<Branch> getActiveReposBranches() {
@@ -150,33 +153,31 @@ public class ModuleTwo {
         return activeRepo.mergeCommits(branchSha1);
     }
 
-    public static String isPointedCommitBranchList(Commit commit)
-    {
-        String res="";
-        for(Branch branch:activeRepo.getBranches())
-        {
-            if(branch.getSha1().equals(commit.getSha1())) {
-                if(res.equals(""))
+    public static String isPointedCommitBranchList(Commit commit) {
+        String res = "";
+        for (Branch branch : activeRepo.getBranches()) {
+            if (branch.getSha1().equals(commit.getSha1())) {
+                if (res.equals(""))
                     res = branch.getName();
                 else
-                    res = res + ", "+ branch.getName() ;
+                    res = res + ", " + branch.getName();
             }
         }
-        if(activeRepo.getHeadBranch().getSha1().equals(commit.getSha1())) {
+        if (activeRepo.getHeadBranch().getSha1().equals(commit.getSha1())) {
             if (res.equals(""))
                 res = activeRepo.getHeadBranch().getName();
             else
-                res = res + ", "+ activeRepo.getHeadBranch().getName() ;
+                res = res + ", " + activeRepo.getHeadBranch().getName();
         }
         return res;
     }
+
     public static String isPointedCommit(String commitSha1) {
-        for(Branch branch:activeRepo.getBranches())
-        {
-            if(branch.getSha1().equals(commitSha1))
+        for (Branch branch : activeRepo.getBranches()) {
+            if (branch.getSha1().equals(commitSha1))
                 return branch.getName();
         }
-        if(activeRepo.getHeadBranch().getSha1().equals(commitSha1))
+        if (activeRepo.getHeadBranch().getSha1().equals(commitSha1))
             return activeRepo.getHeadBranch().getName();
         return "";
     }
@@ -186,16 +187,25 @@ public class ModuleTwo {
     }
 
 
-
     public static void push() throws IOException, NoSuchRepoException {
 
-        if(activeRepo.isHeadBranchRTB()){
-            ArrayList<String> arr =activeRepo.getWantedSha1s();
+        if (activeRepo.isHeadBranchRTB()) {
+            ArrayList<String> arr = activeRepo.getWantedSha1sForPush();
             String activeRepoPath = getActiveRepoPath();
             SwitchRepo(activeRepo.getRemoteRepositoryPath());
-            activeRepo.updateCommits(activeRepoPath,arr);
+            activeRepo.updateCommits(activeRepoPath, arr);
             activeRepo.updateHeadBranch(activeRepoPath);
             SwitchRepo(activeRepoPath);
+            activeRepo.updateRB();
+        }
+    }
+
+    public static void pull() throws IOException, NoSuchRepoException {
+        if (activeRepo.isHeadBranchRTB() && !activeRepo.lrIsPushed()) {
+            String myPath = getActiveRepoPath();
+            SwitchRepo(ModuleTwo.activeRepo.getRemoteRepositoryPath());
+            push();
+            SwitchRepo(myPath);
         }
     }
 }

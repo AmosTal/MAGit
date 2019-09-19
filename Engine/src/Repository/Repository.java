@@ -13,7 +13,6 @@ import Objects.Folder.Fof;
 import Objects.Folder.Folder;
 import XML.XmlData;
 import XMLpackage.*;
-import com.sun.corba.se.impl.resolver.SplitLocalResolverImpl;
 import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
 import puk.team.course.magit.ancestor.finder.CommitRepresentative;
@@ -40,7 +39,7 @@ public class Repository {
     private HashMap<String, MergeCase> conflictMap = new HashMap<>();
     private String latestMergedBranchSha1 = null;
     private String remoteRepoPath = "";
-    private String nameOfRemoteRepo;
+    private String remoteRepoName;
 
     public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches) {
         path = _path;
@@ -696,7 +695,7 @@ public class Repository {
         File remoteRepoPathFile = new File(path+"/.magit/remoteRepositoryName.txt");
         if(remoteRepoPathFile.isFile()){
             BufferedReader r = new BufferedReader(new FileReader(remoteRepoPathFile));
-            nameOfRemoteRepo = r.readLine();
+            remoteRepoName = r.readLine();
             r.close();
         }
     }
@@ -741,9 +740,6 @@ public class Repository {
         return remoteRepoPath;
     }
 
-    public void updatesFilesByDelta(Delta headBranchDelta) {
-
-    }
     public void updateCommits(String remotePath,ArrayList<String> arr) throws IOException { // help for push
         File commitFileToCopy;
         File myObjects;
@@ -754,14 +750,14 @@ public class Repository {
         }
     }
 
-    public ArrayList<String> getWantedSha1s() throws IOException {
+    public ArrayList<String> getWantedSha1sForPush() throws IOException {
         ArrayList<String> arr = new ArrayList<>();
         String sha1ToAdd = headBranch.getSha1();
         File headFile = new File(path+"/.magit/branches/HEAD");
         BufferedReader r = new BufferedReader(new FileReader(headFile));
         String headName = r.readLine();
         r.close();
-        File fileOfRemoteHeadBranch = new File(this.path + "/.magit/branches/" + nameOfRemoteRepo + "/" + headName);
+        File fileOfRemoteHeadBranch = new File(this.path + "/.magit/branches/" + remoteRepoName + "/" + headName);
         BufferedReader br = new BufferedReader(new FileReader(fileOfRemoteHeadBranch));
         String sha1OfAncestor = br.readLine();
         br.close();
@@ -786,19 +782,10 @@ public class Repository {
     }
 
     public void updateHeadBranch(String remotePath) throws IOException {
-        System.out.println(headBranch.getName());
         File myHeadBranch = new File(path + "/.magit/branches/"+headBranch.getName());
         myHeadBranch.delete();
         File remoteHeadBranch = new File(remotePath + "/.magit/branches/"+headBranch.getName());
         FileUtils.copyFile(remoteHeadBranch,myHeadBranch);
-    }
-    public Delta getHeadBranchDelta() throws IOException {
-        deployCommit((Commit)objList.get(headBranch.getSha1()),this.path+"/.magit/merge files");
-        File rtbFileOfHead = new File(this.path+"/.magit/branches/"+this.nameOfRemoteRepo+"/"+headBranch.getName());
-        BufferedReader r = new BufferedReader(new FileReader(rtbFileOfHead));
-        String rbSha1 = r.readLine();
-        r.close();
-        return deltaChangesBetweenCommits(rbSha1);
     }
 
     private void makeRemoteRepositoryNameFile(String pathOfOldRepo) throws IOException {
@@ -811,8 +798,22 @@ public class Repository {
         }
     }
 
-    public String getRemoteRepositoryName() {
-        return nameOfRemoteRepo;
+    public boolean lrIsPushed() throws IOException {
+        File rtbFile = new File(this.path+"/.magit/branches/"+headBranch.getName());
+        File rbFile = new File(this.path+"/.magit/branches/"+this.remoteRepoName+"/"+headBranch.getName());
+        BufferedReader r = new BufferedReader(new FileReader(rtbFile));
+        String rtbCommitSha1 = r.readLine();
+        r = new BufferedReader(new FileReader(rbFile));
+        String rbCommitSha1=r.readLine();
+        r.close();
+        return rtbCommitSha1.equals(rbCommitSha1);
+    }
+
+    public void updateRB() throws IOException {
+        File rtbFile = new File(this.path+"/.magit/branches/"+headBranch.getName());
+        File rbFile = new File(this.path+"/.magit/branches/"+this.remoteRepoName+"/"+headBranch.getName());
+        rbFile.delete();
+        FileUtils.copyFile(rtbFile,rbFile);
     }
 }
 
