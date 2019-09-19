@@ -209,11 +209,14 @@ public class Controller {
         try {
             if (ModuleTwo.checkChanges()) {
                 JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot pull.");
-            } else if (ModuleTwo.activeRepoHeadHasRtbOfRb()) {
-
-
             }
-        } catch (NoActiveRepositoryException | IOException e) {
+            ModuleTwo.pull();
+            ModuleTwo.SwitchRepo(ModuleTwo.getActiveRepoPath());
+            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+            buildFileTree(ModuleTwo.getActiveRepoPath());
+            buildBranchCommitTree();
+            updateGraphicTree();
+        } catch (NoActiveRepositoryException | IOException | NoSuchRepoException e) {
             popAlert(e);
         }
     }
@@ -222,7 +225,12 @@ public class Controller {
     void push() {
         try {
             ModuleTwo.push();
-            fetch();
+            //fetch();
+            ModuleTwo.SwitchRepo(ModuleTwo.getActiveRepoPath());
+            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+            buildFileTree(ModuleTwo.getActiveRepoPath());
+            buildBranchCommitTree();
+            updateGraphicTree();
         } catch (NoSuchRepoException | IOException e) {
             popAlert(e);
         }
@@ -270,7 +278,7 @@ public class Controller {
         }
     }
     @FXML
-    void mergeButtonFunction(String branchSha1) {
+    private void mergeButtonFunction(String branchSha1) {
         try {
 
             if (ModuleTwo.checkChanges()) {
