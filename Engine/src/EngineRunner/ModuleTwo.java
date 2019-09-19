@@ -4,6 +4,7 @@ package EngineRunner;
 import ControlPackage.Controller;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
+import Objects.Branch.BranchNoNameException;
 import Objects.Branch.NoCommitHasBeenMadeException;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
@@ -76,12 +77,13 @@ public class ModuleTwo {
             throw new CommitCannotExecutException();
     }
 
-    public static void makeNewBranch(String name,String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException {
+    public static void makeNewBranch(String name,String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException, BranchNoNameException {
 
 
         checkIfActiveRepoExists();
         activeRepo.addNewBranch(name,sha1);
     }
+
     public static boolean checkChanges() throws NoActiveRepositoryException {
 
         checkIfActiveRepoExists();
@@ -139,18 +141,38 @@ public class ModuleTwo {
         return activeRepo.getBranches();
     }
 
-    public static boolean merge(Branch branch) throws IOException, CannotMergeException {
+    public static boolean merge(String branchSha1) throws IOException, CannotMergeException {
 
-        return activeRepo.mergeCommits(branch);
+        return activeRepo.mergeCommits(branchSha1);
     }
 
-    public static String isPointedCommit(Commit commit) {
+    public static String isPointedCommitBranchList(Commit commit)
+    {
+        String res="";
         for(Branch branch:activeRepo.getBranches())
         {
-            if(branch.getSha1().equals(commit.getSha1()))
+            if(branch.getSha1().equals(commit.getSha1())) {
+                if(res.equals(""))
+                    res = branch.getName();
+                else
+                    res = res + ", "+ branch.getName() ;
+            }
+        }
+        if(activeRepo.getHeadBranch().getSha1().equals(commit.getSha1())) {
+            if (res.equals(""))
+                res = activeRepo.getHeadBranch().getName();
+            else
+                res = res + ", "+ activeRepo.getHeadBranch().getName() ;
+        }
+        return res;
+    }
+    public static String isPointedCommit(String commitSha1) {
+        for(Branch branch:activeRepo.getBranches())
+        {
+            if(branch.getSha1().equals(commitSha1))
                 return branch.getName();
         }
-        if(activeRepo.getHeadBranch().getSha1().equals(commit.getSha1()))
+        if(activeRepo.getHeadBranch().getSha1().equals(commitSha1))
             return activeRepo.getHeadBranch().getName();
         return "";
     }

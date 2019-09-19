@@ -6,6 +6,7 @@ import Objects.Api.MagitObject;
 import Objects.Blob.Blob;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
+import Objects.Branch.BranchNoNameException;
 import Objects.Commit.Commit;
 import Objects.Date.DateAndTime;
 import Objects.Folder.Fof;
@@ -262,8 +263,12 @@ public class Repository {
         }
     }
 
-    public void addNewBranch(String name,String sha1) throws AlreadyExistingBranchException, NoCommitHasBeenMadeException {
+    public void addNewBranch(String name,String sha1) throws AlreadyExistingBranchException, NoCommitHasBeenMadeException,BranchNoNameException {
         Branch branch;
+        if(name.equals(""))
+        {
+            throw new BranchNoNameException();
+        }
         if(headBranch==null)
             throw new NoCommitHasBeenMadeException();
         if (branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null) == null
@@ -500,14 +505,14 @@ public class Repository {
         createZippedFilesForMagitObjects();
     }
 
-    public boolean mergeCommits(Branch branch) throws IOException {                         //
-        latestMergedBranchSha1 = branch.getSha1();
+    public boolean mergeCommits(String branchSha1) throws IOException {                         //
+        latestMergedBranchSha1 = branchSha1;
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
 
-        String sha1OfAncestor = findAncestor(branch.getSha1(), headBranch.getSha1());
-        if (!(sha1OfAncestor.equals(branch.getSha1()) || sha1OfAncestor.equals(headBranch.getSha1()))) {
-            Folder branchFolder = (Folder) objList.get(((Commit) objList.get(branch.getSha1())).getRootFolderSha1());
+        String sha1OfAncestor = findAncestor(branchSha1, headBranch.getSha1());
+        if (!(sha1OfAncestor.equals(branchSha1) || sha1OfAncestor.equals(headBranch.getSha1()))) {
+            Folder branchFolder = (Folder) objList.get(((Commit) objList.get(branchSha1)).getRootFolderSha1());
             Folder headFolder = (Folder) objList.get(((Commit) objList.get(headBranch.getSha1())).getRootFolderSha1());
 
             deleteWCFiles(pathMerge);
@@ -522,7 +527,7 @@ public class Repository {
             conflictMap = mergeConflicts(headBranchDelta, branchDelta);
         } else {
             if (sha1OfAncestor.equals(headBranch.getSha1())) {
-                headBranch.UpdateSha1(branch.getSha1());
+                headBranch.UpdateSha1(branchSha1);
                 makeFileForBranch(headBranch.getSha1(), headBranch.getName());
             } else
                 return false;
@@ -713,6 +718,12 @@ public class Repository {
             Delta deltaOfHeadBranch = deltaChangesBetweenCommits(headBranch.getSha1());
 
         }
+    }
+
+    public boolean isCommitInObjList(String sha1) throws NoCommitInObjList {
+        if(objList.get(sha1)!=null)
+            return true;
+        throw new NoCommitInObjList();
     }
 }
 
