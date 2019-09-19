@@ -502,7 +502,7 @@ public class Repository {
         createZippedFilesForMagitObjects();
     }
 
-    public boolean mergeCommits(Branch branch) throws IOException, CannotMergeException {
+    public boolean mergeCommits(Branch branch) throws IOException {
         latestMergedBranchSha1 = branch.getSha1();
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
@@ -536,7 +536,7 @@ public class Repository {
 
         boolean existsInTarget = false;
         HashMap<String, MergeCase> mergeMap = new HashMap<>();
-        String baseContent = null, ancestorContent = null, targetContent = null;
+        String baseContent , targetContent = null;
         for (Map.Entry<String, Fof> entry : headDelta.getCommitMap().entrySet()) {
             if (entry.getValue().getIsBlob())
                 mergeMap.put(entry.getKey(), sixBooleanGoneWild(headDelta, branchDelta, entry));
@@ -683,6 +683,17 @@ public class Repository {
             remoteRepoPath = r.readLine();
             r.close();
         }
+    }
+
+    public boolean headHasRtb() throws IOException {
+        File rbt = new File(this.path+"/.magit/branches/HEAD");
+        String nameOfRb = "";
+        if(rbt.isFile()){
+            BufferedReader r = new BufferedReader(new FileReader(rbt));
+            nameOfRb = r.readLine();
+            r.close();
+        }
+        return !nameOfRb.equals("");
     }
 }
 

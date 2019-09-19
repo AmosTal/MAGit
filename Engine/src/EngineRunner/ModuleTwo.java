@@ -99,7 +99,7 @@ public class ModuleTwo {
         return activeRepo.showRepoStatus();
     }
 
-    public static String changesBetweenCommitsToString(String sha1) throws IOException {
+    public static String changesBetweenCommitsToString(String sha1) {
         return activeRepo.deltaChangesBetweenCommitsToString(sha1);
     }
     public static void deleteBranch(String input) throws NoActiveRepositoryException, DeleteHeadBranchException, NoSuchBranchException {
@@ -153,5 +153,9 @@ public class ModuleTwo {
         if(activeRepo.getHeadBranch().getSha1().equals(commit.getSha1()))
             return activeRepo.getHeadBranch().getName();
         return "";
+    }
+
+    public static boolean activeRepoHeadHasRtbOfRb() throws IOException {
+        return getActiveRepo().headHasRtb();
     }
 }
