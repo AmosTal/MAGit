@@ -211,7 +211,6 @@ public class Controller {
                 JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot pull.");
             }
             ModuleTwo.pull();
-            ModuleTwo.SwitchRepo(ModuleTwo.getActiveRepoPath());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
@@ -224,13 +223,14 @@ public class Controller {
     @FXML
     void push() {
         try {
-            ModuleTwo.push();
-            //fetch();
-            ModuleTwo.SwitchRepo(ModuleTwo.getActiveRepoPath());
-            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
-            buildFileTree(ModuleTwo.getActiveRepoPath());
-            buildBranchCommitTree();
-            updateGraphicTree();
+            if(ModuleTwo.getActiveRepo().isHeadBranchRTB()){
+                ModuleTwo.push();
+                ModuleTwo.SwitchRepo(ModuleTwo.getActiveRepoPath());
+                activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                buildFileTree(ModuleTwo.getActiveRepoPath());
+                buildBranchCommitTree();
+                updateGraphicTree();
+            }
         } catch (NoSuchRepoException | IOException e) {
             popAlert(e);
         }

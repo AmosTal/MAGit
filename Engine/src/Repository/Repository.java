@@ -700,17 +700,6 @@ public class Repository {
         }
     }
 
-    public boolean headHasRtb() throws IOException {
-        File rbt = new File(this.path+"/.magit/branches/HEAD");
-        String nameOfRb = "";
-        if(rbt.isFile()){
-            BufferedReader r = new BufferedReader(new FileReader(rbt));
-            nameOfRb = r.readLine();
-            r.close();
-        }
-        return !nameOfRb.equals("");
-    }
-
     public boolean isHeadBranchRTB() throws IOException { //checks if rb with name of head branch exists.
         String headName;
         File headFile = new File(path+"/.magit/branches/HEAD");
@@ -725,8 +714,6 @@ public class Repository {
                 remoteBranchesFolder = file;
         }
         assert remoteBranchesFolder != null;
-//        System.out.println("name of remote folder : "+remoteBranchesFolder.getName()+"\nname of head branch is : "+headName);
-//        System.out.println(new File(_path+"/"+remoteBranchesFolder.getName()+"/"+headName).exists());
         return (new File(_path+"/"+remoteBranchesFolder.getName()+"/"+headName).exists());
     }
 
@@ -814,6 +801,36 @@ public class Repository {
         File rbFile = new File(this.path+"/.magit/branches/"+this.remoteRepoName+"/"+headBranch.getName());
         rbFile.delete();
         FileUtils.copyFile(rtbFile,rbFile);
+    }
+
+    public ArrayList<String> getWantedSha1sForPull(String sha1OfAncestor){
+        ArrayList<String> arr = new ArrayList<>();
+        String sha1ToAdd = headBranch.getSha1();
+        while (!sha1ToAdd.equals(sha1OfAncestor)) {
+            arr.add(sha1ToAdd);
+            String comitSha1RootFolder = ((Commit) objList.get(sha1ToAdd)).getRootFolderSha1();
+            Folder rootFolder = (Folder) objList.get(comitSha1RootFolder);
+            recursiveSha1Adder(rootFolder, arr);
+            sha1ToAdd = ((Commit) objList.get(sha1ToAdd)).getPreviousCommitSha1();
+        }
+        return arr;
+    }
+
+    public void updateCommitsForPull(String myPath, ArrayList<String> arr) throws IOException {
+        File commitFileToCopy;
+        File myObjects;
+        for(String commitSha1ToCopy:arr){
+            commitFileToCopy = new File(path + "/.magit/objects/"+commitSha1ToCopy);
+            myObjects = new File(myPath + "/.magit/objects/"+commitSha1ToCopy);
+            FileUtils.copyFile(commitFileToCopy,myObjects);
+        }
+    }
+
+    public void updateHeadBranchForPull(String myPath) throws IOException {
+        File myHeadBranch = new File(myPath + "/.magit/branches/"+headBranch.getName());
+        myHeadBranch.delete();
+        File remoteHeadBranch = new File(path + "/.magit/branches/"+headBranch.getName());
+        FileUtils.copyFile(remoteHeadBranch,myHeadBranch);
     }
 }
 
