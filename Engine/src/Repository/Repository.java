@@ -15,6 +15,7 @@ import XMLpackage.*;
 import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
 import puk.team.course.magit.ancestor.finder.CommitRepresentative;
+import Objects.Branch.NoCommitHasBeenMadeException;
 
 
 import java.io.*;
@@ -261,16 +262,13 @@ public class Repository {
         }
     }
 
-    public void addNewBranch(String name, Commit commit) throws AlreadyExistingBranchException {
+    public void addNewBranch(String name,String sha1) throws AlreadyExistingBranchException, NoCommitHasBeenMadeException {
         Branch branch;
+        if(headBranch==null)
+            throw new NoCommitHasBeenMadeException();
         if (branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null) == null
                 && !headBranch.getName().equals(name)) {
-            if (commit != null) {
-                branch = new Branch(commit.getSha1(), "master");
-                headBranch = branch;
-                makeFileForBranch(branch.getName(), "HEAD");            //update the head file
-            } else
-                branch = new Branch(headBranch.getSha1(), name);
+            branch = new Branch(sha1, name);
             branches.add(branch);
             makeFileForBranch(branch.getSha1(), branch.getName());
         } else
@@ -502,7 +500,7 @@ public class Repository {
         createZippedFilesForMagitObjects();
     }
 
-    public boolean mergeCommits(Branch branch) throws IOException {
+    public boolean mergeCommits(Branch branch) throws IOException {                         //
         latestMergedBranchSha1 = branch.getSha1();
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();

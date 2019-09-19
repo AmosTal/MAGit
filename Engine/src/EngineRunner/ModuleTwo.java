@@ -75,13 +75,12 @@ public class ModuleTwo {
             throw new CommitCannotExecutException();
     }
 
-    public static void makeNewBranch(String name) throws NoActiveRepositoryException, AlreadyExistingBranchException {
+    public static void makeNewBranch(String name,String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException {
 
 
         checkIfActiveRepoExists();
-        activeRepo.addNewBranch(name, null);
+        activeRepo.addNewBranch(name,sha1);
     }
-
     public static boolean checkChanges() throws NoActiveRepositoryException {
 
         checkIfActiveRepoExists();

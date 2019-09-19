@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 public class Controller {
     public static MergeWindowController mergeController;
+    public Commit graphicCommit;
     private boolean commitBool = false;
 
     Stage mergeStage;
@@ -91,12 +92,27 @@ public class Controller {
     @FXML
     public void resetContextPressed()
     {
-        //ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
+        try {
+            ModuleTwo.resetActiveRepoHeadBranch(graphicCommit);
+        } catch (IOException e) {
+            popAlert(e);
+        }
     }
     @FXML
     public void newBranchContextPressed()
     {
-
+        TextInputDialog dialog = new TextInputDialog("");
+        dialog.setTitle("Make new branch:choose a name");
+        dialog.setHeaderText("Please enter the branch name:");
+        dialog.setContentText("Branch name");
+        Optional<String> answer = dialog.showAndWait();
+        if (answer.isPresent()) {
+            try {
+                ModuleTwo.makeNewBranch(answer.get(),graphicCommit.getSha1());
+            } catch (AlreadyExistingBranchException |NoActiveRepositoryException| NoCommitHasBeenMadeException e) {
+                popAlert(e);
+            }
+        }
     }
     @FXML
     public void mergeContextPressed()
@@ -442,31 +458,37 @@ public class Controller {
     @FXML
     void makeNewBranch() {
         TextInputDialog dialog = new TextInputDialog("");
-        dialog.setTitle("Make new branch");
+        dialog.setTitle("Make new branch:choose a name");
         dialog.setHeaderText("Please enter the branch name:");
         dialog.setContentText("Branch name");
         Optional<String> answer = dialog.showAndWait();
         if (answer.isPresent()) {
             try {
-                ModuleTwo.makeNewBranch(answer.get());
 
-                String[] options = new String[]{"Yes",
-                        "No"};
-                ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(options[0], options);
-                choiceDialog.setTitle("Change active branch");
-                choiceDialog.setHeaderText("Do you want to make the new branch active?");
-                choiceDialog.setContentText("Please choose an option");
-                Optional<String> answer2 = choiceDialog.showAndWait();
-                if (answer2.isPresent()) {
-                    if (answer2.get().equals(options[0])) {
-                        ModuleTwo.checkout(answer.get());
-                        activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                String name=answer.get();
+                dialog.setTitle("Make new branch:choose sha1 of commit");
+                dialog.setHeaderText("Please enter sha1 of commit:");
+                dialog.setContentText("Branch sha1");
+                Optional<String> sha1 = dialog.showAndWait();
+                if (sha1.isPresent()) {
+                    ModuleTwo.makeNewBranch(name,sha1.get());
+                    String[] options = new String[]{"Yes",
+                            "No"};
+                    ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(options[0], options);
+                    choiceDialog.setTitle("Change active branch");
+                    choiceDialog.setHeaderText("Do you want to make the new branch active?");
+                    choiceDialog.setContentText("Please choose an option");
+                    Optional<String> answer2 = choiceDialog.showAndWait();
+                    if (answer2.isPresent()) {
+                        if (answer2.get().equals(options[0])) {
+                            ModuleTwo.checkout(answer.get());
+                            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                        }
                     }
+                    buildBranchCommitTree();
+                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                 }
-                buildBranchCommitTree();
-                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-
-            } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException | IOException e) {
+            } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException | IOException| NoCommitHasBeenMadeException e) {
                 popAlert(e);
             }
         }
