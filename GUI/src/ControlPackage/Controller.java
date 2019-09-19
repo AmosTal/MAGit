@@ -4,6 +4,7 @@ import EngineRunner.ModuleTwo;
 import MainPackage.Main;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
+import Objects.Branch.NoCommitHasBeenMadeException;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.*;
