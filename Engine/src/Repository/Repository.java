@@ -695,6 +695,27 @@ public class Repository {
         }
         return !nameOfRb.equals("");
     }
+
+    public boolean isHeadBranchRTB() { //checks if rb with name of head branch exists.
+        String _path = this.path+"/.magit/branches";
+        File branches = new File(_path);
+        File remoteBranchesFolder = null;
+        for(File file : Objects.requireNonNull(branches.listFiles())){
+            if(file.isFile())
+                continue;
+            remoteBranchesFolder = file;
+
+        }
+        assert remoteBranchesFolder != null;
+        return (new File(_path+remoteBranchesFolder.getName()+headBranch.getName()).exists());
+    }
+
+    public void push() {
+        if(isHeadBranchRTB()){
+            Delta deltaOfHeadBranch = deltaChangesBetweenCommits(headBranch.getSha1());
+
+        }
+    }
 }
 
 
