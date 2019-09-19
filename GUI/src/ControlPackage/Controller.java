@@ -4,6 +4,7 @@ import EngineRunner.ModuleTwo;
 import MainPackage.Main;
 import Objects.Branch.AlreadyExistingBranchException;
 import Objects.Branch.Branch;
+import Objects.Branch.BranchNoNameException;
 import Objects.Branch.NoCommitHasBeenMadeException;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
@@ -95,11 +96,16 @@ public class Controller {
     {
         try {
             ModuleTwo.resetActiveRepoHeadBranch(graphicCommit);
+            updateGraphicTree();
         } catch (IOException e) {
             popAlert(e);
         }
     }
     @FXML
+    public void updateGraphicTree()
+    {
+        GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+    }
     public void newBranchContextPressed()
     {
         TextInputDialog dialog = new TextInputDialog("");
@@ -110,7 +116,8 @@ public class Controller {
         if (answer.isPresent()) {
             try {
                 ModuleTwo.makeNewBranch(answer.get(),graphicCommit.getSha1());
-            } catch (AlreadyExistingBranchException |NoActiveRepositoryException| NoCommitHasBeenMadeException e) {
+                updateGraphicTree();
+            } catch (AlreadyExistingBranchException |NoActiveRepositoryException| NoCommitHasBeenMadeException| BranchNoNameException e) {
                 popAlert(e);
             }
         }
@@ -118,12 +125,20 @@ public class Controller {
     @FXML
     public void mergeContextPressed()
     {
+        mergeButtonFunction(graphicCommit.getSha1());
+        updateGraphicTree();
 
     }
     @FXML
     public void deleteBranchContextPressed()
     {
-
+        try {
+            ModuleTwo.deleteBranch(ModuleTwo.isPointedCommit(graphicCommit.getSha1()));
+            buildBranchCommitTree();
+            updateGraphicTree();
+        } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
+            popAlert(e);
+        }
     }
     @FXML
     void cloneRepo() throws IOException {
@@ -150,7 +165,7 @@ public class Controller {
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
-            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+            updateGraphicTree();
         } catch (NoSuchRepoException e) {
             popAlert(e);
         }
@@ -164,7 +179,7 @@ public class Controller {
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
-            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+            updateGraphicTree();
         } catch (IOException | NoSuchRepoException e) {
             popAlert(e);
         }
@@ -204,7 +219,7 @@ public class Controller {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         scrollPane.setPreferredSize( new Dimension( 500, 500 ) );
-        JOptionPane.showMessageDialog(null, scrollPane, "dialog test with textarea",//FIX DISSSSSSSSSSSSSSSSSSSSSSSSSSSS
+        JOptionPane.showMessageDialog(null, scrollPane, "Delta changes",
                 JOptionPane.PLAIN_MESSAGE);
     }
     @FXML
@@ -218,62 +233,66 @@ public class Controller {
 
     @FXML
     void mergeButton() {
+        if (!commitBool) {
+            TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
+            if (!selectedItem.getValue().isCommit())
+                if (!selectedItem.getValue().getBranch().getName().equals(activeBranchLabel.getText())) {
+                mergeButtonFunction(selectedItem.getValue().getBranch().getSha1());
+                }
+                else
+                    JOptionPane.showMessageDialog(null, "Cannot merge active branch to itself");
+
+        }
+    }
+    @FXML
+    void mergeButtonFunction(String branchSha1) {
         try {
-            if (!commitBool) {
-                if (ModuleTwo.checkChanges()) {
-                    JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot merge.");
-                } else {
-                    TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
-                    if (!selectedItem.getValue().isCommit()) {
-                        if (!selectedItem.getValue().getBranch().getName().equals(activeBranchLabel.getText())) {
-                            try {
-                                if (ModuleTwo.merge(selectedItem.getValue().getBranch()))
-                                {
-                                    TextInputDialog commitDialog = new TextInputDialog("");
-                                    commitDialog.setTitle("Execute merge");
-                                    commitDialog.setHeaderText("Enter commit message:");
-                                    Optional<String> commitMsg = commitDialog.showAndWait();
-                                    if (commitMsg.isPresent()) {
-                                        if (!ModuleTwo.getActiveRepo().isConflictsEmpty()) {
-                                            FXMLLoader fxmlLoader = new FXMLLoader();
-                                            URL url = getClass().getResource("MergeWindow.fxml");
-                                            fxmlLoader.setLocation(url);
-                                            GridPane head = fxmlLoader.load(url.openStream());
-                                            Scene scene = new Scene(head, 1200, 800);
-                                            scene.getStylesheets().add(Main.getSkinPath());
-                                            mergeStage = new Stage();
-                                            mergeStage.setTitle("Conflicts");
-                                            mergeController = fxmlLoader.getController();
-                                            mergeController.setMainController(this);
-                                            mergeController.setMsg(commitMsg.get());
-                                            mergeStage.setScene(scene);
-                                            mergeStage.show();
-                                            mergeController.updateConflictTreeView();
-                                            mergeController.showFiles();
-                                        } else {
 
-                                            refreshCommitsTree();
-                                        }
-                                    }
-                                    refreshFilesTree();
-                                    //refreshCommitsTree();
-                                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
-                                }
-                                else {
-                                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                                    alert.setContentText("Nothing to merge: active branch is already made from the merged branch");
-                                    alert.showAndWait();
-                                }
+            if (ModuleTwo.checkChanges()) {
+                JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot merge.");
+            } else {
 
-                            } catch (IOException | CannotMergeException e) {
-                                popAlert(e);
+                try {
+                    if (ModuleTwo.merge(branchSha1)) {
+                        TextInputDialog commitDialog = new TextInputDialog("");
+                        commitDialog.setTitle("Execute merge");
+                        commitDialog.setHeaderText("Enter commit message:");
+                        Optional<String> commitMsg = commitDialog.showAndWait();
+                        if (commitMsg.isPresent()) {
+                            if (!ModuleTwo.getActiveRepo().isConflictsEmpty()) {
+                                FXMLLoader fxmlLoader = new FXMLLoader();
+                                URL url = getClass().getResource("MergeWindow.fxml");
+                                fxmlLoader.setLocation(url);
+                                GridPane head = fxmlLoader.load(url.openStream());
+                                Scene scene = new Scene(head, 1200, 800);
+                                scene.getStylesheets().add(Main.getSkinPath());
+                                mergeStage = new Stage();
+                                mergeStage.setTitle("Conflicts");
+                                mergeController = fxmlLoader.getController();
+                                mergeController.setMainController(this);
+                                mergeController.setMsg(commitMsg.get());
+                                mergeStage.setScene(scene);
+                                mergeStage.show();
+                                mergeController.updateConflictTreeView();
+                                mergeController.showFiles();
+                            } else {
+
+                                refreshCommitsTree();
                             }
-                        } else
-                            JOptionPane.showMessageDialog(null, "Cannot merge active branch to itself");
+                        }
+                        refreshFilesTree();
+                        updateGraphicTree();
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setContentText("Nothing to merge: active branch is already made from the merged branch");
+                        alert.showAndWait();
                     }
+
+                } catch (IOException | CannotMergeException e) {
+                    popAlert(e);
                 }
             }
-        } catch (NoActiveRepositoryException e) {
+        }catch (NoActiveRepositoryException e) {
             popAlert(e);
         }
     }
@@ -296,7 +315,7 @@ public class Controller {
                     buildFileTree(ModuleTwo.getActiveRepoPath());
                     buildBranchCommitTree();
                     activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
-                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+                    updateGraphicTree();
                 }
             } else
                 throw new CommitCannotExecutException();
@@ -449,7 +468,7 @@ public class Controller {
             try {
                 ModuleTwo.deleteBranch(answer.get());
                 buildBranchCommitTree();
-                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+                updateGraphicTree();
             } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
                 popAlert(e);
             }
@@ -472,24 +491,26 @@ public class Controller {
                 dialog.setContentText("Branch sha1");
                 Optional<String> sha1 = dialog.showAndWait();
                 if (sha1.isPresent()) {
-                    ModuleTwo.makeNewBranch(name,sha1.get());
-                    String[] options = new String[]{"Yes",
-                            "No"};
-                    ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(options[0], options);
-                    choiceDialog.setTitle("Change active branch");
-                    choiceDialog.setHeaderText("Do you want to make the new branch active?");
-                    choiceDialog.setContentText("Please choose an option");
-                    Optional<String> answer2 = choiceDialog.showAndWait();
-                    if (answer2.isPresent()) {
-                        if (answer2.get().equals(options[0])) {
-                            ModuleTwo.checkout(answer.get());
-                            activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                    if(ModuleTwo.getActiveRepo().isCommitInObjList(sha1.get())) {//fix commitinobjlist to only return true if it is commit<<<<<<<<<<<<<
+                        ModuleTwo.makeNewBranch(name, sha1.get());
+                        String[] options = new String[]{"Yes",
+                                "No"};
+                        ChoiceDialog<String> choiceDialog = new ChoiceDialog<>(options[0], options);
+                        choiceDialog.setTitle("Change active branch");
+                        choiceDialog.setHeaderText("Do you want to make the new branch active?");
+                        choiceDialog.setContentText("Please choose an option");
+                        Optional<String> answer2 = choiceDialog.showAndWait();
+                        if (answer2.isPresent()) {
+                            if (answer2.get().equals(options[0])) {
+                                ModuleTwo.checkout(answer.get());
+                                activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
+                            }
                         }
+                        buildBranchCommitTree();
+                        updateGraphicTree();
                     }
-                    buildBranchCommitTree();
-                    GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
                 }
-            } catch (NoActiveRepositoryException | AlreadyExistingBranchException | NoSuchBranchException | IOException| NoCommitHasBeenMadeException e) {
+            } catch (NoActiveRepositoryException|BranchNoNameException |NoCommitInObjList| AlreadyExistingBranchException | NoSuchBranchException | IOException| NoCommitHasBeenMadeException e) {
                 popAlert(e);
             }
         }
@@ -508,7 +529,7 @@ public class Controller {
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
-            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+            updateGraphicTree();
 
         } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
             popAlert(e);
@@ -599,7 +620,7 @@ public class Controller {
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
-            GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+            updateGraphicTree();
         } catch (NoSuchRepoException | IOException e) {
             popAlert(e);
         }
@@ -628,7 +649,7 @@ public class Controller {
                 ModuleTwo.checkout(answer.get());
                 activeBranchLabel.setText(answer.get());
                 buildBranchCommitTree();
-                GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
+                updateGraphicTree();
                 refreshFilesTree();
 
             } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
