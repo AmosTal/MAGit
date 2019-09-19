@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -41,8 +42,28 @@ public class Controller {
     public static MergeWindowController mergeController;
     public Commit graphicCommit;
     private boolean commitBool = false;
+    public static boolean isRepoOpenedAlready=false;
 
     Stage mergeStage;
+    @FXML
+    private MenuItem cloneMenuItem;
+    @FXML
+    private MenuItem fetchMenuItem;
+    @FXML
+    private MenuItem pullMenuItem;
+    @FXML
+    private MenuItem pushMenuItem;
+    @FXML
+    private MenuItem showBranchesMenuItem;
+    @FXML
+    private MenuItem makeNewBranchMenuItem;
+    @FXML
+    private MenuItem deleteExistingBranchMenuItem;
+    @FXML
+    private MenuItem switchHeadBranchMenuItem;
+    @FXML
+    private VBox vBoxButtons;
+
     @FXML
     private Label repositoryNameLabel;
     @FXML
@@ -70,6 +91,8 @@ public class Controller {
     @FXML
     private Button mergeButtonID;
     @FXML
+    private Button commitButtonID;
+    @FXML
     public ContextMenu contextMenu;
     @FXML
     public ScrollPane scrollPane;
@@ -81,13 +104,10 @@ public class Controller {
     private TreeView<CommitOrBranch> BranchCommitTreeView;
     @FXML
     public MenuItem resetContext;
-
     @FXML
     public MenuItem newBranchContext;
-
     @FXML
     public MenuItem mergeContext;
-
     @FXML
     public MenuItem deleteBranchContext;
 
@@ -456,6 +476,7 @@ public class Controller {
             try {
                 ModuleTwo.InitializeRepo(path);
                 repositoryNameLabel.setText(answer.get());
+                enableMenuItems();//make this only after making commit
             } catch (IOException e) {
                 popAlert(e);
             }
@@ -535,6 +556,7 @@ public class Controller {
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
             updateGraphicTree();
+            enableMenuItems();
 
         } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
             popAlert(e);
@@ -626,6 +648,7 @@ public class Controller {
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
             updateGraphicTree();
+            enableMenuItems();
         } catch (NoSuchRepoException | IOException e) {
             popAlert(e);
         }
@@ -732,5 +755,29 @@ public static boolean justClickedOnGraphic=false;
         }
         justClickedOnGraphic=false;
     }
+    @FXML
+    void normalView() {
+        vBoxButtons.setVisible(true);
+    }
+    @FXML
+    void graphicalView() {
+        vBoxButtons.setVisible(false);
+    }
+    private void enableMenuItems()
+    {
+        if(!isRepoOpenedAlready)
+        {
+            cloneMenuItem.setDisable(false);
+            fetchMenuItem.setDisable(false);
+            pullMenuItem.setDisable(false);
+            pushMenuItem.setDisable(false);
+            showBranchesMenuItem.setDisable(false);
+            makeNewBranchMenuItem.setDisable(false);
+            deleteExistingBranchMenuItem.setDisable(false);
+            switchHeadBranchMenuItem.setDisable(false);
+            commitButtonID.setDisable(false);
+        }
+    }
+
 }
 

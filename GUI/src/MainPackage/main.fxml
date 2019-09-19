@@ -34,23 +34,23 @@
                                 <MenuItem mnemonicParsing="false" onAction="#openRepository" text="Open Repository" />
                                 <MenuItem mnemonicParsing="false" onAction="#loadRepoFromXml" text="Load xml repository" />
                                 <MenuItem mnemonicParsing="false" onAction="#switchUsername" text="Set username" />
-                        <MenuItem mnemonicParsing="false" onAction="#cloneRepo" text="Clone" />
-                        <MenuItem mnemonicParsing="false" onAction="#fetch" text="Fetch" />
-                        <MenuItem mnemonicParsing="false" onAction="#pull" text="Pull" />
-                        <MenuItem mnemonicParsing="false" onAction="#push" text="Push" />
+                        <MenuItem fx:id="cloneMenuItem" disable="true" mnemonicParsing="false" onAction="#cloneRepo" text="Clone" />
+                        <MenuItem fx:id="fetchMenuItem" disable="true" mnemonicParsing="false" onAction="#fetch" text="Fetch" />
+                        <MenuItem fx:id="pullMenuItem" disable="true" mnemonicParsing="false" onAction="#pull" text="Pull" />
+                        <MenuItem fx:id="pushMenuItem" disable="true" mnemonicParsing="false" onAction="#push" text="Push" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Branches">
                             <items>
-                                <MenuItem mnemonicParsing="false" onAction="#showBranches" text="Show branches" />
-                                <MenuItem mnemonicParsing="false" onAction="#makeNewBranch" text="Make new branch" />
-                                <MenuItem mnemonicParsing="false" onAction="#deleteExistingBranch" text="Delete existing branch" />
-                                <MenuItem mnemonicParsing="false" onAction="#switchHeadBranch" text="Switch head branch(checkout)" />
+                                <MenuItem fx:id="showBranchesMenuItem" disable="true" mnemonicParsing="false" onAction="#showBranches" text="Show branches" />
+                                <MenuItem fx:id="makeNewBranchMenuItem" disable="true" mnemonicParsing="false" onAction="#makeNewBranch" text="Make new branch" />
+                                <MenuItem fx:id="deleteExistingBranchMenuItem" disable="true" mnemonicParsing="false" onAction="#deleteExistingBranch" text="Delete existing branch" />
+                                <MenuItem fx:id="switchHeadBranchMenuItem" disable="true" mnemonicParsing="false" onAction="#switchHeadBranch" text="Switch head branch(checkout)" />
                             </items>
                         </Menu>
                     </menus>
                 </MenuBar>
-                <Button alignment="CENTER" contentDisplay="CENTER" layoutX="257.0" layoutY="2.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="30.0" prefWidth="130.0" text="Commit" textFill="#007aff">
+                <Button fx:id="commitButtonID" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="215.0" layoutY="2.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="27.0" prefWidth="101.0" text="Commit" textFill="#007aff">
                     <effect>
                         <ColorAdjust />
                     </effect>
@@ -68,7 +68,7 @@
                         <Glow />
                     </effect>
                 </AnchorPane>
-            <Button fx:id="changeSkinButton" layoutX="405.0" layoutY="4.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="87.0" text="Change skin" />
+            <Button fx:id="changeSkinButton" layoutX="478.0" layoutY="2.0" mnemonicParsing="false" text="Change skin" />
             </children>
         </AnchorPane>
     </top>
@@ -143,7 +143,7 @@
                     <children>
                         <HBox maxWidth="1.7976931348623157E308" prefHeight="150.0" prefWidth="372.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
                             <children>
-                                <VBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="136.0" prefWidth="115.0">
+                                <VBox fx:id="vBoxButtons" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="136.0" prefWidth="115.0">
                                     <children>
                                         <Label fx:id="optionsLabel1" text="Branches options:" />
                                         <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#switchingButton1" prefHeight="40.0" prefWidth="140.0" text="Checkout">
@@ -215,7 +215,7 @@
                         </HBox>
                         <TabPane maxWidth="870.0" tabClosingPolicy="UNAVAILABLE" GridPane.rowSpan="2">
                             <tabs>
-                                <Tab text="Graphical view">
+                                <Tab onSelectionChanged="#graphicalView" text="Graphical view">
                            <content>
                                <ScrollPane fx:id="scrollPane" onMouseClicked="#updateContextMenuToNull" prefHeight="200.0" prefWidth="200.0">
                                  <contextMenu>
@@ -229,7 +229,7 @@
                                     </ContextMenu>
                                  </contextMenu></ScrollPane>
                            </content></Tab>
-                                <Tab text="Normal view">
+                                <Tab onSelectionChanged="#normalView" text="Normal view">
                                     <content>
                                         <TreeView fx:id="BranchCommitTreeView" prefHeight="200.0" prefWidth="200.0" />
                                     </content>
