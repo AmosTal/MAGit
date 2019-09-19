@@ -198,9 +198,14 @@ public class Controller {
         }
     }
 
-        @FXML
+    @FXML
     void push() {
-        ModuleTwo.push();
+        try {
+            ModuleTwo.push();
+            fetch();
+        } catch (NoSuchRepoException | IOException e) {
+            popAlert(e);
+        }
     }
 
     @FXML

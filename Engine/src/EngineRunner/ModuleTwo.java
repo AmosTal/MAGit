@@ -183,7 +183,14 @@ public class ModuleTwo {
 
 
 
-    public static void push() {
-            activeRepo.push();
+    public static void push() throws IOException, NoSuchRepoException {
+        if(activeRepo.isHeadBranchRTB()){
+            ArrayList<String> arr =activeRepo.getWantedSha1s();
+            String activeRepoPath = getActiveRepoPath();
+            SwitchRepo(activeRepo.getRemoteRepositoryPath());
+            activeRepo.updateCommits(activeRepoPath,arr);
+            activeRepo.updateHeadBranch(activeRepoPath);
+            SwitchRepo(activeRepoPath);
+        }
     }
 }
