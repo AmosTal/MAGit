@@ -39,7 +39,7 @@ public class Repository {
     private HashMap<String, MergeCase> conflictMap = new HashMap<>();
     private String latestMergedBranchSha1 = null;
     private String remoteRepoPath = "";
-
+    private String nameOfRemoteRepo;
 
     public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches) {
         path = _path;
@@ -724,6 +724,52 @@ public class Repository {
         if(objList.get(sha1)!=null)
             return true;
         throw new NoCommitInObjList();
+    }
+    public String getRemoteRepositoryPath() {
+        return remoteRepoPath;
+    }
+
+    public void updatesFilesByDelta(Delta headBranchDelta) {
+
+    }
+    public void updateCommits(String remotePath,ArrayList<String> arr) throws IOException { // help for push
+        File commitFileToCopy;
+        File myObjects;
+        for(String commitSha1ToCopy:arr){
+            commitFileToCopy = new File(remotePath + "/.magit/objects/"+commitSha1ToCopy);
+            myObjects = new File(path + "/.magit/objects"+commitSha1ToCopy);
+            FileUtils.copyFile(commitFileToCopy,myObjects);
+        }
+    }
+
+    public ArrayList<String> getWantedSha1s() throws IOException {
+        ArrayList<String> arr =new ArrayList<>();
+        String sha1ToAdd = "";
+        File fileOfRemoteHeadBranch = new File(this.path+"/.magit/branches/"+nameOfRemoteRepo+"/"+headBranch);
+        BufferedReader r = new BufferedReader(new FileReader(fileOfRemoteHeadBranch));
+        String sha1OfAncestor = r.readLine();
+        r.close();
+        while(!sha1ToAdd.equals(sha1OfAncestor)){
+            arr.add(sha1ToAdd);
+            //addAllFilesOfCommit
+            sha1ToAdd = ((Commit)objList.get(sha1ToAdd)).getPreviousCommitSha1();
+        }
+        return arr;
+    }
+
+    public void updateHeadBranch(String remotePath) throws IOException {
+        File myHeadBranch = new File(path + "/.magit/branches/"+headBranch.getName());
+        myHeadBranch.delete();
+        File remoteHeadBranch = new File(remotePath + "/.magit/branches/"+headBranch.getName());
+        FileUtils.copyFile(remoteHeadBranch,myHeadBranch);
+    }
+    public Delta getHeadBranchDelta() throws IOException {
+        deployCommit((Commit)objList.get(headBranch.getSha1()),this.path+"/.magit/merge files");
+        File rtbFileOfHead = new File(this.path+"/.magit/branches/"+this.nameOfRemoteRepo+"/"+headBranch.getName());
+        BufferedReader r = new BufferedReader(new FileReader(rtbFileOfHead));
+        String rbSha1 = r.readLine();
+        r.close();
+        return deltaChangesBetweenCommits(rbSha1);
     }
 }
 
