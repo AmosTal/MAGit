@@ -13,6 +13,7 @@ import Objects.Folder.Fof;
 import Objects.Folder.Folder;
 import XML.XmlData;
 import XMLpackage.*;
+import com.sun.corba.se.impl.resolver.SplitLocalResolverImpl;
 import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
 import puk.team.course.magit.ancestor.finder.CommitRepresentative;
@@ -743,18 +744,31 @@ public class Repository {
     }
 
     public ArrayList<String> getWantedSha1s() throws IOException {
-        ArrayList<String> arr =new ArrayList<>();
+        ArrayList<String> arr = new ArrayList<>();
         String sha1ToAdd = "";
-        File fileOfRemoteHeadBranch = new File(this.path+"/.magit/branches/"+nameOfRemoteRepo+"/"+headBranch);
+        File fileOfRemoteHeadBranch = new File(this.path + "/.magit/branches/" + nameOfRemoteRepo + "/" + headBranch);
         BufferedReader r = new BufferedReader(new FileReader(fileOfRemoteHeadBranch));
         String sha1OfAncestor = r.readLine();
         r.close();
-        while(!sha1ToAdd.equals(sha1OfAncestor)){
+        while (!sha1ToAdd.equals(sha1OfAncestor)) {
             arr.add(sha1ToAdd);
-            //addAllFilesOfCommit
-            sha1ToAdd = ((Commit)objList.get(sha1ToAdd)).getPreviousCommitSha1();
+            String comitSha1RootFolder = ((Commit) objList.get(sha1ToAdd)).getRootFolderSha1();
+            Folder rootFolder = (Folder) objList.get(comitSha1RootFolder);
+            recursiveSha1Adder(rootFolder, arr);
+            sha1ToAdd = ((Commit) objList.get(sha1ToAdd)).getPreviousCommitSha1();
         }
+
         return arr;
+    }
+
+    private void recursiveSha1Adder(Folder folder,ArrayList<String> arr){
+        for (Fof fof : folder.getFofList()) {
+            if (!fof.getIsBlob()) {
+                arr.add(fof.getSha1());
+                recursiveSha1Adder((Folder) objList.get(fof.getSha1()), arr);
+            } else
+                arr.add(fof.getSha1());
+        }
     }
 
     public void updateHeadBranch(String remotePath) throws IOException {
