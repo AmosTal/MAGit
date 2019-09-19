@@ -41,7 +41,7 @@ public class Controller {
     public static MergeWindowController mergeController;
     private boolean commitBool = false;
 
-    public Stage mergeStage;
+    Stage mergeStage;
     @FXML
     private Label repositoryNameLabel;
     @FXML
@@ -112,7 +112,7 @@ public class Controller {
     }
     @FXML
     void cloneRepo() throws IOException {
-        String path,name = null;
+        String path,name;
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select repository location ");
         File directory = directoryChooser.showDialog(new Stage());
@@ -156,24 +156,29 @@ public class Controller {
     }
     @FXML
     void pull() {
+        try {
+            if (ModuleTwo.checkChanges()) {
+                JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot pull.");
+            } else if (ModuleTwo.activeRepoHeadHasRtbOfRb()) {
+
+
+            }
+        } catch (NoActiveRepositoryException | IOException e) {
+            popAlert(e);
+        }
     }
 
-    @FXML
+        @FXML
     void push() {
     }
 
     @FXML
     void showDelta1() {
-
-        try {
             String changes=ModuleTwo.changesBetweenCommitsToString(commitPrevLabel.getText());
             if(!changes.equals(""))
                 printJscrollpane(changes);
             else
                 JOptionPane.showMessageDialog(null,"No changes were made");
-        } catch (IOException e) {
-            popAlert(e);
-        }
     }
 
     private void printJscrollpane(String text)
@@ -188,15 +193,11 @@ public class Controller {
     }
     @FXML
     void showDelta2() {
-        try {
             String changes=ModuleTwo.changesBetweenCommitsToString(commitSecondPrevLabel.getText());
             if(!changes.equals(""))
                 printJscrollpane(changes);
             else
                 JOptionPane.showMessageDialog(null,"No changes were made");
-        } catch (IOException e) {
-            popAlert(e);
-        }
     }
 
     @FXML
@@ -367,7 +368,7 @@ public class Controller {
     public void showCommitFiles(Commit selectedCommit) throws IOException {
         String path = ModuleTwo.getActiveRepoPath() + "/.magit/Commit files";
         try {
-            ModuleTwo.getActiveRepo().deleteWCFiles(path);
+            Repository.deleteWCFiles(path);
             commitMsgLabel.setText(selectedCommit.getCommitPurposeMSG());
             commitSha1Label.setText(selectedCommit.getSha1());
             commitPrevLabel.setText(selectedCommit.getPreviousCommitSha1());
