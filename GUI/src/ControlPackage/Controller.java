@@ -122,7 +122,7 @@ public class Controller {
         }
     }
     @FXML
-    public void updateGraphicTree()
+    private void updateGraphicTree()
     {
         GraphicTree.GraphicCommitNodeMaker.createGraphicTree(scrollPane);
     }
@@ -176,11 +176,11 @@ public class Controller {
         else
             throw new IOException();
         path = directory.getPath() + "/" + name;
-        ModuleTwo.getActiveRepo().Clone(path);
         String pathOfOldRepo = ModuleTwo.getActiveRepoPath();
+        ModuleTwo.makeRemoteRepositoryFiles(pathOfOldRepo);
+        ModuleTwo.getActiveRepo().Clone(path);
         try {
             ModuleTwo.SwitchRepo(path);
-            ModuleTwo.getActiveRepo().makeRemoteRepositoryFile(pathOfOldRepo);
             repositoryNameLabel.setText(ModuleTwo.getActiveRepoName());
             activeBranchLabel.setText(ModuleTwo.getActiveBranchName());
             buildFileTree(ModuleTwo.getActiveRepoPath());

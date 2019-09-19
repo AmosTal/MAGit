@@ -30,13 +30,17 @@ public class ModuleTwo {
         Repository.updateUsername(name);
     }
 
+    public static void makeRemoteRepositoryFiles(String path) throws IOException {
+        activeRepo.makeRemoteRepositoryFiles(path);
+    }
     public static void SwitchRepo(String path) throws NoSuchRepoException, IOException {
         Path p = Paths.get(path + "/.magit");
         if (Files.isDirectory(p)) {
             Repository repo = new Repository(path, new HashMap<>(), new ArrayList<>());
             repo.readRepoFiles();
+            repo.updateRemoteRepoPath();
+            repo.updateRemoteRepoName();
             activeRepo = repo;
-            activeRepo.updateRemoteRepoPath();
         } else
             throw new NoSuchRepoException();
     }
@@ -184,6 +188,7 @@ public class ModuleTwo {
 
 
     public static void push() throws IOException, NoSuchRepoException {
+
         if(activeRepo.isHeadBranchRTB()){
             ArrayList<String> arr =activeRepo.getWantedSha1s();
             String activeRepoPath = getActiveRepoPath();
