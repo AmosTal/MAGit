@@ -671,7 +671,11 @@ public class Repository {
         }
     }
 
-    public void makeRemoteRepositoryFile(String pathOfOldRepo) throws IOException {
+    public void makeRemoteRepositoryFiles(String pathOfOldRepo) throws IOException{
+        makeRemoteRepositoryFile(pathOfOldRepo);
+        makeRemoteRepositoryNameFile(pathOfOldRepo);
+    }
+    private void makeRemoteRepositoryFile(String pathOfOldRepo) throws IOException {
         File pathOfRepoFile = new File(this.path+"/.magit/remoteRepositoryPath.txt");
         if(pathOfRepoFile.createNewFile()) {
             BufferedWriter writer = new BufferedWriter(new FileWriter(pathOfRepoFile));
@@ -688,6 +692,14 @@ public class Repository {
             r.close();
         }
     }
+    public void updateRemoteRepoName() throws IOException {
+        File remoteRepoPathFile = new File(path+"/.magit/remoteRepositoryName.txt");
+        if(remoteRepoPathFile.isFile()){
+            BufferedReader r = new BufferedReader(new FileReader(remoteRepoPathFile));
+            nameOfRemoteRepo = r.readLine();
+            r.close();
+        }
+    }
 
     public boolean headHasRtb() throws IOException {
         File rbt = new File(this.path+"/.magit/branches/HEAD");
@@ -700,26 +712,25 @@ public class Repository {
         return !nameOfRb.equals("");
     }
 
-    public boolean isHeadBranchRTB() { //checks if rb with name of head branch exists.
+    public boolean isHeadBranchRTB() throws IOException { //checks if rb with name of head branch exists.
+        String headName;
+        File headFile = new File(path+"/.magit/branches/HEAD");
+        BufferedReader r = new BufferedReader(new FileReader(headFile));
+        headName = r.readLine();
+        r.close();
         String _path = this.path+"/.magit/branches";
         File branches = new File(_path);
         File remoteBranchesFolder = null;
         for(File file : Objects.requireNonNull(branches.listFiles())){
-            if(file.isFile())
-                continue;
-            remoteBranchesFolder = file;
-
+            if(file.isDirectory())
+                remoteBranchesFolder = file;
         }
         assert remoteBranchesFolder != null;
-        return (new File(_path+remoteBranchesFolder.getName()+headBranch.getName()).exists());
+//        System.out.println("name of remote folder : "+remoteBranchesFolder.getName()+"\nname of head branch is : "+headName);
+//        System.out.println(new File(_path+"/"+remoteBranchesFolder.getName()+"/"+headName).exists());
+        return (new File(_path+"/"+remoteBranchesFolder.getName()+"/"+headName).exists());
     }
 
-    public void push() {
-        if(isHeadBranchRTB()){
-            Delta deltaOfHeadBranch = deltaChangesBetweenCommits(headBranch.getSha1());
-
-        }
-    }
 
     public boolean isCommitInObjList(String sha1) throws NoCommitInObjList {
         if(objList.get(sha1)!=null)
@@ -738,18 +749,22 @@ public class Repository {
         File myObjects;
         for(String commitSha1ToCopy:arr){
             commitFileToCopy = new File(remotePath + "/.magit/objects/"+commitSha1ToCopy);
-            myObjects = new File(path + "/.magit/objects"+commitSha1ToCopy);
+            myObjects = new File(path + "/.magit/objects/"+commitSha1ToCopy);
             FileUtils.copyFile(commitFileToCopy,myObjects);
         }
     }
 
     public ArrayList<String> getWantedSha1s() throws IOException {
         ArrayList<String> arr = new ArrayList<>();
-        String sha1ToAdd = "";
-        File fileOfRemoteHeadBranch = new File(this.path + "/.magit/branches/" + nameOfRemoteRepo + "/" + headBranch);
-        BufferedReader r = new BufferedReader(new FileReader(fileOfRemoteHeadBranch));
-        String sha1OfAncestor = r.readLine();
+        String sha1ToAdd = headBranch.getSha1();
+        File headFile = new File(path+"/.magit/branches/HEAD");
+        BufferedReader r = new BufferedReader(new FileReader(headFile));
+        String headName = r.readLine();
         r.close();
+        File fileOfRemoteHeadBranch = new File(this.path + "/.magit/branches/" + nameOfRemoteRepo + "/" + headName);
+        BufferedReader br = new BufferedReader(new FileReader(fileOfRemoteHeadBranch));
+        String sha1OfAncestor = br.readLine();
+        br.close();
         while (!sha1ToAdd.equals(sha1OfAncestor)) {
             arr.add(sha1ToAdd);
             String comitSha1RootFolder = ((Commit) objList.get(sha1ToAdd)).getRootFolderSha1();
@@ -757,7 +772,6 @@ public class Repository {
             recursiveSha1Adder(rootFolder, arr);
             sha1ToAdd = ((Commit) objList.get(sha1ToAdd)).getPreviousCommitSha1();
         }
-
         return arr;
     }
 
@@ -772,6 +786,7 @@ public class Repository {
     }
 
     public void updateHeadBranch(String remotePath) throws IOException {
+        System.out.println(headBranch.getName());
         File myHeadBranch = new File(path + "/.magit/branches/"+headBranch.getName());
         myHeadBranch.delete();
         File remoteHeadBranch = new File(remotePath + "/.magit/branches/"+headBranch.getName());
@@ -784,6 +799,20 @@ public class Repository {
         String rbSha1 = r.readLine();
         r.close();
         return deltaChangesBetweenCommits(rbSha1);
+    }
+
+    private void makeRemoteRepositoryNameFile(String pathOfOldRepo) throws IOException {
+        File pathOfRepoFile = new File(this.path+"/.magit/remoteRepositoryName.txt");
+        File repoNameFile = new File(pathOfOldRepo);
+        if(pathOfRepoFile.createNewFile()) {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(pathOfRepoFile));
+            writer.write(repoNameFile.getName());
+            writer.close();
+        }
+    }
+
+    public String getRemoteRepositoryName() {
+        return nameOfRemoteRepo;
     }
 }
 
