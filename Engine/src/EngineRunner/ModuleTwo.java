@@ -158,4 +158,10 @@ public class ModuleTwo {
     public static boolean activeRepoHeadHasRtbOfRb() throws IOException {
         return getActiveRepo().headHasRtb();
     }
+
+
+
+    public static void push() {
+            activeRepo.push();
+    }
 }

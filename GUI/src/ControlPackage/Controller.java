@@ -168,6 +168,7 @@ public class Controller {
 
         @FXML
     void push() {
+        ModuleTwo.push();
     }
 
     @FXML
