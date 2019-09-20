@@ -109,14 +109,29 @@ public class XmlData {
                     throw new XmlNotValidException("xml not valid:Commit points to a non root folder");
             }
             boolean validHead = false;
+            boolean validTracking = false;
             for (MagitSingleBranch branch : magitBranches.getMagitSingleBranch()) {
                 if (commitMap.get(branch.getPointedCommit().getId()) == null)
                     throw new XmlNotValidException("xml not valid:Branch points to commit id that doesn't exist");
                 if (magitBranches.getHead().equals(branch.getName()))
                     validHead = true;
+                if(branch.isTracking()){
+                    for (MagitSingleBranch b:magitBranches.getMagitSingleBranch()){
+                        if(b.isIsRemote()&&b.getName().equals(branch.getTrackingAfter()))
+                            validTracking = true;
+                    }
+                    if(!validTracking)
+                        throw new XmlNotValidException("Xml not valid:Remote tracking branch name does not match remote branch name.");
+                    validTracking = false;
+                }
             }
             if (!validHead)
-                throw new XmlNotValidException("xml not valid:Head doesn't point to an existing branch");
+                throw new XmlNotValidException("xml not valid:Head doesn't point to an existing branch.");
+        }
+        if(magitRepository.getMagitRemoteReference()!=null && magitRepository.getMagitRemoteReference().getLocation()!=null){
+            if(!(new File(magitRepository.getMagitRemoteReference().getLocation()).exists() && new File(magitRepository.getMagitRemoteReference().getLocation()+"/.magit").exists())){
+                throw new XmlNotValidException("xml not valid:Remote repository does not exist.");
+            }
         }
     }
 
