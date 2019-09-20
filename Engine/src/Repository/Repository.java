@@ -95,11 +95,15 @@ public class Repository {
     }
 
     private void createFilesForBranches() throws FileNotFoundException {
+        ArrayList<Branch> arr = new ArrayList<>(branches);
         makeFileForBranch(headBranch.getName(), "HEAD");
         makeFileForBranch(headBranch.getSha1(), headBranch.getName());
         for (Branch branch : branches) {
             makeFileForBranch(branch.getSha1(), branch.getName());
+            if(branch.getName().contains("/")||branch.getName().contains("\\"))
+                arr.remove(branch);
         }
+        branches = arr;
 
     }
 
@@ -367,7 +371,6 @@ public class Repository {
                 if (isHead)
                     repo.headBranch = new Branch(commitSha1, mgBranch.getName());
                 else {
-                    if(!mgBranch.getName().contains("\\"))
                         repo.branches.add(new Branch(commitSha1, mgBranch.getName()));
                 }
             }
