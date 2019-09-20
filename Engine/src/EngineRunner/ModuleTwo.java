@@ -67,6 +67,7 @@ public class ModuleTwo {
             activeRepo = Repository.makeRepoFromXmlRepo(reader);
             activeRepo.createEmptyRepo();
             activeRepo.createFiles();
+            activeRepo.makeRemoteFiles();
         } else {
             SwitchRepo(pathFromXml);
         }

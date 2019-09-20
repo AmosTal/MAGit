@@ -372,10 +372,8 @@ public class Repository {
             }
         }
         if(xmldata.hasRemote()) {
-            System.out.println(xmldata.getRemotePath());
-            repo.makeRemoteRepositoryFiles(xmldata.getRemotePath());
-            repo.updateRemoteRepoName();
-            repo.updateRemoteRepoPath();
+            repo.remoteRepoName = xmldata.getRemoteName();
+            repo.remoteRepoPath = xmldata.getRemotePath();
         }
         repo.deployCommit((Commit) repo.objList.get(repo.headBranch.getSha1()), repo.getPath());
         return repo;
@@ -825,6 +823,21 @@ public class Repository {
         myHeadBranch.delete();
         File remoteHeadBranch = new File(path + "/.magit/branches/"+headBranch.getName());
         FileUtils.copyFile(remoteHeadBranch,myHeadBranch);
+    }
+
+    public void makeRemoteFiles() throws IOException {
+        if(remoteRepoName!=null){
+            File pathOfRepoFile = new File(this.path+"/.magit/remoteRepositoryName.txt");
+            pathOfRepoFile.createNewFile();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(pathOfRepoFile));
+            writer.write(remoteRepoName);
+            writer.close();
+            File pathOfRepoPathFile = new File(this.path+"/.magit/remoteRepositoryPath.txt");
+            pathOfRepoPathFile.createNewFile();
+            BufferedWriter r = new BufferedWriter(new FileWriter(pathOfRepoPathFile));
+            r.write(remoteRepoPath);
+            r.close();
+        }
     }
 }
 
