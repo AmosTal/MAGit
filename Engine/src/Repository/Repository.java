@@ -540,7 +540,7 @@ public class Repository {
 
         boolean existsInTarget = false;
         HashMap<String, MergeCase> mergeMap = new HashMap<>();
-        String baseContent , targetContent = null;
+        String baseContent , targetContent ;
         for (Map.Entry<String, Fof> entry : headDelta.getCommitMap().entrySet()) {
             if (entry.getValue().getIsBlob())
                 mergeMap.put(entry.getKey(), sixBooleanGoneWild(headDelta, branchDelta, entry));
@@ -556,7 +556,7 @@ public class Repository {
                 if (branchDelta.getNewFilesFofs().get(entry.getKey()) != null) {
                     targetContent = objList.get(branchDelta.getNewFilesFofs().get(entry.getKey()).getSha1()).getContent();
                     MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, false,
-                            false, false, false), false, baseContent, targetContent, null);
+                            targetContent.equals(baseContent), false, false), false, baseContent, targetContent, null);
                     mergeMap.put(entry.getKey(), mc);
                     branchDelta.getNewFilesFofs().remove(entry.getKey());
                 } else {
@@ -623,11 +623,6 @@ public class Repository {
             existsInBase = false;
         }
         baseEqualsTargetSha1 = (targetEqualsAncestorSha1 && baseEqualsAncestorSha1) || (baseSha1.equals(targetSha1));
-        if ((existsInBase || existsInTarget) && !(baseEqualsAncestorSha1 && targetEqualsAncestorSha1)) {
-            baseEqualsTargetSha1 = false;
-            targetEqualsAncestorSha1 = false;
-            baseEqualsAncestorSha1 = false;
-        }
         Optional<MergeCases> res = MergeCase.caseIs(existsInBase, existsInTarget, true,
                 baseEqualsTargetSha1, targetEqualsAncestorSha1, baseEqualsAncestorSha1);
 
@@ -642,6 +637,11 @@ public class Repository {
 
 
     public boolean isConflictsEmpty() {
+        HashMap<String, MergeCase> map = new HashMap<>(conflictMap);
+        for(Map.Entry<String, MergeCase> entry:conflictMap.entrySet())
+            if(entry.getValue().getMergecases().get().takeOursOrTheirs().equals("delete"))
+                map.remove(entry.getKey());
+        conflictMap=map;
         return conflictMap.isEmpty();
     }
 

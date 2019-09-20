@@ -314,7 +314,6 @@ public class Controller {
                                 mergeController.updateConflictTreeView();
                                 mergeController.showFiles();
                             } else {
-
                                 refreshCommitsTree();
                             }
                         }

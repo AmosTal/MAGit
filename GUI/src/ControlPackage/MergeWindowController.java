@@ -42,6 +42,7 @@ public class MergeWindowController {
             GraphicTree.GraphicCommitNodeMaker.createGraphicTree(mainController.scrollPane);
             mainController.buildBranchCommitTree();
             mainController.refreshCommitsTree();
+            mainController.refreshFilesTree();
             mainController.mergeStage.close();
 
         }
@@ -104,8 +105,7 @@ public class MergeWindowController {
             recursiveFolderBuilder(pathMerge,newFolderLst);
     }
     private TreeItem<String> getNodes() throws FileNotFoundException {
-        if(conflictLst.isEmpty()&&pathLst.isEmpty())
-        {
+        if(conflictLst.isEmpty()&&pathLst.isEmpty()) {
             pathLst = ModuleTwo.getActiveRepo().getConflictMap();
             String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
             new File(pathMerge).mkdir();
@@ -123,10 +123,13 @@ public class MergeWindowController {
                             PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
                             out.write(entry.getValue().getBaseContent());
                             out.close();
-                        } else {
-                            PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
-                            out.write(entry.getValue().getTargetContent());
-                            out.close();
+                        }
+                        if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals("theirs")) {
+                            {
+                                PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
+                                out.write(entry.getValue().getTargetContent());
+                                out.close();
+                            }
                         }
                     }
                 }
