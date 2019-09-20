@@ -18,6 +18,8 @@ public class XmlData {
     private MagitFolders magitFolders;
     private MagitCommits magitCommits;
     private String repositoryPath;
+    private String remotePath;
+    private String remoteName;
 
     private Map<String, MagitBlob> blobMap = new HashMap<>();
     private Map<String, MagitSingleFolder> folderMap = new HashMap<>();
@@ -52,6 +54,8 @@ public class XmlData {
             magitFolders = magitRepository.getMagitFolders();
             magitBlobs = magitRepository.getMagitBlobs();
             repositoryPath = magitRepository.getLocation();
+            remotePath = magitRepository.getMagitRemoteReference().getLocation();
+            remoteName = magitRepository.getMagitRemoteReference().getName();
             makeMaps();
             checkIfXmlIsValid();
         } catch (JAXBException e) {
