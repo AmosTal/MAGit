@@ -47,6 +47,15 @@ public class Repository {
         branches = _branches;
         name = new File(_path).getName();
     }
+    public Repository(String _path, Map<String, MagitObject> _objList, ArrayList<Branch> _branches,String remotePath,String remoteName) {
+        path = _path;
+        objList = _objList;
+        branches = _branches;
+        name = new File(_path).getName();
+        remoteRepoPath = remotePath;
+        remoteRepoName = remoteName;
+    }
+
 
     public String getPath() {
         return path;
