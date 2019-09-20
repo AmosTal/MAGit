@@ -372,6 +372,7 @@ public class Repository {
                     repo.branches.add(new Branch(commitSha1, mgBranch.getName()));
             }
         }
+        repo.makeRemoteRepositoryFiles(xmldata.getRemotePath());
         repo.deployCommit((Commit) repo.objList.get(repo.headBranch.getSha1()), repo.getPath());
         return repo;
     }

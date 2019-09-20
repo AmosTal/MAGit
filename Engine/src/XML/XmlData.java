@@ -122,4 +122,8 @@ public class XmlData {
         if (!file.exists() || !str[len - 1].equals("xml"))
             throw new XmlNotValidException("xml file wasn't found");
     }
+
+    public String getRemotePath() {
+        return this.remotePath;
+    }
 }
