@@ -66,8 +66,8 @@ public class ModuleTwo {
             new File(reader.getMagitRepository().getLocation()).mkdir();
             activeRepo = Repository.makeRepoFromXmlRepo(reader);
             activeRepo.createEmptyRepo();
-            activeRepo.createFiles();
             activeRepo.makeRemoteFiles();
+            activeRepo.createFiles();
         } else {
             SwitchRepo(pathFromXml);
         }

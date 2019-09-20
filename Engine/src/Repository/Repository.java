@@ -837,6 +837,7 @@ public class Repository {
             BufferedWriter r = new BufferedWriter(new FileWriter(pathOfRepoPathFile));
             r.write(remoteRepoPath);
             r.close();
+            new File(this.path+"/.magit/branches/"+this.remoteRepoName+"/").mkdir();
         }
     }
 }
