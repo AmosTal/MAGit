@@ -1,5 +1,6 @@
 package Repository;
 
+import EngineRunner.ModuleTwo;
 import Merge.MergeCase;
 import Merge.MergeCases;
 import Objects.Api.MagitObject;
@@ -635,14 +636,51 @@ public class Repository {
         return finder.traceAncestor(sha1_1, sha1_2);
     }
 
+    private void recursiveFolderBuilder(String pathMerge,HashMap<String, MergeCase> folderLst)
+    {
 
-    public boolean isConflictsEmpty() {
-        HashMap<String, MergeCase> map = new HashMap<>(conflictMap);
-        for(Map.Entry<String, MergeCase> entry:conflictMap.entrySet())
+        HashMap<String, MergeCase> newFolderLst=new HashMap<>();
+        for(Map.Entry<String, MergeCase> entry:folderLst.entrySet())
+            if(entry.getValue().getIsFolder())
+                if((!new File(pathMerge+entry.getKey()).mkdir())&&!(new File(pathMerge+entry.getKey()).isDirectory()))
+                {
+                    newFolderLst.put(entry.getKey(),entry.getValue());
+                }
+        if(!newFolderLst.isEmpty())
+            recursiveFolderBuilder(pathMerge,newFolderLst);
+    }
+    public HashMap<String, MergeCase> getConflictHashMap() throws FileNotFoundException {
+
+         HashMap<String, MergeCase> resMap = new HashMap<>();
+         String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
+         new File(pathMerge).mkdir();
+         recursiveFolderBuilder(pathMerge, conflictMap);
+            for (Map.Entry<String, MergeCase> entry : conflictMap.entrySet()) {
+                if (!entry.getValue().getIsFolder()) {
+                    if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals(""))
+                        resMap.put(entry.getKey(), entry.getValue());
+                    else {
+                        if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals("ours")) {
+                            PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
+                            out.write(entry.getValue().getBaseContent());
+                            out.close();
+                        }
+                        if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals("theirs")) {
+                            {
+                                PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
+                                out.write(entry.getValue().getTargetContent());
+                                out.close();
+                            }
+                        }
+                    }
+                }
+            }
+        HashMap<String, MergeCase> map = new HashMap<>(resMap);
+        for(Map.Entry<String, MergeCase> entry:resMap.entrySet())
             if(entry.getValue().getMergecases().get().takeOursOrTheirs().equals("delete"))
                 map.remove(entry.getKey());
-        conflictMap=map;
-        return conflictMap.isEmpty();
+        resMap=map;
+        return resMap;
     }
 
     public void Clone(String _path) throws IOException {
