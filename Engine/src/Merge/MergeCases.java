@@ -5,7 +5,7 @@ public enum MergeCases {
         Case2(true, true, false, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
         Case3(false, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
         Case4(true, false, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
-        Case5(true, false, false, false, false, false){ @Override public String takeOursOrTheirs() { return ""; }},
+        Case5(true, false, false, false, false, false){ @Override public String takeOursOrTheirs() { return "ours"; }},
         Case6(true, true, true, true, true, true){ @Override public String takeOursOrTheirs() { return "ours"; } },
         Case7(true, false, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
         Case8(true, true, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
@@ -13,6 +13,7 @@ public enum MergeCases {
         Case10(true, true, true, true, false, false){ @Override public String takeOursOrTheirs() { return "theirs"; }},
         Case11(true, true, false, true, false, false){@Override public String takeOursOrTheirs() { return "theirs"; }},
         Case12(false, false, true, false, false, false)  {@Override public String takeOursOrTheirs() { return "theirs"; }};
+        
 
 
     private boolean existsInBase,  existsInTarget,  existsInAncestor,  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1;

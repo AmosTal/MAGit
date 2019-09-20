@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControlPackage.MergeWindowController">
   <columnConstraints>
@@ -48,10 +49,13 @@
          <children>
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Button fx:id="makeNewFileButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#makeNewFileButton" text="Make new file" />
-                  <Button alignment="BASELINE_LEFT" contentDisplay="BOTTOM" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#deleteFile" text="Delete file" />
-                  <Button fx:id="cancelButton1" alignment="BASELINE_LEFT" contentDisplay="BOTTOM" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#mergeDone" text="Done" />
-                  <Button fx:id="cancelButton" alignment="BASELINE_LEFT" contentDisplay="BOTTOM" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#cancelMerge" text="Cancel" />
+                  <Button fx:id="makeNewFileButton" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#makeNewFileButton" prefHeight="32.0" prefWidth="90.0" text="Make new file" wrapText="true">
+                     <font>
+                        <Font size="11.0" />
+                     </font></Button>
+                  <Button alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#deleteFile" text="Delete file" />
+                  <Button fx:id="cancelButton1" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#mergeDone" text="Done" />
+                  <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#cancelMerge" text="Cancel" />
                </children>
             </VBox>
          </children>

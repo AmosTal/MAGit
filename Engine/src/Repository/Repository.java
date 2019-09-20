@@ -526,9 +526,12 @@ public class Repository {
             if (sha1OfAncestor.equals(headBranch.getSha1())) {
                 headBranch.UpdateSha1(branchSha1);
                 makeFileForBranch(headBranch.getSha1(), headBranch.getName());
+                deleteWCFiles(this.path);
+                deployCommit((Commit)objList.get(branchSha1),this.path);
                 return false;
-            } else
+            } else {
                 return false;
+            }
         }
         return true;
     }
@@ -558,10 +561,9 @@ public class Repository {
                     branchDelta.getNewFilesFofs().remove(entry.getKey());
                 } else {
                     MergeCase mc = new MergeCase(MergeCase.caseIs(true, false, false,
-                            false, false, false), false, baseContent, targetContent, null);
+                            false, false, false), false, baseContent, null, null);
                     mergeMap.put(entry.getKey(), mc);
                 }
-                targetContent = null;
             } else {
                 MergeCase mc = new MergeCase(MergeCase.caseIs(true, true, true,
                         true, true, true), true, null, null, null);
@@ -621,7 +623,7 @@ public class Repository {
             existsInBase = false;
         }
         baseEqualsTargetSha1 = (targetEqualsAncestorSha1 && baseEqualsAncestorSha1) || (baseSha1.equals(targetSha1));
-        if (existsInBase && existsInTarget && !(baseEqualsAncestorSha1 && targetEqualsAncestorSha1)) {
+        if ((existsInBase || existsInTarget) && !(baseEqualsAncestorSha1 && targetEqualsAncestorSha1)) {
             baseEqualsTargetSha1 = false;
             targetEqualsAncestorSha1 = false;
             baseEqualsAncestorSha1 = false;
