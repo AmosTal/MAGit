@@ -26,7 +26,7 @@ public class MergeWindowController {
 
     private String msg;
 
-
+    private  HashMap<String, MergeCase> pathLst=new HashMap<>();
     private  HashMap<String, MergeCase> conflictLst=new HashMap<>();
     @FXML
     void cancelMerge() {
@@ -57,7 +57,7 @@ public class MergeWindowController {
     void deleteFile() throws FileNotFoundException {
         TreeItem<String> selectedItem = conflictTreeView.getSelectionModel().getSelectedItem();
         conflictLst.remove(selectedItem.getValue());
-        updateConflictTreeView(conflictLst);
+        updateConflictTreeView();
     }
     @FXML
     void makeNewFileButton() throws IOException {
@@ -69,13 +69,12 @@ public class MergeWindowController {
             out.write(newFileTextArea.getText());
             out.close();
             conflictLst.remove(selectedItem.getValue());
-            updateConflictTreeView(conflictLst);
+            updateConflictTreeView();
         }
     }
 
 
-    void updateConflictTreeView(HashMap<String, MergeCase> map) throws FileNotFoundException {
-        conflictLst=map;
+    void updateConflictTreeView() throws FileNotFoundException {
         conflictTreeView.setRoot(getNodes());
         conflictTreeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
 
@@ -92,9 +91,50 @@ public class MergeWindowController {
         });
         conflictTreeView.getRoot().setExpanded(true);
     }
+    private void recursiveFolderBuilder(String pathMerge,HashMap<String, MergeCase> folderLst)
+    {
 
+        HashMap<String, MergeCase> newFolderLst=new HashMap<>();
+        for(Map.Entry<String, MergeCase> entry:folderLst.entrySet())
+            if(entry.getValue().getIsFolder())
+                if((!new File(pathMerge+entry.getKey()).mkdir())&&!(new File(pathMerge+entry.getKey()).isDirectory()))
+                {
+                    newFolderLst.put(entry.getKey(),entry.getValue());
+                }
+        if(!newFolderLst.isEmpty())
+            recursiveFolderBuilder(pathMerge,newFolderLst);
+    }
     private TreeItem<String> getNodes() throws FileNotFoundException {
+        if(conflictLst.isEmpty()&&pathLst.isEmpty()) {
+            pathLst = ModuleTwo.getActiveRepo().getConflictMap();
+            String pathMerge = ModuleTwo.getActiveRepoPath() + "/.magit/merge files/";
+            new File(pathMerge).mkdir();
+            recursiveFolderBuilder(pathMerge, pathLst);
+            //conflictLst.putAll(pathLst.entrySet().stream().filter(e->e.getValue().getIsFolder()));
 
+            //possible solution: sort the array
+
+            for (Map.Entry<String, MergeCase> entry : pathLst.entrySet()) {
+                if (!entry.getValue().getIsFolder()) {
+                    if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals(""))
+                        conflictLst.put(entry.getKey(), entry.getValue());
+                    else {
+                        if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals("ours")) {
+                            PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
+                            out.write(entry.getValue().getBaseContent());
+                            out.close();
+                        }
+                        if (entry.getValue().getMergecases().get().takeOursOrTheirs().equals("theirs")) {
+                            {
+                                PrintWriter out = new PrintWriter(pathMerge + entry.getKey());
+                                out.write(entry.getValue().getTargetContent());
+                                out.close();
+                            }
+                        }
+                    }
+                }
+            }
+        }
         //filter the folders...
         //filter the cases- keep 1-5 only
         //all the files remaining put in the folder..
@@ -109,9 +149,10 @@ public class MergeWindowController {
     public void showFiles() {
         TreeItem<String> selectedItem = conflictTreeView.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
-            ancestorCommitContent.setText((conflictLst.get(selectedItem.getValue())).getAncestorContent());
-            currentBranchContent.setText((conflictLst.get(selectedItem.getValue())).getBaseContent());
-            mergedBranchContent.setText((conflictLst.get(selectedItem.getValue())).getTargetContent());
+
+            ancestorCommitContent.setText((pathLst.get(selectedItem.getValue())).getAncestorContent());
+            currentBranchContent.setText((pathLst.get(selectedItem.getValue())).getBaseContent());
+            mergedBranchContent.setText((pathLst.get(selectedItem.getValue())).getTargetContent());
         }
     }
 
