@@ -133,4 +133,8 @@ public class XmlData {
     public boolean hasRemote(){
         return remotePath!=null;
     }
+
+    public String getRemoteName() {
+        return remoteName;
+    }
 }
