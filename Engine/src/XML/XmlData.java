@@ -18,6 +18,7 @@ public class XmlData {
     private MagitFolders magitFolders;
     private MagitCommits magitCommits;
     private String repositoryPath;
+    private MagitRepository.MagitRemoteReference remoteReference;
     private String remotePath;
     private String remoteName;
 
@@ -54,7 +55,7 @@ public class XmlData {
             magitFolders = magitRepository.getMagitFolders();
             magitBlobs = magitRepository.getMagitBlobs();
             repositoryPath = magitRepository.getLocation();
-            MagitRepository.MagitRemoteReference remoteReference = magitRepository.getMagitRemoteReference();
+            remoteReference = magitRepository.getMagitRemoteReference();
             if(remoteReference!=null){
                 remotePath = remoteReference.getLocation();
                 remoteName = remoteReference.getName();
@@ -130,6 +131,6 @@ public class XmlData {
         return this.remotePath;
     }
     public boolean hasRemote(){
-        return magitRepository.getMagitRemoteReference()==null;
+        return remotePath!=null;
     }
 }
