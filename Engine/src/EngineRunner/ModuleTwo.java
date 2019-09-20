@@ -2,10 +2,7 @@ package EngineRunner;
 
 
 import ControlPackage.Controller;
-import Objects.Branch.AlreadyExistingBranchException;
-import Objects.Branch.Branch;
-import Objects.Branch.BranchNoNameException;
-import Objects.Branch.NoCommitHasBeenMadeException;
+import Objects.Branch.*;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.*;
@@ -96,7 +93,7 @@ public class ModuleTwo {
         return activeRepo.checkDeltaChanges();
     }
 
-    public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException, IOException {
+    public static void checkout(String name) throws NoActiveRepositoryException, NoSuchBranchException, IOException, CheckOutHeadException {
 
         checkIfActiveRepoExists();
         activeRepo.switchHead(name);

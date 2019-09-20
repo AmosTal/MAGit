@@ -2,10 +2,7 @@ package ControlPackage;
 
 import EngineRunner.ModuleTwo;
 import MainPackage.Main;
-import Objects.Branch.AlreadyExistingBranchException;
-import Objects.Branch.Branch;
-import Objects.Branch.BranchNoNameException;
-import Objects.Branch.NoCommitHasBeenMadeException;
+import Objects.Branch.*;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
 import Repository.*;
@@ -42,7 +39,7 @@ import java.util.stream.Collectors;
 public class Controller {
     public static MergeWindowController mergeController;
     public Commit graphicCommit;
-    private boolean commitBool = false;
+    private String commitBranchRoot = "";
     public static boolean isRepoOpenedAlready=false;
 
     Stage mergeStage;
@@ -277,7 +274,7 @@ public class Controller {
 
     @FXML
     void mergeButton() {
-        if (!commitBool) {
+        if (commitBranchRoot.equals("branch")) {
             TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
             if (!selectedItem.getValue().isCommit())
                 if (!selectedItem.getValue().getBranch().getName().equals(activeBranchLabel.getText())) {
@@ -369,39 +366,44 @@ public class Controller {
     @FXML
     void switchingButton1() throws IOException {
         String branchName;
-        if (commitBool) {
+        if (commitBranchRoot.equals("commit")) {
             TreeItem<CommitOrBranch> selectedItem = BranchCommitTreeView.getSelectionModel().getSelectedItem();
             if (selectedItem.getValue().isCommit()) {
                 Commit selectedCommit = selectedItem.getValue().getCommit();
                 showCommitFiles(selectedCommit);
             } else
                 commitMsgLabel.setText("This is not a Commit");
-        } else
+        }
+        if((commitBranchRoot.equals("branch"))) {
             try {
                 branchName = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getBranch().getName();
                 ModuleTwo.checkout(branchName);
                 activeBranchLabel.setText(branchName);
                 buildBranchCommitTree();
                 refreshFilesTree();
-            } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
+            } catch (NoActiveRepositoryException | NoSuchBranchException | IOException| CheckOutHeadException e) {
                 popAlert(e);
             }
+        }
     }
 
     @FXML
     void switchingButton2() {
-        if (commitBool) {
+        if (commitBranchRoot.equals("commit")) {
             Commit selectedCommit = BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().getCommit();
             try {
                 ModuleTwo.resetActiveRepoHeadBranch(selectedCommit);
+                updateGraphicTree();
+                refreshCommitsTree();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            refreshCommitsTree();
-        } else {
+        }
+        if((commitBranchRoot.equals("branch"))) {
             try {
                 ModuleTwo.deleteBranch(BranchCommitTreeView.getSelectionModel().getSelectedItem().getValue().branch.getName());
                 buildBranchCommitTree();
+                updateGraphicTree();
             } catch (DeleteHeadBranchException | NoSuchBranchException | NoActiveRepositoryException e) {
                 popAlert(e);
             }
@@ -423,17 +425,19 @@ public class Controller {
                     switchButton2.setText("Reset head branch to this commit");
                     switchButton2.setStyle("-fx-font: 11 arial;");
                     mergeButtonID.setVisible(false);
-                    commitBool = true;
+                    commitBranchRoot = "commit";
                 } else {
                     optionsLabel1.setText("Branches options:");
                     switchButton1.setText("Checkout");
                     switchButton2.setText("Delete branch");
                     switchButton2.setStyle("-fx-font: 12 arial;");
                     mergeButtonID.setVisible(true);
-                    commitBool = false;
+                    commitBranchRoot = "branch";
                 }
             }
         }
+        else
+            commitBranchRoot = "root";
     }
 
     public void showCommitFiles(Commit selectedCommit) throws IOException {
@@ -552,7 +556,7 @@ public class Controller {
                         updateGraphicTree();
                     }
                 }
-            } catch (NoActiveRepositoryException|BranchNoNameException |NoCommitInObjList| AlreadyExistingBranchException | NoSuchBranchException | IOException| NoCommitHasBeenMadeException e) {
+            } catch (CheckOutHeadException|NoActiveRepositoryException|BranchNoNameException |NoCommitInObjList| AlreadyExistingBranchException | NoSuchBranchException | IOException| NoCommitHasBeenMadeException e) {
                 popAlert(e);
             }
         }
@@ -696,7 +700,7 @@ public class Controller {
                 updateGraphicTree();
                 refreshFilesTree();
 
-            } catch (NoActiveRepositoryException | NoSuchBranchException | IOException e) {
+            } catch (CheckOutHeadException|NoActiveRepositoryException | NoSuchBranchException | IOException e) {
                 popAlert(e);
             }
         }

@@ -4,9 +4,7 @@ import Merge.MergeCase;
 import Merge.MergeCases;
 import Objects.Api.MagitObject;
 import Objects.Blob.Blob;
-import Objects.Branch.AlreadyExistingBranchException;
-import Objects.Branch.Branch;
-import Objects.Branch.BranchNoNameException;
+import Objects.Branch.*;
 import Objects.Commit.Commit;
 import Objects.Date.DateAndTime;
 import Objects.Folder.Fof;
@@ -16,7 +14,6 @@ import XMLpackage.*;
 import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
 import puk.team.course.magit.ancestor.finder.CommitRepresentative;
-import Objects.Branch.NoCommitHasBeenMadeException;
 
 
 import java.io.*;
@@ -295,7 +292,9 @@ public class Repository {
         return delta.showChanges();
     }
 
-    public void switchHead(String name) throws NoSuchBranchException, IOException {
+    public void switchHead(String name) throws NoSuchBranchException, IOException,CheckOutHeadException {
+        if(headBranch.getName().equals(name))
+            throw new CheckOutHeadException();
         Branch branch = branches.stream().filter(Branch -> Branch.getName().equals(name)).findFirst().orElse(null);
         if (branch == null)
             throw new NoSuchBranchException();
@@ -367,9 +366,12 @@ public class Repository {
                 commitSha1 = repo.recursiveSha1PrevCommitBuilder(singleCommit, xmldata);
                 if (isHead)
                     repo.headBranch = new Branch(commitSha1, mgBranch.getName());
-                else
-                    repo.branches.add(new Branch(commitSha1, mgBranch.getName()));
+                else {
+                    if(!mgBranch.getName().contains("\\"))
+                        repo.branches.add(new Branch(commitSha1, mgBranch.getName()));
+                }
             }
+
         }
         if(xmldata.hasRemote()) {
             repo.remoteRepoName = xmldata.getRemoteName();
@@ -497,7 +499,7 @@ public class Repository {
         createZippedFilesForMagitObjects();
     }
 
-    public boolean mergeCommits(String branchSha1) throws IOException {                         //
+    public boolean mergeCommits(String branchSha1) throws IOException {
         latestMergedBranchSha1 = branchSha1;
         String pathMerge = path + "/.magit/merge files/";
         new File(pathMerge).mkdir();
@@ -521,6 +523,7 @@ public class Repository {
             if (sha1OfAncestor.equals(headBranch.getSha1())) {
                 headBranch.UpdateSha1(branchSha1);
                 makeFileForBranch(headBranch.getSha1(), headBranch.getName());
+                return false;
             } else
                 return false;
         }
