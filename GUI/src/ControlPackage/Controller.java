@@ -2,6 +2,7 @@ package ControlPackage;
 
 import EngineRunner.ModuleTwo;
 import MainPackage.Main;
+import Merge.MergeCase;
 import Objects.Branch.*;
 import Objects.Commit.Commit;
 import Objects.Commit.CommitCannotExecutException;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -297,7 +299,8 @@ public class Controller {
                         commitDialog.setHeaderText("Enter commit message:");
                         Optional<String> commitMsg = commitDialog.showAndWait();
                         if (commitMsg.isPresent()) {
-                            if (!ModuleTwo.getActiveRepo().isConflictsEmpty()) {
+                            HashMap<String, MergeCase> map = ModuleTwo.getActiveRepo().getConflictHashMap();
+                            if (!map.isEmpty()) {
                                 FXMLLoader fxmlLoader = new FXMLLoader();
                                 URL url = getClass().getResource("MergeWindow.fxml");
                                 fxmlLoader.setLocation(url);
@@ -311,9 +314,10 @@ public class Controller {
                                 mergeController.setMsg(commitMsg.get());
                                 mergeStage.setScene(scene);
                                 mergeStage.show();
-                                mergeController.updateConflictTreeView();
+                                mergeController.updateConflictTreeView(map);
                                 mergeController.showFiles();
                             } else {
+                                ModuleTwo.getActiveRepo().buildCommitForMerge(commitMsg.get());
                                 refreshCommitsTree();
                             }
                         }
