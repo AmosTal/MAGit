@@ -30,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -137,7 +138,7 @@ public class Controller {
             try {
                 ModuleTwo.makeNewBranch(answer.get(),graphicCommit.getSha1());
                 updateGraphicTree();
-            } catch (AlreadyExistingBranchException |NoActiveRepositoryException| NoCommitHasBeenMadeException| BranchNoNameException e) {
+            } catch (AlreadyExistingBranchException | NoActiveRepositoryException | NoCommitHasBeenMadeException | BranchNoNameException | FileNotFoundException e) {
                 popAlert(e);
             }
         }
@@ -186,7 +187,7 @@ public class Controller {
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
             updateGraphicTree();
-        } catch (NoSuchRepoException e) {
+        } catch (NoSuchRepoException | ClassNotFoundException e) {
             popAlert(e);
         }
     }
@@ -200,7 +201,7 @@ public class Controller {
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
             updateGraphicTree();
-        } catch (IOException | NoSuchRepoException e) {
+        } catch (IOException | NoSuchRepoException | ClassNotFoundException e) {
             popAlert(e);
         }
     }
@@ -215,7 +216,7 @@ public class Controller {
             buildFileTree(ModuleTwo.getActiveRepoPath());
             buildBranchCommitTree();
             updateGraphicTree();
-        } catch (NoActiveRepositoryException | IOException | NoSuchRepoException e) {
+        } catch (NoActiveRepositoryException | IOException | NoSuchRepoException | ClassNotFoundException e) {
             popAlert(e);
         }
     }
@@ -231,18 +232,23 @@ public class Controller {
                 buildBranchCommitTree();
                 updateGraphicTree();
             }
-        } catch (NoSuchRepoException | IOException e) {
+        } catch (NoSuchRepoException | IOException| ClassNotFoundException e) {
             popAlert(e);
         }
     }
 
     @FXML
     void showDelta1() {
+        try {
             String changes=ModuleTwo.changesBetweenCommitsToString(commitPrevLabel.getText());
             if(!changes.equals(""))
                 printJscrollpane(changes);
             else
                 JOptionPane.showMessageDialog(null,"No changes were made");
+        }
+        catch (IOException e){
+            popAlert(e);
+        }
     }
 
     private void printJscrollpane(String text)
@@ -257,11 +263,16 @@ public class Controller {
     }
     @FXML
     void showDelta2() {
-            String changes=ModuleTwo.changesBetweenCommitsToString(commitSecondPrevLabel.getText());
-            if(!changes.equals(""))
+        try {
+            String changes = ModuleTwo.changesBetweenCommitsToString(commitSecondPrevLabel.getText());
+            if (!changes.equals(""))
                 printJscrollpane(changes);
             else
-                JOptionPane.showMessageDialog(null,"No changes were made");
+                JOptionPane.showMessageDialog(null, "No changes were made");
+        }
+        catch (IOException e){
+            popAlert(e);
+        }
     }
 
     @FXML
@@ -280,12 +291,9 @@ public class Controller {
     @FXML
     private void mergeButtonFunction(String branchSha1) {
         try {
-
             if (ModuleTwo.checkChanges()) {
                 JOptionPane.showMessageDialog(null, "There are open changes in WC. Cannot merge.");
             } else {
-
-                try {
                     if (ModuleTwo.merge(branchSha1)) {
                         TextInputDialog commitDialog = new TextInputDialog("");
                         commitDialog.setTitle("Execute merge");
@@ -320,19 +328,19 @@ public class Controller {
                         alert.setContentText("Nothing to merge: active branch is already made from the merged branch");
                         alert.showAndWait();
                     }
-
-                } catch (IOException | CannotMergeException e) {
-                    popAlert(e);
-                }
             }
-        }catch (NoActiveRepositoryException e) {
+        }catch (IOException | NoActiveRepositoryException | CannotMergeException e) {
             popAlert(e);
         }
     }
 
     @FXML
     void showChanges() {
-        JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            JOptionPane.showMessageDialog(null, ModuleTwo.showStatus(), "Changes in repository", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            popAlert(e);
+        }
     }
 
     @FXML
@@ -352,7 +360,7 @@ public class Controller {
                 }
             } else
                 throw new CommitCannotExecutException();
-        } catch (NoActiveRepositoryException | CommitCannotExecutException e) {
+        } catch (NoActiveRepositoryException | CommitCannotExecutException | IOException e) {
             popAlert(e);
         }
 
@@ -566,7 +574,7 @@ public class Controller {
             updateGraphicTree();
             enableMenuItems();
 
-        } catch (NoSuchRepoException | XmlNotValidException | IOException e) {
+        } catch (NoSuchRepoException | XmlNotValidException | IOException | ClassNotFoundException e) {
             popAlert(e);
         }
     }
@@ -657,7 +665,7 @@ public class Controller {
             buildBranchCommitTree();
             updateGraphicTree();
             enableMenuItems();
-        } catch (NoSuchRepoException | IOException e) {
+        } catch (NoSuchRepoException | IOException | ClassNotFoundException e) {
             popAlert(e);
         }
     }
