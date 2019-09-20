@@ -34,7 +34,7 @@ public class ModuleTwo {
         activeRepo.makeRemoteRepositoryFiles(path);
     }
 
-    public static void SwitchRepo(String path) throws NoSuchRepoException, IOException {
+    public static void SwitchRepo(String path) throws NoSuchRepoException, IOException, ClassNotFoundException {
         Path p = Paths.get(path + "/.magit");
         if (Files.isDirectory(p)) {
             Repository repo = new Repository(path, new HashMap<>(), new ArrayList<>());
@@ -52,7 +52,7 @@ public class ModuleTwo {
         activeRepo = repo;
     }
 
-    public static void loadRepo(String path) throws XmlNotValidException, IOException, NoSuchRepoException {
+    public static void loadRepo(String path) throws XmlNotValidException, IOException, NoSuchRepoException, ClassNotFoundException {
 
         XmlData reader = new XmlData(path);
         String pathFromXml = reader.getMagitRepository().getLocation();
@@ -72,7 +72,7 @@ public class ModuleTwo {
         }
     }
 
-    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException {
+    public static boolean executeCommit(String msg) throws NoActiveRepositoryException, CommitCannotExecutException, IOException {
         checkIfActiveRepoExists();
         if (activeRepo.checkDeltaChanges()) {
             activeRepo.newCommit(msg);
@@ -82,14 +82,14 @@ public class ModuleTwo {
             throw new CommitCannotExecutException();
     }
 
-    public static void makeNewBranch(String name, String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException, BranchNoNameException {
+    public static void makeNewBranch(String name, String sha1) throws NoActiveRepositoryException, AlreadyExistingBranchException, NoCommitHasBeenMadeException, BranchNoNameException, FileNotFoundException {
 
 
         checkIfActiveRepoExists();
         activeRepo.addNewBranch(name, sha1);
     }
 
-    public static boolean checkChanges() throws NoActiveRepositoryException {
+    public static boolean checkChanges() throws NoActiveRepositoryException, IOException {
 
         checkIfActiveRepoExists();
         return activeRepo.checkDeltaChanges();
@@ -102,11 +102,11 @@ public class ModuleTwo {
 
     }
 
-    public static String showStatus() {
+    public static String showStatus() throws IOException {
         return activeRepo.showRepoStatus();
     }
 
-    public static String changesBetweenCommitsToString(String sha1) {
+    public static String changesBetweenCommitsToString(String sha1) throws IOException {
         return activeRepo.deltaChangesBetweenCommitsToString(sha1);
     }
 
@@ -184,7 +184,7 @@ public class ModuleTwo {
 
 
 
-    public static void push() throws IOException, NoSuchRepoException {
+    public static void push() throws IOException, NoSuchRepoException, ClassNotFoundException {
             ArrayList<String> arr = activeRepo.getWantedSha1sForPush();
             String activeRepoPath = getActiveRepoPath();
             SwitchRepo(activeRepo.getRemoteRepositoryPath());
@@ -194,7 +194,7 @@ public class ModuleTwo {
             activeRepo.updateRB();
     }
 
-    public static void pull() throws IOException, NoSuchRepoException {
+    public static void pull() throws IOException, NoSuchRepoException, ClassNotFoundException {
         if (activeRepo.isHeadBranchRTB() && activeRepo.lrIsPushed()) {
             String myPath = getActiveRepoPath();
             File headBranchFile= new File(getActiveRepoPath()+"/.magit/branches/"+activeRepo.getHeadBranchName());

@@ -79,7 +79,7 @@ public class Repository {
         Head.createNewFile();
     }
 
-    public void createFiles() {
+    public void createFiles() throws IOException {
         createZippedFilesForMagitObjects();
         createFilesForBranches();
     }
@@ -88,7 +88,7 @@ public class Repository {
         return (Commit) objList.get(sha1);
     }
 
-    private void createFilesForBranches() {
+    private void createFilesForBranches() throws FileNotFoundException {
         makeFileForBranch(headBranch.getName(), "HEAD");
         makeFileForBranch(headBranch.getSha1(), headBranch.getName());
         for (Branch branch : branches) {
@@ -101,24 +101,19 @@ public class Repository {
         return branches;
     }
 
-    private void makeFileForBranch(String content, String name) {
-        try {
+    private void makeFileForBranch(String content, String name) throws FileNotFoundException {
             PrintWriter out = new PrintWriter(this.path + "/.magit/branches/" + name);
             out.println(content);
             out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    private void createZippedFilesForMagitObjects() {
+    private void createZippedFilesForMagitObjects() throws IOException {
         for (Map.Entry<String, MagitObject> entry : objList.entrySet())
             createSingleZippedFileForMagitObject(entry.getKey(), entry.getValue());
 
     }
 
-    private void createSingleZippedFileForMagitObject(String sha1, MagitObject obj) {
-        try {
+    private void createSingleZippedFileForMagitObject(String sha1, MagitObject obj) throws IOException {
             File file = new File(this.path + "/.magit/objects/" + sha1);
             if (!file.exists()) {
                 FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
@@ -129,20 +124,16 @@ public class Repository {
                 oos.close();
                 fos.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void readRepoFiles() {
+    public void readRepoFiles() throws IOException, ClassNotFoundException {
         this.readMagitObjects();
         this.readBranches();
     }
 
-    private void readBranches() {
+    private void readBranches() throws IOException {
         File folder = new File(this.path + "/.magit/branches");
         String nameOfHead = "";
-        try {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
                 if (fileEntry.isDirectory())
                     continue;
@@ -162,15 +153,11 @@ public class Repository {
             String finalNameOfHead = nameOfHead;
             headBranch = branches.stream().filter(Branch -> Branch.getName().equals(finalNameOfHead)).findFirst().orElse(null);
             branches.remove(headBranch);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    private void readMagitObjects() {
+    private void readMagitObjects() throws IOException, ClassNotFoundException {
         File folder = new File(this.path + "/.magit/objects");
         MagitObject obj;
-        try {
             for (File fileEntry : Objects.requireNonNull(folder.listFiles())) {
                 FileInputStream fin = new FileInputStream(fileEntry.getPath());
                 GZIPInputStream gis = new GZIPInputStream(fin);
@@ -181,12 +168,9 @@ public class Repository {
                 gis.close();
                 fin.close();
             }
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void newCommit(String msg) {
+    public void newCommit(String msg) throws IOException {
 
         String sha1OfRoot;
         sha1OfRoot = Objects.requireNonNull(recursiveWcToObjectBuilder(this.path, "", true, username, currDelta)).getSha1();
@@ -210,7 +194,7 @@ public class Repository {
         return res;
     }
 
-    private Fof recursiveWcToObjectBuilder(String location, String _path, boolean isCommit, String modifier, Delta delta) {
+    private Fof recursiveWcToObjectBuilder(String location, String _path, boolean isCommit, String modifier, Delta delta) throws IOException {
         ArrayList<Fof> fofLst = new ArrayList<>();
         File file = new File(location + _path);
         MagitObject obj = null;
@@ -237,12 +221,8 @@ public class Repository {
             }
             obj = new Folder(fofLst);
         } else {
-            try {
                 content = new String(Files.readAllBytes(Paths.get(location + _path)));
                 obj = new Blob(content);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         assert obj != null;
         fof = new Fof(obj.getSha1(), file.getName(), !file.isDirectory(), modifier, new DateAndTime(file.lastModified()));
@@ -263,7 +243,7 @@ public class Repository {
         }
     }
 
-    public void addNewBranch(String name,String sha1) throws AlreadyExistingBranchException, NoCommitHasBeenMadeException,BranchNoNameException {
+    public void addNewBranch(String name,String sha1) throws AlreadyExistingBranchException, NoCommitHasBeenMadeException, BranchNoNameException, FileNotFoundException {
         Branch branch;
         if(name.equals(""))
         {
@@ -280,7 +260,7 @@ public class Repository {
             throw new AlreadyExistingBranchException();
     }
 
-    public boolean checkDeltaChanges() {
+    public boolean checkDeltaChanges() throws IOException {
         Map<String, Fof> commitMap = new HashMap<>();
         if (headBranch != null) {
             if (!headBranch.getSha1().equals(""))
@@ -291,14 +271,14 @@ public class Repository {
         return currDelta.getIsChanged();
     }
 
-    private Delta deltaChangesBetweenCommits(String sha1) {
+    private Delta deltaChangesBetweenCommits(String sha1) throws IOException {
         Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
         Delta delta = new Delta(commitMap);
         recursiveWcToObjectBuilder(this.path + "/.magit/merge files", "", false, username, delta);
         return delta;
     }
 
-    public String deltaChangesBetweenCommitsToString(String sha1) {
+    public String deltaChangesBetweenCommitsToString(String sha1) throws IOException {
         String commitPath = path + "/.magit/Commit files/";
         Map<String, Fof> commitMap = getCommitMap((Commit) objList.get(sha1));
         Delta delta = new Delta(commitMap);
@@ -352,7 +332,7 @@ public class Repository {
 
     }
 
-    public String showRepoStatus() {
+    public String showRepoStatus() throws IOException {
         String noChanges = "No changes were made since last commit";
         if (!checkDeltaChanges()) {
             return noChanges;
