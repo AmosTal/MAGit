@@ -1,23 +1,19 @@
 package Merge;
 
 public enum MergeCases {
-Case1(true, true,true, true, true, true) {@Override public String takeOursOrTheirs() { return "ours"; }},
-Case4(true, true, true, true, false, false){@Override public String takeOursOrTheirs() { return ""; }},
-Case6(true, true,true, false, true, false){ @Override public String takeOursOrTheirs() { return "ours"; } },
-Case7(true, true, true, false, false, true) {@Override public String takeOursOrTheirs() { return "theirs"; }},
-Case8(true, true,true, false, false, false) {@Override public String takeOursOrTheirs() { return ""; }},
-Case12(true, true, false, true, false, false)  {@Override public String takeOursOrTheirs() { return "ours"; }},
-Case16(true, true, false, false, false, false){ @Override public String takeOursOrTheirs() { return ""; } },
-Case23(true, false, true, false, false, true){@Override public String takeOursOrTheirs() { return "delete"; }},
-Case24(true, false, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
-Case32(true, false, false, false, false, false){@Override public String takeOursOrTheirs() { return "ours"; }},
-Case38(false, true, true, false, true, false) {@Override public String takeOursOrTheirs() { return "delete"; }},
-Case40(false, true, true, false, false, false){ @Override public String takeOursOrTheirs() { return ""; }},
-Case47(false, true, false, false, false, true) {@Override public String takeOursOrTheirs() { return "theirs"; }},
-Case48(false, true, false, false, false, false) {@Override public String takeOursOrTheirs() { return "theirs"; }},
-Case56(false,false, true, false, false, false){ @Override public String takeOursOrTheirs() { return ""; } };
-
-
+        Case1(true, true, true, false, false, false) {@Override public String takeOursOrTheirs() { return ""; }},
+        Case2(true, true, false, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case3(false, true, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case4(true, false, true, false, false, false){@Override public String takeOursOrTheirs() { return ""; }},
+        Case5(true, false, false, false, false, false){ @Override public String takeOursOrTheirs() { return "ours"; }},
+        Case6(true, true, true, true, true, true){ @Override public String takeOursOrTheirs() { return "ours"; } },
+        Case7(true, false, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
+        Case8(true, true, true, false, true, false) {@Override public String takeOursOrTheirs() { return "ours"; }},
+        Case9(false, true, false, false, false, false) { @Override public String takeOursOrTheirs() { return "theirs"; }},
+        Case10(true, true, true, true, false, false){ @Override public String takeOursOrTheirs() { return "theirs"; }},
+        Case11(true, true, false, true, false, false){@Override public String takeOursOrTheirs() { return "theirs"; }},
+        Case12(false, false, true, false, false, false)  {@Override public String takeOursOrTheirs() { return "theirs"; }};
+        
 
 
     private boolean existsInBase,  existsInTarget,  existsInAncestor,  baseEqualsTargetSha1,  targetEqualsAncestorSha1,  baseEqualsAncestorSha1;
