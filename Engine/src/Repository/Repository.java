@@ -359,7 +359,6 @@ public class Repository {
         for (MagitSingleBranch mgBranch : mr.getMagitBranches().getMagitSingleBranch()) {
             isHead = mr.getMagitBranches().getHead().equals(mgBranch.getName());
             if (mgBranch.getPointedCommit() != null) {
-
                 if (isHead && mgBranch.getPointedCommit().getId().equals("")) {
                     repo.headBranch = new Branch("", "master");
                     return repo;
@@ -372,7 +371,11 @@ public class Repository {
                     repo.branches.add(new Branch(commitSha1, mgBranch.getName()));
             }
         }
-        repo.makeRemoteRepositoryFiles(xmldata.getRemotePath());
+        if(xmldata.hasRemote()) {
+            repo.makeRemoteRepositoryFiles(xmldata.getRemotePath());
+            repo.updateRemoteRepoName();
+            repo.updateRemoteRepoPath();
+        }
         repo.deployCommit((Commit) repo.objList.get(repo.headBranch.getSha1()), repo.getPath());
         return repo;
     }

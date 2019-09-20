@@ -54,8 +54,11 @@ public class XmlData {
             magitFolders = magitRepository.getMagitFolders();
             magitBlobs = magitRepository.getMagitBlobs();
             repositoryPath = magitRepository.getLocation();
-            remotePath = magitRepository.getMagitRemoteReference().getLocation();
-            remoteName = magitRepository.getMagitRemoteReference().getName();
+            MagitRepository.MagitRemoteReference remoteReference = magitRepository.getMagitRemoteReference();
+            if(remoteReference!=null){
+                remotePath = remoteReference.getLocation();
+                remoteName = remoteReference.getName();
+            }
             makeMaps();
             checkIfXmlIsValid();
         } catch (JAXBException e) {
@@ -125,5 +128,8 @@ public class XmlData {
 
     public String getRemotePath() {
         return this.remotePath;
+    }
+    public boolean hasRemote(){
+        return magitRepository.getMagitRemoteReference()==null;
     }
 }
