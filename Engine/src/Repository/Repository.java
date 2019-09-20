@@ -372,6 +372,7 @@ public class Repository {
             }
         }
         if(xmldata.hasRemote()) {
+            System.out.println(xmldata.getRemotePath());
             repo.makeRemoteRepositoryFiles(xmldata.getRemotePath());
             repo.updateRemoteRepoName();
             repo.updateRemoteRepoPath();
