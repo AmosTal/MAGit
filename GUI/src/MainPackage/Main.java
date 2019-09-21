@@ -29,14 +29,11 @@ public static Controller controller;
         primaryStage.setTitle("MAGit");
         controller=fxmlLoader.getController();
         Scene scene = new Scene(root, 1200,800);
-        addSkin("Resources/caspian.css",scene);
         Button changeSkinButton = controller.changeSkinButton;
         changeSkinButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if(scene.getStylesheets().contains("Resources/caspian.css")) {
-                    scene.getStylesheets().remove("Resources/caspian.css");
-                    if(!scene.getStylesheets().contains("Resources/secondSkin.css"))
+                if(scene.getStylesheets().isEmpty()) {
                         addSkin("Resources/secondSkin.css",scene);
                 }
                 else if (scene.getStylesheets().contains("Resources/secondSkin.css")){
@@ -46,7 +43,8 @@ public static Controller controller;
                 }
                 else{
                     scene.getStylesheets().remove("Resources/firstSkin.css");
-                    addSkin("Resources/caspian.css",scene);
+                    scene.getStylesheets().clear();
+
                 }
             }
         });
