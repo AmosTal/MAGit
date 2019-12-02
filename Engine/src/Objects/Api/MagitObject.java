@@ -3,7 +3,7 @@ package Objects.Api;
 import Util.Sha1ing;
 
 public class MagitObject implements Sha1able, java.io.Serializable {
-    private String content;
+    protected String content;
 
     protected MagitObject(String _content) {
         content = _content;
