@@ -8,27 +8,11 @@ import java.util.Map;
 
 class Delta {
 
-
     private Map<String, Fof> updatedFilesFofs; // <Path,Fof>
     private Map<String, Fof> newFilesFofs;
     private Map<String, Fof> deletedFilesFofs;
     private Map<String, Fof> commitMap;
     private boolean isChanged = false;
-
-    Map<String, Fof> getCommitMap() {
-        return commitMap;
-    }
-    Map<String, Fof> getUpdatedFilesFofs() {
-        return updatedFilesFofs;
-    }
-    Map<String, Fof> getNewFilesFofs() {
-        return newFilesFofs;
-    }
-
-    Map<String, Fof> getDeletedFilesFofs() {
-        return deletedFilesFofs;
-    }
-
 
 
     Delta(Map<String, Fof> _currentCommitMap) {
@@ -55,7 +39,7 @@ class Delta {
     }
 
 
-     String showChanges() {
+    String showChanges() {
         String linesToPrint = "";
         if (newFilesFofs.entrySet().size() != 0) {
             linesToPrint = linesToPrint.concat("The following files and folders have been created:\n");
@@ -81,11 +65,11 @@ class Delta {
         return msg;
     }
 
-    boolean getIsChanged() {
+    public boolean getIsChanged() {
         return isChanged || !deletedFilesFofs.isEmpty();
     }
 
-    String getUsername(String fofpath) {
+    public String getUsername(String fofpath) {
         Fof fof = commitMap.get(fofpath);
         if (fof == null)
             return null;

@@ -2,9 +2,8 @@ package Objects.Commit;
 
 import Objects.Api.MagitObject;
 import Objects.Date.*;
-import puk.team.course.magit.ancestor.finder.CommitRepresentative;
 
-public class Commit extends MagitObject implements Comparable<Commit>, CommitRepresentative {
+public class Commit extends MagitObject implements Comparable<Commit> {
     private String rootFolderSha1;
     private String previousCommitSha1;
     private String previousCommit2Sha1;
@@ -49,8 +48,8 @@ public class Commit extends MagitObject implements Comparable<Commit>, CommitRep
     public Commit(String _rootFolderSha1, String _CommitPurposeMSG, String _NameOfModifier) {
         super(_rootFolderSha1 + _CommitPurposeMSG + _NameOfModifier);
         rootFolderSha1 = _rootFolderSha1;
-        previousCommitSha1 = "";
-        previousCommit2Sha1 = "";
+        previousCommitSha1 = null;
+        previousCommit2Sha1 = null;
         CommitPurposeMSG = _CommitPurposeMSG;
         NameOfModifier = _NameOfModifier;
         dateAndTime = new DateAndTime();
@@ -74,19 +73,4 @@ public class Commit extends MagitObject implements Comparable<Commit>, CommitRep
     public int compareTo(Commit o) {
         return this.dateAndTime.getDateInSeconds() < o .dateAndTime.getDateInSeconds() ? 1 : -1;
     }
-
-    public void setPreviousCommit2Sha1(String previousCommit2Sha1) {
-        this.previousCommit2Sha1 = previousCommit2Sha1;
-    }
-
-    @Override
-    public String getFirstPrecedingSha1() {
-        return previousCommitSha1;
-    }
-
-    @Override
-    public String getSecondPrecedingSha1() {
-        return previousCommit2Sha1;
-    }
-
 }

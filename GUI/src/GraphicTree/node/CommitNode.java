@@ -1,6 +1,5 @@
 package GraphicTree.node;
 
-import Objects.Commit.Commit;
 import com.fxgraph.cells.AbstractCell;
 import com.fxgraph.graph.Graph;
 import com.fxgraph.graph.IEdge;
@@ -18,18 +17,12 @@ public class CommitNode extends AbstractCell {
     private String timestamp;
     private String committer;
     private String message;
-    private Commit commit;
     private CommitNodeController commitNodeController;
-    private String isPointed;
 
-
-    public CommitNode(String timestamp, String committer, String message,Commit commit,String isPointed) {
+    public CommitNode(String timestamp, String committer, String message) {
         this.timestamp = timestamp;
         this.committer = committer;
         this.message = message;
-        this.commit =commit;
-        this.isPointed = isPointed;
-
     }
 
     @Override
@@ -46,8 +39,6 @@ public class CommitNode extends AbstractCell {
             commitNodeController.setCommitMessage(message);
             commitNodeController.setCommitter(committer);
             commitNodeController.setCommitTimeStamp(timestamp);
-            commitNodeController.setCommit(commit);
-            commitNodeController.setPointedCommit(isPointed);
 
             return root;
         } catch (IOException e) {
@@ -75,5 +66,4 @@ public class CommitNode extends AbstractCell {
     public int hashCode() {
         return timestamp != null ? timestamp.hashCode() : 0;
     }
-
 }
