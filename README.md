@@ -2,6 +2,6 @@
 
 File system like git
 
-![scrrenshot](https://imgur.com/9vVEeoV)
+![screenshot](https://imgur.com/9vVEeoV)
 
 
