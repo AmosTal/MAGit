@@ -1,7 +1,6 @@
-# MAGit
+# MAGit  
 
 File system like git
 
-![screenshot](https://imgur.com/9vVEeoV)
-
+![img](https://i.imgur.com/9vVEeoV.gif)
 
