@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
@@ -22,11 +21,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="365.0" prefWidth="605.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControlPackage.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="348.0" prefWidth="603.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ControlPackage.Controller">
     <top>
         <AnchorPane prefHeight="47.0" prefWidth="608.0" BorderPane.alignment="CENTER">
             <children>
-                <MenuBar layoutX="-8.0" layoutY="1.0" maxWidth="2000.0" prefHeight="31.0" prefWidth="397.0" AnchorPane.leftAnchor="-8.0" AnchorPane.rightAnchor="3.0">
+                <MenuBar layoutX="-8.0" layoutY="1.0" maxWidth="2000.0" prefHeight="31.0" prefWidth="613.0" AnchorPane.leftAnchor="-8.0" AnchorPane.rightAnchor="3.0">
                     <menus>
                         <Menu mnemonicParsing="false" text="Repository">
                             <items>
@@ -34,41 +33,36 @@
                                 <MenuItem mnemonicParsing="false" onAction="#openRepository" text="Open Repository" />
                                 <MenuItem mnemonicParsing="false" onAction="#loadRepoFromXml" text="Load xml repository" />
                                 <MenuItem mnemonicParsing="false" onAction="#switchUsername" text="Set username" />
-                        <MenuItem fx:id="cloneMenuItem" disable="true" mnemonicParsing="false" onAction="#cloneRepo" text="Clone" />
-                        <MenuItem fx:id="fetchMenuItem" disable="true" mnemonicParsing="false" onAction="#fetch" text="Fetch" />
-                        <MenuItem fx:id="pullMenuItem" disable="true" mnemonicParsing="false" onAction="#pull" text="Pull" />
-                        <MenuItem fx:id="pushMenuItem" disable="true" mnemonicParsing="false" onAction="#push" text="Push" />
                             </items>
                         </Menu>
                         <Menu mnemonicParsing="false" text="Branches">
                             <items>
-                                <MenuItem fx:id="showBranchesMenuItem" disable="true" mnemonicParsing="false" onAction="#showBranches" text="Show branches" />
-                                <MenuItem fx:id="makeNewBranchMenuItem" disable="true" mnemonicParsing="false" onAction="#makeNewBranch" text="Make new branch" />
-                                <MenuItem fx:id="deleteExistingBranchMenuItem" disable="true" mnemonicParsing="false" onAction="#deleteExistingBranch" text="Delete existing branch" />
-                                <MenuItem fx:id="switchHeadBranchMenuItem" disable="true" mnemonicParsing="false" onAction="#switchHeadBranch" text="Switch head branch(checkout)" />
+                                <MenuItem mnemonicParsing="false" onAction="#showBranches" text="Show branches" />
+                                <MenuItem mnemonicParsing="false" onAction="#makeNewBranch" text="Make new branch" />
+                                <MenuItem mnemonicParsing="false" onAction="#deleteExistingBranch" text="Delete existing branch" />
+                                <MenuItem mnemonicParsing="false" onAction="#switchHeadBranch" text="Switch head branch(checkout)" />
                             </items>
                         </Menu>
                     </menus>
                 </MenuBar>
-                <Button fx:id="commitButtonID" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="215.0" layoutY="2.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="28.0" prefWidth="100.0" text="Commit" textFill="#111111">
+                <Button layoutX="257.0" layoutY="1.0" mnemonicParsing="false" onAction="#commitButton" prefHeight="28.0" prefWidth="84.0" text="Commit" textFill="#007aff">
                     <effect>
                         <ColorAdjust />
                     </effect>
                 </Button>
-                <AnchorPane layoutY="25.0" prefHeight="27.0" prefWidth="612.0" AnchorPane.bottomAnchor="-5.0">
+                <AnchorPane layoutY="25.0" prefHeight="24.0" prefWidth="608.0" AnchorPane.bottomAnchor="-5.0">
                     <children>
-                        <Label layoutX="173.0" layoutY="2.0" prefHeight="25.0" prefWidth="77.0" text="Repository:" AnchorPane.bottomAnchor="0.0" />
+                        <Label layoutX="173.0" layoutY="2.0" prefHeight="25.0" prefWidth="64.0" text="Repository:" AnchorPane.bottomAnchor="0.0" />
                         <Label layoutX="14.0" layoutY="30.0" prefHeight="27.0" prefWidth="72.0" text="Username:" AnchorPane.bottomAnchor="-1.0" />
-                        <Label fx:id="repositoryNameLabel" layoutX="251.0" layoutY="2.0" prefHeight="24.0" prefWidth="73.0" AnchorPane.bottomAnchor="1.0" />
-                        <Label fx:id="usernameLabel" layoutX="87.0" layoutY="1.0" prefHeight="27.0" prefWidth="88.0" text="Default" AnchorPane.bottomAnchor="-1.0" />
-                        <Label layoutX="327.0" prefHeight="27.0" prefWidth="102.0" text="Active branch:" AnchorPane.bottomAnchor="0.0" />
-                        <Label fx:id="activeBranchLabel" layoutX="422.0" prefHeight="27.0" prefWidth="134.0" AnchorPane.bottomAnchor="0.0" />
+                        <Label fx:id="repositoryNameLabel" layoutX="235.0" layoutY="2.0" prefHeight="27.0" prefWidth="83.0" AnchorPane.bottomAnchor="-2.0" />
+                        <Label fx:id="usernameLabel" layoutX="77.0" layoutY="1.0" prefHeight="27.0" prefWidth="88.0" text="Default" AnchorPane.bottomAnchor="-1.0" />
+                        <Label layoutX="327.0" prefHeight="27.0" prefWidth="77.0" text="Active branch:" AnchorPane.bottomAnchor="0.0" />
+                        <Label fx:id="activeBranchLabel" layoutX="404.0" prefHeight="27.0" prefWidth="134.0" AnchorPane.bottomAnchor="0.0" />
                     </children>
                     <effect>
                         <Glow />
                     </effect>
                 </AnchorPane>
-            <Button fx:id="changeSkinButton" layoutX="478.0" layoutY="2.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="100.0" text="Change skin" />
             </children>
         </AnchorPane>
     </top>
@@ -98,12 +92,12 @@
                                 <VBox prefHeight="138.0" prefWidth="115.0">
                                     <children>
                                         <Label text="File options:" />
-                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#showContentButton" prefHeight="40.0" prefWidth="140.0" text="Show file content" wrapText="true">
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#showContentButton" prefHeight="34.0" prefWidth="113.0" text="Show file content">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
-                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="40.0" prefWidth="140.0" text="Refresh Files" wrapText="true" />
-                                        <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#showChanges" prefHeight="40.0" prefWidth="140.0" text="Show changes" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshFilesTree" prefHeight="35.0" prefWidth="113.0" text="Refresh Files" />
+                                        <Button alignment="CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#showChanges" prefHeight="38.0" prefWidth="115.0" text="Show changes" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
                                  <font>
                                     <Font size="12.0" />
                                  </font></Button>
@@ -133,107 +127,53 @@
                 </GridPane>
                 <GridPane GridPane.rowIndex="1">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="870.0" minWidth="10.0" prefWidth="200.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1050.0" minWidth="10.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="870.0" minWidth="10.0" prefWidth="495.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1050.0" minWidth="10.0" prefWidth="700.0" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints maxHeight="500.0" minHeight="10.0" prefHeight="37.0" vgrow="SOMETIMES" />
                         <RowConstraints />
                     </rowConstraints>
                     <children>
-                        <HBox maxWidth="1.7976931348623157E308" prefHeight="150.0" prefWidth="372.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
+                        <HBox prefHeight="136.0" prefWidth="414.0" GridPane.columnIndex="1" GridPane.rowSpan="2">
                             <children>
-                                <VBox fx:id="vBoxButtons" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="136.0" prefWidth="115.0">
+                                <VBox prefHeight="136.0" prefWidth="115.0">
                                     <children>
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#refreshCommitsTree" prefHeight="39.0" prefWidth="134.0" text="Refresh branches">
+                                 <font>
+                                    <Font size="12.0" />
+                                 </font></Button>
                                         <Label fx:id="optionsLabel1" text="Branches options:" />
-                                        <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#switchingButton1" prefHeight="40.0" prefWidth="140.0" text="Checkout">
+                                        <Button fx:id="switchButton1" mnemonicParsing="false" onAction="#switchingButton1" prefHeight="39.0" prefWidth="134.0" text="Checkout">
                                  <font>
                                     <Font size="14.0" />
                                  </font></Button>
-                                        <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#switchingButton2" prefHeight="40.0" prefWidth="140.0" text="Delete Branch" textAlignment="CENTER" wrapText="true" />
-                              <Button fx:id="mergeButtonID" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#mergeButton" prefHeight="40.0" prefWidth="140.0" text="Merge" />
+                                        <Button fx:id="switchButton2" mnemonicParsing="false" onAction="#switchingButton2" prefHeight="52.0" prefWidth="115.0" text="Delete branch" textAlignment="CENTER" wrapText="true" />
                                     </children>
                                 </VBox>
-                                <VBox maxWidth="1.7976931348623157E308">
+                                <VBox prefHeight="138.0" prefWidth="287.0">
                                     <children>
-                              <GridPane maxWidth="1.7976931348623157E308" prefHeight="157.0">
-                                <columnConstraints>
-                                    <ColumnConstraints hgrow="SOMETIMES" maxWidth="121.0" minWidth="-Infinity" prefWidth="70.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="202.0" minWidth="-Infinity" prefWidth="103.0" />
-                                  <ColumnConstraints maxWidth="1.7976931348623157E308" minWidth="115.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="45.0" minHeight="10.0" prefHeight="45.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="62.0" minHeight="10.0" prefHeight="49.0" vgrow="SOMETIMES" />
-                                    <RowConstraints maxHeight="75.0" minHeight="10.0" prefHeight="47.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
-                                 <children>
-                                                <Label prefHeight="17.0" text="Commit message:" GridPane.columnIndex="1" />
-                                                <Label fx:id="commitMsgLabel" alignment="TOP_LEFT" maxWidth="1.7976931348623157E308" prefHeight="222.0" GridPane.columnIndex="2" />
-                                    <Label prefHeight="19.0" prefWidth="106.0" text="Commit sha1:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <Label fx:id="commitSha1Label" alignment="TOP_LEFT" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Label>
-                                    <Label text="Previous commit sha1:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="commitPrevLabel" alignment="TOP_LEFT" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="2">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Label>
-                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta1" prefHeight="39.0" prefWidth="88.0" text="Show delta" wrapText="true" GridPane.rowIndex="2">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Button>
-                                    <Label text="Second previous commit sha1:" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="commitSecondPrevLabel" alignment="TOP_LEFT" wrapText="true" GridPane.columnIndex="2" GridPane.rowIndex="3">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Label>
-                                    <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#showDelta2" prefHeight="39.0" prefWidth="68.0" text="Show delta" GridPane.rowIndex="3">
-                                       <font>
-                                          <Font size="10.0" />
-                                       </font>
-                                    </Button>
-                                 </children>
-                              </GridPane>
+                                        <HBox prefHeight="19.0" prefWidth="287.0">
+                                            <children>
+                                                <Label prefHeight="20.0" prefWidth="156.0" text="Commit message:" />
+                                                <Label fx:id="commitMsgLabel" alignment="TOP_LEFT" prefHeight="22.0" prefWidth="193.0" />
+                                            </children>
+                                        </HBox>
                                     </children>
                                 </VBox>
                             </children>
                         </HBox>
                         <TabPane maxWidth="870.0" tabClosingPolicy="UNAVAILABLE" GridPane.rowSpan="2">
                             <tabs>
-                                <Tab onSelectionChanged="#graphicalView" text="Graphical view">
-                           <content>
-                               <ScrollPane fx:id="scrollPane" onMouseClicked="#updateContextMenuToNull" prefHeight="200.0" prefWidth="200.0">
-                                 <contextMenu>
-                                    <ContextMenu fx:id="contextMenu">
-                                      <items>
-                                        <MenuItem fx:id="resetContext" mnemonicParsing="false" onAction="#resetContextPressed" text="Reset head branch to this commit" />
-                                          <MenuItem fx:id="newBranchContext" mnemonicParsing="false" onAction="#newBranchContextPressed" text="Make new branch" />
-                                          <MenuItem fx:id="mergeContext" mnemonicParsing="false" onAction="#mergeContextPressed" text="Merge head with this branch" />
-                                          <MenuItem fx:id="deleteBranchContext" mnemonicParsing="false" onAction="#deleteBranchContextPressed" text="Delete Branch" />
-                                      </items>
-                                    </ContextMenu>
-                                 </contextMenu></ScrollPane>
-                           </content></Tab>
-                                <Tab onSelectionChanged="#normalView" text="Normal view">
+                                <Tab text="Normal view">
                                     <content>
                                         <TreeView fx:id="BranchCommitTreeView" prefHeight="200.0" prefWidth="200.0" />
                                     </content>
                                 </Tab>
+                                <Tab text="Graphical view">
+                           <content>
+                               <ScrollPane fx:id="scrollPane" onMouseClicked="#refreshGraphic" prefHeight="200.0" prefWidth="200.0" />
+                           </content></Tab>
                             </tabs>
                         </TabPane>
                     </children>
