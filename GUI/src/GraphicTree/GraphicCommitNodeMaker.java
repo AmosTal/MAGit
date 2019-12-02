@@ -3,33 +3,23 @@ package GraphicTree;
 import EngineRunner.ModuleTwo;
 import GraphicTree.layout.CommitTreeLayout;
 import GraphicTree.node.CommitNode;
-import Objects.Api.MagitObject;
 import Objects.Commit.Commit;
 import com.fxgraph.edges.Edge;
-import com.fxgraph.graph.Graph;
-import com.fxgraph.graph.ICell;
-import com.fxgraph.graph.Model;
-import com.fxgraph.graph.PannableCanvas;
-import javafx.application.Application;
+import com.fxgraph.graph.*;
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
-import javafx.stage.Stage;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class GraphicCommitNodeMaker {
-    public static HashMap<String, ICell> cellMap = new HashMap<>();
+    private static HashMap<String, ICell> cellMap = new HashMap<>();
 
     public static void createGraphicTree(ScrollPane scrollPane) {
         Graph tree = new Graph();
         ArrayList<Commit> commitLst = ModuleTwo.getActiveRepo().getCommits();
         GraphicCommitNodeMaker.createCommits(tree, commitLst);
         PannableCanvas canvas = tree.getCanvas();
-        //canvas.setPrefWidth(100);
-        //canvas.setPrefHeight(100);
         scrollPane.setContent(canvas);
 
         Platform.runLater(() -> {
@@ -38,14 +28,16 @@ public class GraphicCommitNodeMaker {
         });
     }
 
-    public static void createCommits(Graph graph, ArrayList<Commit> commitLst) {
+    private static void createCommits(Graph graph, ArrayList<Commit> commitLst) {
+
         final Model model = graph.getModel();
 
         graph.beginUpdate();
         ICell c;
+
         for (Commit commit : commitLst) {
             c = new CommitNode(commit.getDateAndTime().getDate(), commit.getNameOfModifier(),
-                    commit.getCommitPurposeMSG());
+                    commit.getCommitPurposeMSG(), commit, ModuleTwo.isPointedCommitBranchList(commit));
             cellMap.put(commit.getSha1(), c);
             model.addCell(c);
         }
@@ -54,8 +46,12 @@ public class GraphicCommitNodeMaker {
                 final Edge edge = new Edge(cellMap.get(commit.getSha1()), cellMap.get(commit.getPreviousCommitSha1()));
                 model.addEdge(edge);
             }
+            if (cellMap.containsKey(commit.getSecondPrecedingSha1())) {
+                final Edge edge = new Edge(cellMap.get(commit.getSha1()), cellMap.get(commit.getSecondPrecedingSha1()));
+                model.addEdge(edge);
+            }
         }
         graph.endUpdate();
-        graph.layout(new CommitTreeLayout());
+        graph.layout(new CommitTreeLayout(cellMap, commitLst.get(0), commitLst));
     }
 }
