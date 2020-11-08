@@ -1,4 +1,4 @@
-# MAGit  
+# MyGitHub  
 
 File system similar to git - desktop application with Java FX
 
